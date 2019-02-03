@@ -273,7 +273,7 @@ def main():
         if os.path.exists(args.input):
             shutil.copy(args.input, working_dir)
             filename = os.path.basename(args.input)
-            clean_filename = os.path.splitext(filename)[0] + "_cropped.pdf"
+            clean_filename = filename
 
         os.chdir(working_dir)
         if validate_url(args.input):
@@ -294,7 +294,11 @@ def main():
             return input()
 
         if args.no_upload:
-            shutil.move(clean_filename, start_wd)
+            if os.path.exists(os.path.join(start_wd, clean_filename)):
+                tmpfname = os.path.splitext(filename)[0] + "_cropped.pdf"
+                shutil.move(clean_filename, os.path.join(start_wd, tmpfname))
+            else:
+                shutil.move(clean_filename, start_wd)
         else:
             upload_to_rm(clean_filename, rmapi_path=args.rmapi)
 
