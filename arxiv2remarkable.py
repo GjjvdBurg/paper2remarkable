@@ -41,7 +41,7 @@ HEADERS = {
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
-    raise SystemExit
+    raise SystemExit(1)
 
 
 def validate_url(url):
@@ -69,8 +69,7 @@ def validate_url(url):
 
 
 def get_urls(url):
-    """Get the pdf and abs url from any given url
-    """
+    """Get the pdf and abs url from any given url """
     if re.match("https?://arxiv.org/abs/\d{4}\.\d{5}(v\d+)?", url):
         abs_url = url
         pdf_url = url.replace("abs", "pdf") + ".pdf"
@@ -83,8 +82,7 @@ def get_urls(url):
 
 
 def get_page_with_retry(url):
-    """Get the content of an url, retrying up to five times on failure.
-    """
+    """Get the content of an url, retrying up to five times on failure. """
     count = 0
     while True:
         res = requests.get(url, headers=HEADERS)
@@ -153,8 +151,8 @@ def dearxiv(input_file, pdftk_path="pdftk"):
 def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
     logger.info("Cropping pdf file")
     status = subprocess.call(
-        [pdfcrop_path, "--margins", "15 40 15 15", filepath], 
-        stdout=subprocess.DEVNULL
+        [pdfcrop_path, "--margins", "15 40 15 15", filepath],
+        stdout=subprocess.DEVNULL,
     )
     if not status == 0:
         logger.warning("Failed to crop the pdf file at: %s" % filepath)
@@ -216,8 +214,9 @@ def generate_filename(info):
 
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     logger.info("Starting upload to reMarkable")
-    status = subprocess.call([rmapi_path, "put", filepath, remarkable_dir],
-        stdout=subprocess.DEVNULL)
+    status = subprocess.call(
+        [rmapi_path, "put", filepath, remarkable_dir], stdout=subprocess.DEVNULL
+    )
     if not status == 0:
         exception("Uploading file %s to remarkable failed" % filepath)
     logger.info("Upload successful.")
