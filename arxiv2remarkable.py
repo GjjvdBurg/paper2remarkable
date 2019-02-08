@@ -193,7 +193,8 @@ def get_paper_info(url):
     page = get_page_with_retry(url)
     soup = bs4.BeautifulSoup(page, "html.parser")
     authors = [
-        x["content"] for x in soup.find_all("meta", {"name": "citation_author"})
+        x["content"]
+        for x in soup.find_all("meta", {"name": "citation_author"})
     ]
     title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
     date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
@@ -215,7 +216,8 @@ def generate_filename(info):
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     logger.info("Starting upload to reMarkable")
     status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir], stdout=subprocess.DEVNULL
+        [rmapi_path, "put", filepath, remarkable_dir],
+        stdout=subprocess.DEVNULL,
     )
     if not status == 0:
         exception("Uploading file %s to remarkable failed" % filepath)
