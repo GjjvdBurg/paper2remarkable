@@ -63,17 +63,17 @@ def validate_url(url):
     False
     """
     m = re.match(
-        "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{5}(v\d+)?(\.pdf)?", url
+        "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", url
     )
     return not m is None
 
 
 def get_urls(url):
     """Get the pdf and abs url from any given url """
-    if re.match("https?://arxiv.org/abs/\d{4}\.\d{5}(v\d+)?", url):
+    if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
         abs_url = url
         pdf_url = url.replace("abs", "pdf") + ".pdf"
-    elif re.match("https?://arxiv.org/pdf/\d{4}\.\d{5}(v\d+)?\.pdf", url):
+    elif re.match("https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf", url):
         abs_url = url[:-4].replace("pdf", "abs")
         pdf_url = url
     else:
