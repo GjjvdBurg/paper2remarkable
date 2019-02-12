@@ -215,12 +215,18 @@ def generate_filename(info):
 
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     logger.info("Starting upload to reMarkable")
+    if not remarkable_dir == "/":
+        status = subprocess.call([rmapi_path, "mkdir", remarkable_dir])
+        if not status == 0:
+            exception(
+                "Creating directory %s on reMarkable failed" % remarkable_dir
+            )
     status = subprocess.call(
         [rmapi_path, "put", filepath, remarkable_dir],
         stdout=subprocess.DEVNULL,
     )
     if not status == 0:
-        exception("Uploading file %s to remarkable failed" % filepath)
+        exception("Uploading file %s to reMarkable failed" % filepath)
     logger.info("Upload successful.")
 
 
@@ -242,6 +248,13 @@ def parse_args():
         "--debug",
         help="debug mode, doesn't upload to reMarkable",
         action="store_true",
+    )
+    parser.add_argument(
+        "-p",
+        "--remarkable-path",
+        help="directory on reMarkable to put the file (created if missing)",
+        dest="remarkable_dir",
+        default="/",
     )
     parser.add_argument(
         "--rmapi", help="path to rmapi executable", default="rmapi"
@@ -302,7 +315,11 @@ def main():
             else:
                 shutil.move(clean_filename, start_wd)
         else:
-            upload_to_rm(clean_filename, rmapi_path=args.rmapi)
+            upload_to_rm(
+                clean_filename,
+                remarkable_dir=args.remarkable_dir,
+                rmapi_path=args.rmapi,
+            )
 
 
 if __name__ == "__main__":
