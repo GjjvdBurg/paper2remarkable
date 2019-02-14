@@ -214,15 +214,18 @@ def generate_filename(info):
 
 
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
+    remarkable_dir = remarkable_dir.rstrip("/")
     logger.info("Starting upload to reMarkable")
-    if not remarkable_dir == "/":
-        status = subprocess.call([rmapi_path, "mkdir", remarkable_dir])
+    if remarkable_dir:
+        status = subprocess.call(
+            [rmapi_path, "mkdir", remarkable_dir], stdout=subprocess.DEVNULL
+        )
         if not status == 0:
             exception(
                 "Creating directory %s on reMarkable failed" % remarkable_dir
             )
     status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir],
+        [rmapi_path, "put", filepath, remarkable_dir + "/"],
         stdout=subprocess.DEVNULL,
     )
     if not status == 0:
