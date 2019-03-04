@@ -25,26 +25,30 @@ Here's the full help of the script:
 
 ```bash
 usage: arxiv2remarkable.py [-h] [-v] [-n] [-d] [--filename FILENAME]
-                           [--rmapi RMAPI] [--pdfcrop PDFCROP] [--pdftk PDFTK]
-                           [--gs GS]
+                           [-p REMARKABLE_DIR] [--rmapi RMAPI]
+                           [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
                            input
 
 positional arguments:
-  input                url to an arxiv paper, url to pdf, or existing pdf file
+  input                 url to an arxiv paper, url to pdf, or existing pdf
+                        file
 
 optional arguments:
-  -h, --help           show this help message and exit
-  -v, --verbose        be verbose (default: False)
-  -n, --no-upload      don't upload to the reMarkable, save the output in
-                       current working dir (default: False)
-  -d, --debug          debug mode, doesn't upload to reMarkable (default:
-                       False)
-  --filename FILENAME  Filename to use for the file on reMarkable (default:
-                       None)
-  --rmapi RMAPI        path to rmapi executable (default: rmapi)
-  --pdfcrop PDFCROP    path to pdfcrop executable (default: pdfcrop)
-  --pdftk PDFTK        path to pdftk executable (default: pdftk)
-  --gs GS              path to gs executable (default: gs)
+  -h, --help            show this help message and exit
+  -v, --verbose         be verbose (default: False)
+  -n, --no-upload       don't upload to the reMarkable, save the output in
+                        current working dir (default: False)
+  -d, --debug           debug mode, doesn't upload to reMarkable (default:
+                        False)
+  --filename FILENAME   Filename to use for the file on reMarkable (default:
+                        None)
+  -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
+                        directory on reMarkable to put the file (created if
+                        missing) (default: /)
+  --rmapi RMAPI         path to rmapi executable (default: rmapi)
+  --pdfcrop PDFCROP     path to pdfcrop executable (default: pdfcrop)
+  --pdftk PDFTK         path to pdftk executable (default: pdftk)
+  --gs GS               path to gs executable (default: gs)
 ```
 
 And here's an example with verbose mode enabled that shows everything the 
