@@ -65,7 +65,7 @@ def arxiv_url(url):
     False
     """
     m = re.match(
-        "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{5}(v\d+)?(\.pdf)?", url
+        "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", url
     )
     return not m is None
 
@@ -88,10 +88,10 @@ def check_file_is_pdf(filename):
 
 def get_arxiv_urls(url):
     """Get the pdf and abs url from any given url """
-    if re.match("https?://arxiv.org/abs/\d{4}\.\d{5}(v\d+)?", url):
+    if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
         abs_url = url
         pdf_url = url.replace("abs", "pdf") + ".pdf"
-    elif re.match("https?://arxiv.org/pdf/\d{4}\.\d{5}(v\d+)?\.pdf", url):
+    elif re.match("https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf", url):
         abs_url = url[:-4].replace("pdf", "abs")
         pdf_url = url
     else:
@@ -141,13 +141,13 @@ def dearxiv(input_file, pdftk_path="pdftk"):
         data = fid.read()
         # Remove the text element
         data = re.sub(
-            b"\(arXiv:\d{4}\.\d{5}v\d\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
+            b"\(arXiv:\d{4}\.\d{4,5}v\d\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
             b"()Tj",
             data,
         )
         # Remove the URL element
         data = re.sub(
-            b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{5}v\d\)\\n\/S /URI\\n>>\\n",
+            b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d\)\\n\/S /URI\\n>>\\n",
             b"",
             data,
         )
@@ -211,7 +211,8 @@ def get_paper_info(url):
     page = get_page_with_retry(url)
     soup = bs4.BeautifulSoup(page, "html.parser")
     authors = [
-        x["content"] for x in soup.find_all("meta", {"name": "citation_author"})
+        x["content"]
+        for x in soup.find_all("meta", {"name": "citation_author"})
     ]
     title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
     date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
@@ -231,12 +232,22 @@ def generate_filename(info):
 
 
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
+    remarkable_dir = remarkable_dir.rstrip("/")
     logger.info("Starting upload to reMarkable")
+    if remarkable_dir:
+        status = subprocess.call(
+            [rmapi_path, "mkdir", remarkable_dir], stdout=subprocess.DEVNULL
+        )
+        if not status == 0:
+            exception(
+                "Creating directory %s on reMarkable failed" % remarkable_dir
+            )
     status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir], stdout=subprocess.DEVNULL
+        [rmapi_path, "put", filepath, remarkable_dir + "/"],
+        stdout=subprocess.DEVNULL,
     )
     if not status == 0:
-        exception("Uploading file %s to remarkable failed" % filepath)
+        exception("Uploading file %s to reMarkable failed" % filepath)
     logger.info("Upload successful.")
 
 
@@ -263,6 +274,13 @@ def parse_args():
         "--filename",
         help="Filename to use for the file on reMarkable",
         default=None,
+        )
+    parser.add_argument(
+        "-p",
+        "--remarkable-path",
+        help="directory on reMarkable to put the file (created if missing)",
+        dest="remarkable_dir",
+        default="/",
     )
     parser.add_argument(
         "--rmapi", help="path to rmapi executable", default="rmapi"
@@ -341,7 +359,11 @@ def main():
             else:
                 shutil.move(clean_filename, start_wd)
         else:
-            upload_to_rm(clean_filename, rmapi_path=args.rmapi)
+            upload_to_rm(
+                clean_filename,
+                remarkable_dir=args.remarkable_dir,
+                rmapi_path=args.rmapi,
+            )
 
 
 if __name__ == "__main__":
