@@ -1,39 +1,50 @@
 # arxiv2remarkable.py
 
-This script takes an URL to an arXiv paper, and:
+This script makes it as easy to get a PDF on your reMarkable from any of the 
+following sources:
 
-1. Downloads it
+- an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
+- a url to a PDF file
+- a local file.
+
+The script takes the source and:
+
+1. Downloads it if necessary
 2. Removes the arXiv timestamp
 3. Crops the pdf to remove unnecessary borders
-4. Shrinks the pdf to reduce filesize
-5. Generates a nice filename based on author/title/year of the paper
-6. Uploads it to the reMarkable
+4. Shrinks the pdf file to reduce the filesize
+5. Generates a nice filename based on author/title/year of the paper (arXiv 
+   only)
+6. Uploads it to your reMarkable using ``rMapi``.
 
 Optionally, you can download a paper but not have it uploaded to the 
-reMarkable (using the ``-n`` switch), or provide an existing pdf file (to use 
-only steps 2 - 6).
+reMarkable using the ``-n`` switch. Also, the ``--filename`` parameter to the 
+script can be used to provide an explicit filename for on the reMarkable.
 
 Here's the full help of the script:
 
 ```bash
-[arxiv2remarkable] $ python arxiv2remarkable.py -h
-usage: arxiv2remarkable.py [-h] [-v] [-n] [-d] [--rmapi RMAPI]
-                           [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
+usage: arxiv2remarkable.py [-h] [-v] [-n] [-d] [--filename FILENAME]
+                           [--rmapi RMAPI] [--pdfcrop PDFCROP] [--pdftk PDFTK]
+                           [--gs GS]
                            input
 
 positional arguments:
-  input              url to an arxiv paper or existing pdf file
+  input                url to an arxiv paper, url to pdf, or existing pdf file
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -v, --verbose      be verbose (default: False)
-  -n, --no-upload    don't upload to the reMarkable, save the output in
-                     current working dir (default: False)
-  -d, --debug        debug mode, doesn't upload to reMarkable (default: False)
-  --rmapi RMAPI      path to rmapi executable (default: rmapi)
-  --pdfcrop PDFCROP  path to pdfcrop executable (default: pdfcrop)
-  --pdftk PDFTK      path to pdftk executable (default: pdftk)
-  --gs GS            path to gs executable (default: gs)
+  -h, --help           show this help message and exit
+  -v, --verbose        be verbose (default: False)
+  -n, --no-upload      don't upload to the reMarkable, save the output in
+                       current working dir (default: False)
+  -d, --debug          debug mode, doesn't upload to reMarkable (default:
+                       False)
+  --filename FILENAME  Filename to use for the file on reMarkable (default:
+                       None)
+  --rmapi RMAPI        path to rmapi executable (default: rmapi)
+  --pdfcrop PDFCROP    path to pdfcrop executable (default: pdfcrop)
+  --pdftk PDFTK        path to pdftk executable (default: pdftk)
+  --gs GS              path to gs executable (default: gs)
 ```
 
 And here's an example with verbose mode enabled that shows everything the 
@@ -70,7 +81,13 @@ The script also needs the following Python packages:
 - [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 - [requests](https://pypi.org/project/requests/)
 - [loguru](https://pypi.org/project/loguru/)
+- [PyPDF2](https://github.com/mstamy2/PyPDF2)
 
+You can use this line:
+
+```bash
+pip install --user bs4 requests loguru PyPDF2
+```
 
 # Notes
 

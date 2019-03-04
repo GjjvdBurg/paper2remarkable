@@ -18,6 +18,7 @@ License: MIT
 
 """
 
+import PyPDF2
 import argparse
 import bs4
 import os
@@ -28,6 +29,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 
 from loguru import logger
 
@@ -44,7 +46,7 @@ def exception(msg):
     raise SystemExit(1)
 
 
-def validate_url(url):
+def arxiv_url(url):
     """Check if the url is to an arXiv page.
 
     >>> validate_url("https://arxiv.org/abs/1811.11242")
@@ -68,7 +70,23 @@ def validate_url(url):
     return not m is None
 
 
-def get_urls(url):
+def valid_url(url):
+    try:
+        result = urllib.parse.urlparse(url)
+        return all([result.scheme, result.netloc, result.path])
+    except:
+        return False
+
+
+def check_file_is_pdf(filename):
+    try:
+        PyPDF2.PdfFileReader(open(filename, "rb"))
+        return True
+    except PyPDF2.utils.PdfReadError:
+        return False
+
+
+def get_arxiv_urls(url):
     """Get the pdf and abs url from any given url """
     if re.match("https?://arxiv.org/abs/\d{4}\.\d{5}(v\d+)?", url):
         abs_url = url
@@ -242,6 +260,11 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "--filename",
+        help="Filename to use for the file on reMarkable",
+        default=None,
+    )
+    parser.add_argument(
         "--rmapi", help="path to rmapi executable", default="rmapi"
     )
     parser.add_argument(
@@ -252,7 +275,7 @@ def parse_args():
     )
     parser.add_argument("--gs", help="path to gs executable", default="gs")
     parser.add_argument(
-        "input", help="url to an arxiv paper or existing pdf file"
+        "input", help="url to an arxiv paper, url to pdf, or existing pdf file"
     )
     return parser.parse_args()
 
@@ -261,8 +284,16 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if not (os.path.exists(args.input) or validate_url(args.input)):
-        exception("Input not a file or arXiv url.")
+    if os.path.exists(args.input):
+        mode = "local_file"
+    elif arxiv_url(args.input):
+        mode = "arxiv_url"
+    elif valid_url(args.input):
+        if args.filename is None:
+            exception("Filename must be provided with pdf url (use --filename)")
+        mode = "pdf_url"
+    else:
+        exception("Input not a valid url, arxiv url, or existing file.")
 
     if not args.verbose:
         logger.remove(0)
@@ -270,18 +301,28 @@ def main():
     start_wd = os.getcwd()
 
     with tempfile.TemporaryDirectory() as working_dir:
-        if os.path.exists(args.input):
+        if mode == "local_file":
             shutil.copy(args.input, working_dir)
             filename = os.path.basename(args.input)
-            clean_filename = filename
+            clean_filename = args.filename if args.filename else filename
 
         os.chdir(working_dir)
-        if validate_url(args.input):
-            pdf_url, abs_url = get_urls(args.input)
+        if mode == "arxiv_url":
+            pdf_url, abs_url = get_arxiv_urls(args.input)
             filename = "paper.pdf"
             download_url(pdf_url, filename)
-            paper_info = get_paper_info(abs_url)
-            clean_filename = generate_filename(paper_info)
+            if args.filename:
+                clean_filename = args.filename
+            else:
+                paper_info = get_paper_info(abs_url)
+                clean_filename = generate_filename(paper_info)
+
+        if mode == "pdf_url":
+            filename = "paper.pdf"
+            download_url(args.input, filename)
+            if not check_file_is_pdf(filename):
+                exception("Input url doesn't point to valid pdf file.")
+            clean_filename = args.filename
 
         dearxived = dearxiv(filename, pdftk_path=args.pdftk)
         cropped = crop_pdf(dearxived, pdfcrop_path=args.pdfcrop)
