@@ -124,20 +124,27 @@ def get_pmc_urls(url):
 
 def get_page_with_retry(url):
     """Get the content of an url, retrying up to five times on failure. """
+
+    def retry(url, count):
+        if count < 5:
+            logger.info("Caught error for url %s. Retrying in 5 seconds." % url)
+            time.sleep(5)
+        else:
+            exception("Failed to download url: %s" % url)
+
     count = 0
     while True:
-        res = requests.get(url, headers=HEADERS)
+        count += 1
+        try:
+            res = requests.get(url, headers=HEADERS)
+        except requests.exceptions.ConnectionError:
+            retry(url, count)
+            continue
         if res.ok:
             logger.info("Downloading url: %s" % url)
             return res.content
         else:
-            if count < 5:
-                logger.info(
-                    "Caught error for url %s. Retrying in 5 seconds." % url
-                )
-                time.sleep(5)
-            else:
-                exception("Failed to download url: %s" % url)
+            retry(url, count)
 
 
 def download_url(url, filename):
