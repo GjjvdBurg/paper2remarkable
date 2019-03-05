@@ -29,6 +29,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import titlecase
 import urllib.parse
 
 from loguru import logger
@@ -70,6 +71,11 @@ def arxiv_url(url):
     return not m is None
 
 
+def pmc_url(url):
+    m = re.fullmatch("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", url)
+    return not m is None
+
+
 def valid_url(url):
     try:
         result = urllib.parse.urlparse(url)
@@ -87,7 +93,7 @@ def check_file_is_pdf(filename):
 
 
 def get_arxiv_urls(url):
-    """Get the pdf and abs url from any given url """
+    """Get the pdf and abs url from any given arXiv url """
     if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
         abs_url = url
         pdf_url = url.replace("abs", "pdf") + ".pdf"
@@ -96,6 +102,23 @@ def get_arxiv_urls(url):
         pdf_url = url
     else:
         exception("Couldn't figure out arXiv urls.")
+    return pdf_url, abs_url
+
+
+def get_pmc_urls(url):
+    """Get the pdf and html url from a given PMC url """
+    if re.match(
+        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf",
+        url,
+    ):
+        idx = url.index("pdf")
+        abs_url = url[: idx - 1]
+        pdf_url = url
+    elif re.match("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?", url):
+        abs_url = url
+        pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
+    else:
+        exception("Couldn't figure out PMC urls.")
     return pdf_url, abs_url
 
 
@@ -206,27 +229,51 @@ def shrink_pdf(filepath, gs_path="gs"):
     return output_file
 
 
-def get_paper_info(url):
+def get_paper_info_arxiv(url):
     logger.info("Getting paper info from arXiv")
     page = get_page_with_retry(url)
     soup = bs4.BeautifulSoup(page, "html.parser")
     authors = [
-        x["content"]
-        for x in soup.find_all("meta", {"name": "citation_author"})
+        x["content"] for x in soup.find_all("meta", {"name": "citation_author"})
     ]
+    authors = [x.split(",")[0].strip() for x in authors]
     title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
     date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
     return dict(title=title, date=date, authors=authors)
 
 
+def get_paper_info_pmc(url):
+    """ Extract the paper's authors, title, and publication year """
+    logger.info("Getting paper info from PMC")
+    page = get_page_with_retry(url)
+    soup = bs4.BeautifulSoup(page, "html.parser")
+    authors = [
+        x["content"]
+        for x in soup.find_all("meta", {"name": "citation_authors"})
+    ]
+    # We only use last names, and this method is a guess at best. I'm open to
+    # more advanced approaches.
+    authors = [x.strip().split(" ")[-1].strip() for x in authors[0].split(",")]
+    title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+    date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
+    if re.match("\w+\ \d{4}", date):
+        date = date.split(" ")[-1]
+    else:
+        date = date.replace(" ", "_")
+    return dict(title=title, date=date, authors=authors)
+
+
 def generate_filename(info):
+    """ Generate a nice filename for a paper given the info dict """
+    # we assume that the list of authors is lastname only.
     logger.info("Generating output filename")
     if len(info["authors"]) > 3:
-        author_part = info["authors"][0].split(",")[0] + "_et_al"
+        author_part = info["authors"][0] + "_et_al"
     else:
-        author_part = "_".join([x.split(",")[0] for x in info["authors"]])
+        author_part = "_".join(info["authors"])
     author_part = author_part.replace(" ", "_")
-    title_part = info["title"].replace(",", "").replace(" ", "_")
+    title = info["title"].replace(",", "").replace(":", "").replace(" ", "_")
+    title_part = titlecase.titlecase(title)
     year_part = info["date"].split("/")[0]
     return author_part + "_-_" + title_part + "_" + year_part + ".pdf"
 
@@ -274,7 +321,7 @@ def parse_args():
         "--filename",
         help="Filename to use for the file on reMarkable",
         default=None,
-        )
+    )
     parser.add_argument(
         "-p",
         "--remarkable-path",
@@ -306,6 +353,8 @@ def main():
         mode = "local_file"
     elif arxiv_url(args.input):
         mode = "arxiv_url"
+    elif pmc_url(args.input):
+        mode = "pmc_url"
     elif valid_url(args.input):
         if args.filename is None:
             exception("Filename must be provided with pdf url (use --filename)")
@@ -332,7 +381,17 @@ def main():
             if args.filename:
                 clean_filename = args.filename
             else:
-                paper_info = get_paper_info(abs_url)
+                paper_info = get_paper_info_arxiv(abs_url)
+                clean_filename = generate_filename(paper_info)
+
+        if mode == "pmc_url":
+            pdf_url, abs_url = get_pmc_urls(args.input)
+            filename = "paper.pdf"
+            download_url(pdf_url, filename)
+            if args.filename:
+                clean_filename = args.filename
+            else:
+                paper_info = get_paper_info_pmc(abs_url)
                 clean_filename = generate_filename(paper_info)
 
         if mode == "pdf_url":

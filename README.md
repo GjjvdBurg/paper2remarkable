@@ -4,6 +4,7 @@ This script makes it as easy to get a PDF on your reMarkable from any of the
 following sources:
 
 - an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
+- a PubMed Central url (either to the HTML or the PDF)
 - a url to a PDF file
 - a local file.
 
@@ -82,15 +83,16 @@ with the relevant options to the script.
 
 The script also needs the following Python packages:
 
-- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
-- [requests](https://pypi.org/project/requests/)
-- [loguru](https://pypi.org/project/loguru/)
-- [PyPDF2](https://github.com/mstamy2/PyPDF2)
+- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/): parsing HTML
+- [requests](https://pypi.org/project/requests/): getting HTML
+- [loguru](https://pypi.org/project/loguru/): easy logging
+- [PyPDF2](https://github.com/mstamy2/PyPDF2): verifying urls point to PDF
+- [titlecase](https://pypi.org/project/titlecase/): fancy titles
 
 You can use this line:
 
 ```bash
-pip install --user bs4 requests loguru PyPDF2
+pip install --user bs4 requests loguru PyPDF2 titlecase
 ```
 
 # Notes
