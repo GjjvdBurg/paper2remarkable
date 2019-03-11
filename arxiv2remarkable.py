@@ -453,42 +453,26 @@ def main():
             clean_filename = args.filename if args.filename else filename
 
         os.chdir(working_dir)
-        if mode == "arxiv_url":
-            pdf_url, abs_url = get_arxiv_urls(args.input)
+        if mode in ["arxiv_url", "pmc_url", "acm_url", "pdf_url"]:
             filename = "paper.pdf"
-            download_url(pdf_url, filename)
-            if args.filename:
-                clean_filename = args.filename
-            else:
+            if mode == "arxiv_url":
+                pdf_url, abs_url = get_arxiv_urls(args.input)
                 paper_info = get_paper_info_arxiv(abs_url)
-                clean_filename = generate_filename(paper_info)
-
-        if mode == "pmc_url":
-            pdf_url, abs_url = get_pmc_urls(args.input)
-            filename = "paper.pdf"
-            download_url(pdf_url, filename)
-            if args.filename:
-                clean_filename = args.filename
-            else:
+            elif mode == "pmc_url":
+                pdf_url, abs_url = get_pmc_urls(args.input)
                 paper_info = get_paper_info_pmc(abs_url)
-                clean_filename = generate_filename(paper_info)
-
-        if mode == "acm_url":
-            pdf_url, abs_url = get_acm_urls(args.input)
-            filename = "paper.pdf"
+            elif mode == "acm_url":
+                pdf_url, abs_url = get_acm_urls(args.input)
+                paper_info = get_paper_info_acm(abs_url)
+            else:
+                pdf_url = args.input
             download_url(pdf_url, filename)
+            if not check_file_is_pdf(filename):
+                exception("Downloaded file isn't a valid pdf file.")
             if args.filename:
                 clean_filename = args.filename
             else:
-                paper_info = get_paper_info_acm(abs_url)
                 clean_filename = generate_filename(paper_info)
-
-        if mode == "pdf_url":
-            filename = "paper.pdf"
-            download_url(args.input, filename)
-            if not check_file_is_pdf(filename):
-                exception("Input url doesn't point to valid pdf file.")
-            clean_filename = args.filename
 
         dearxived = dearxiv(filename, pdftk_path=args.pdftk)
         cropped = crop_pdf(dearxived, pdfcrop_path=args.pdfcrop)
