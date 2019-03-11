@@ -167,7 +167,9 @@ def get_page_with_retry(url):
 
     def retry(url, count):
         if count < 5:
-            logger.info("Caught error for url %s. Retrying in 5 seconds." % url)
+            logger.info(
+                "Caught error for url %s. Retrying in 5 seconds." % url
+            )
             time.sleep(5)
         else:
             exception("Failed to download url: %s" % url)
@@ -277,11 +279,13 @@ def shrink_pdf(filepath, gs_path="gs"):
 
 
 def get_paper_info_arxiv(url):
+    """ Extract the paper's authors, title, and publication year """
     logger.info("Getting paper info from arXiv")
     page = get_page_with_retry(url)
     soup = bs4.BeautifulSoup(page, "html.parser")
     authors = [
-        x["content"] for x in soup.find_all("meta", {"name": "citation_author"})
+        x["content"]
+        for x in soup.find_all("meta", {"name": "citation_author"})
     ]
     authors = [x.split(",")[0].strip() for x in authors]
     title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
@@ -430,7 +434,9 @@ def main():
         mode = "acm_url"
     elif valid_url(args.input):
         if args.filename is None:
-            exception("Filename must be provided with pdf url (use --filename)")
+            exception(
+                "Filename must be provided with pdf url (use --filename)"
+            )
         mode = "pdf_url"
     else:
         exception("Input not a valid url, arxiv url, or existing file.")

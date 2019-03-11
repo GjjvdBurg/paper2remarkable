@@ -11,7 +11,7 @@ following sources:
 
 The script takes the source and:
 
-1. Downloads it if necessary
+1. Downloads the pdf if necessary
 2. Removes the arXiv timestamp
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
