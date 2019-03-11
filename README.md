@@ -5,6 +5,7 @@ following sources:
 
 - an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
 - a PubMed Central url (either to the HTML or the PDF)
+- an ACM citation page url (``https://dl.acm.org/citation.cfm?id=...``)
 - a url to a PDF file
 - a local file.
 

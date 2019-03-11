@@ -34,6 +34,8 @@ import urllib.parse
 
 from loguru import logger
 
+GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 "
@@ -72,7 +74,14 @@ def arxiv_url(url):
 
 
 def pmc_url(url):
-    m = re.fullmatch("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", url)
+    m = re.fullmatch(
+        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", url
+    )
+    return not m is None
+
+
+def acm_url(url):
+    m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", url)
     return not m is None
 
 
@@ -119,6 +128,37 @@ def get_pmc_urls(url):
         pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
     else:
         exception("Couldn't figure out PMC urls.")
+    return pdf_url, abs_url
+
+
+def get_acm_pdf_url(url):
+    page = get_page_with_retry(url)
+    soup = bs4.BeautifulSoup(page, "html.parser")
+    thea = None
+    for a in soup.find_all("a"):
+        if a.get("name") == "FullTextPDF":
+            thea = a
+            break
+    if thea is None:
+        return None
+    href = thea.get("href")
+    if href.startswith("http"):
+        return href
+    else:
+        return "https://dl.acm.org/" + href
+
+
+def get_acm_urls(url):
+    if re.match("https?://dl.acm.org/citation.cfm\?id=\d+", url):
+        abs_url = url
+        pdf_url = get_acm_pdf_url(url)
+        if pdf_url is None:
+            exception("Couldn't extract PDF url from ACM citation page.")
+    else:
+        exception(
+            "Couldn't figure out ACM urls, please provide a URL of the "
+            "format: http(s)://dl.acm.org/citation.cfm?id=..."
+        )
     return pdf_url, abs_url
 
 
@@ -270,6 +310,30 @@ def get_paper_info_pmc(url):
     return dict(title=title, date=date, authors=authors)
 
 
+def get_paper_info_acm(url):
+    """ Extract the paper's authors, title, and publication year """
+    logger.info("Getting paper info from ACM")
+    page = get_page_with_retry(url)
+    soup = bs4.BeautifulSoup(page, "html.parser")
+    authors = [
+        x["content"]
+        for x in soup.find_all("meta", {"name": "citation_authors"})
+    ]
+    # We only use last names, and this method is a guess. I'm open to more
+    # advanced approaches.
+    authors = [x.strip().split(",")[0].strip() for x in authors[0].split(";")]
+    title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+    date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
+    if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
+        logger.warning(
+            "Couldn't extract year from ACM page, please raise an "
+            "issue on GitHub so I can fix it: %s",
+            GITHUB_URL,
+        )
+    date = date.strip().split("/")[-1]
+    return dict(title=title, date=date, authors=authors)
+
+
 def generate_filename(info):
     """ Generate a nice filename for a paper given the info dict """
     # we assume that the list of authors is lastname only.
@@ -362,6 +426,8 @@ def main():
         mode = "arxiv_url"
     elif pmc_url(args.input):
         mode = "pmc_url"
+    elif acm_url(args.input):
+        mode = "acm_url"
     elif valid_url(args.input):
         if args.filename is None:
             exception("Filename must be provided with pdf url (use --filename)")
@@ -399,6 +465,16 @@ def main():
                 clean_filename = args.filename
             else:
                 paper_info = get_paper_info_pmc(abs_url)
+                clean_filename = generate_filename(paper_info)
+
+        if mode == "acm_url":
+            pdf_url, abs_url = get_acm_urls(args.input)
+            filename = "paper.pdf"
+            download_url(pdf_url, filename)
+            if args.filename:
+                clean_filename = args.filename
+            else:
+                paper_info = get_paper_info_acm(abs_url)
                 clean_filename = generate_filename(paper_info)
 
         if mode == "pdf_url":
