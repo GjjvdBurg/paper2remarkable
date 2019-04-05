@@ -18,6 +18,7 @@ License: MIT
 
 """
 
+import abc
 import PyPDF2
 import argparse
 import bs4
@@ -43,34 +44,133 @@ HEADERS = {
 }
 
 
+class Provider(metaclass=abc.ABCMeta):
+    """ ABC for providers of pdf sources """
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def validate(self, src):
+        """ Validate whether ``src`` is appropriate for this provider """
+
+    @abc.abstractmethod
+    def retrieve_pdf(self, src, filename):
+        """ Download pdf from src and save to filename """
+
+    @abc.abstractmethod
+    def get_paper_info(self, src):
+        """ Retrieve the title/author (surnames)/year information """
+
+    def create_filename(self, info, filename=None):
+        """ Generate filename using the info dict or filename if provided """
+        if not filename is None:
+            return filename
+        # we assume that the list of authors is surname only.
+        logger.info("Generating output filename")
+        if len(info["authors"]) > 3:
+            author_part = info["authors"][0] + "_et_al"
+        else:
+            author_part = "_".join(info["authors"])
+        author_part = author_part.replace(" ", "_")
+        title = (
+            info["title"].replace(",", "").replace(":", "").replace(" ", "_")
+        )
+        title_part = titlecase.titlecase(title)
+        year_part = info["date"].split("/")[0]
+        return author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+
+    def run(self, src, filename=None):
+        info = get_paper_info(src)
+        clean_filename = self.create_filename(info, filename)
+        tmp_filename = "paper.pdf"
+        self.retrieve_pdf(src, tmp_filename)
+        self.check_file_is_pdf(tmp_filename)
+
+        ops = [self.dearxiv, self.crop, self.shrink]
+        intermediate_fname = tmp_filename
+        for op in ops:
+            intermediate_fname = op(tmp_filename)
+        shutil.move(intermediate_fname, clean_filename)
+        # TODO: here
+
+
+
+
+
+
+
+
+
+class ArxivProvider(Provider):
+    def __init__(self):
+        super().__init__()
+        self.abs_url = None
+        self.pdf_url = None
+
+    def get_abs_pdf_urls(self, url):
+        """Get the pdf and abs url from any given arXiv url """
+        if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
+            abs_url = url
+            pdf_url = url.replace("abs", "pdf") + ".pdf"
+        elif re.match(
+            "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf", url
+        ):
+            abs_url = url[:-4].replace("pdf", "abs")
+            pdf_url = url
+        else:
+            exception("Couldn't figure out arXiv urls.")
+        return abs_url, pdf_url
+
+    def validate(self, src):
+        """Check if the url is to an arXiv page.
+
+        >>> validate_url("https://arxiv.org/abs/1811.11242")
+        True
+        >>> validate_url("https://arxiv.org/pdf/1811.11242.pdf")
+        True
+        >>> validate_url("http://arxiv.org/abs/1811.11242")
+        True
+        >>> validate_url("http://arxiv.org/pdf/1811.11242.pdf")
+        True
+        >>> validate_url("https://arxiv.org/abs/1811.11242v1")
+        True
+        >>> validate_url("https://arxiv.org/pdf/1811.11242v1.pdf")
+        True
+        >>> validate_url("https://gertjanvandenburg.com")
+        False
+        """
+        m = re.match(
+            "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", src
+        )
+        return not m is None
+
+    def retrieve_pdf(self, src, filename):
+        """ Download the file and save as filename """
+        _, pdf_url = self.get_abs_pdf_urls(src)
+        download_url(pdf_url, filename)
+
+    def get_paper_info(self, src):
+        """ Extract the paper's authors, title, and publication year """
+        abs_url, _ = self.get_abs_pdf_urls(src)
+        logger.info("Getting paper info from arXiv")
+        page = get_page_with_retry(abs_url)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        authors = [
+            x["content"]
+            for x in soup.find_all("meta", {"name": "citation_author"})
+        ]
+        authors = [x.split(",")[0].strip() for x in authors]
+        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
+        return dict(title=title, date=date, authors=authors)
+
+
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
     raise SystemExit(1)
-
-
-def arxiv_url(url):
-    """Check if the url is to an arXiv page.
-
-    >>> validate_url("https://arxiv.org/abs/1811.11242")
-    True
-    >>> validate_url("https://arxiv.org/pdf/1811.11242.pdf")
-    True
-    >>> validate_url("http://arxiv.org/abs/1811.11242")
-    True
-    >>> validate_url("http://arxiv.org/pdf/1811.11242.pdf")
-    True
-    >>> validate_url("https://arxiv.org/abs/1811.11242v1")
-    True
-    >>> validate_url("https://arxiv.org/pdf/1811.11242v1.pdf")
-    True
-    >>> validate_url("https://gertjanvandenburg.com")
-    False
-    """
-    m = re.match(
-        "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", url
-    )
-    return not m is None
 
 
 def pmc_url(url):
@@ -99,19 +199,6 @@ def check_file_is_pdf(filename):
         return True
     except PyPDF2.utils.PdfReadError:
         return False
-
-
-def get_arxiv_urls(url):
-    """Get the pdf and abs url from any given arXiv url """
-    if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
-        abs_url = url
-        pdf_url = url.replace("abs", "pdf") + ".pdf"
-    elif re.match("https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf", url):
-        abs_url = url[:-4].replace("pdf", "abs")
-        pdf_url = url
-    else:
-        exception("Couldn't figure out arXiv urls.")
-    return pdf_url, abs_url
 
 
 def get_pmc_urls(url):
@@ -418,6 +505,22 @@ def parse_args():
         "input", help="url to an arxiv paper, url to pdf, or existing pdf file"
     )
     return parser.parse_args()
+
+
+@logger.catch
+def newmain():
+    args = parse_args()
+
+    provider = next((p for p in providers if p.validate(args.input)), None)
+    if provider is None:
+        exception("Input not valid, no provider can handle this source.")
+
+    if not args.verbose:
+        logger.remove(0)
+
+    start_wd = os.getcwd()
+    with tempfile.TemporaryDirector() as working_dir:
+        provider.run(args.input)
 
 
 @logger.catch
