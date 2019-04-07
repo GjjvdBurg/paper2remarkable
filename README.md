@@ -5,12 +5,13 @@ following sources:
 
 - an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
 - a PubMed Central url (either to the HTML or the PDF)
+- an ACM citation page url (``https://dl.acm.org/citation.cfm?id=...``)
 - a url to a PDF file
 - a local file.
 
 The script takes the source and:
 
-1. Downloads it if necessary
+1. Downloads the pdf if necessary
 2. Removes the arXiv timestamp
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
