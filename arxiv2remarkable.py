@@ -282,7 +282,9 @@ def generate_filename(info):
     title = info["title"].replace(",", "").replace(":", "").replace(" ", "_")
     title_part = titlecase.titlecase(title)
     year_part = info["date"].split("/")[0]
-    return author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+    name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+    logger.info("Created filename: %s" % name)
+    return name
 
 
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
