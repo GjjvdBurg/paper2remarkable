@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__version__ = "0.2.0"
+__author__ = "G.J.J. van den Burg"
+
 """
 Given an arXiv paper url this script:
 
@@ -47,8 +50,9 @@ HEADERS = {
 class Provider(metaclass=abc.ABCMeta):
     """ ABC for providers of pdf sources """
 
-    def __init__(self):
-        pass
+    def __init__(self, remarkable_dir="/", rmapi_path="rmapi"):
+        self.remarkable_dir = remarkable_dir
+        self.rmapi_path = rmapi_path
 
     @staticmethod
     @abc.abstractmethod
@@ -79,10 +83,78 @@ class Provider(metaclass=abc.ABCMeta):
         )
         title_part = titlecase.titlecase(title)
         year_part = info["date"].split("/")[0]
-        return author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+        name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+        logger.info("Created filename: %s" % name)
+        return name
 
-    def run(self, src, filename=None):
-        info = get_paper_info(src)
+    def crop_pdf(self, filepath):
+        logger.info("Cropping pdf file")
+        status = subprocess.call(
+            [self.pdfcrop_path, "--margins", "15 40 15 15", filepath],
+            stdout=subprocess.DEVNULL,
+        )
+        if not status == 0:
+            logger.warning("Failed to crop the pdf file at: %s" % filepath)
+            return filepath
+        cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
+        if not os.path.exists(cropped_file):
+            logger.warning(
+                "Can't find cropped file '%s' where expected." % cropped_file
+            )
+            return filepath
+        return cropped_file
+
+    def shrink_pdf(self, filepath):
+        logger.info("Shrinking pdf file")
+        output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
+        status = subprocess.call(
+            [
+                self.gs_path,
+                "-sDEVICE=pdfwrite",
+                "-dCompatibilityLevel=1.4",
+                "-dPDFSETTINGS=/printer",
+                "-dNOPAUSE",
+                "-dBATCH",
+                "-dQUIET",
+                "-sOutputFile=%s" % output_file,
+                filepath,
+            ]
+        )
+        if not status == 0:
+            logger.warning("Failed to shrink the pdf file")
+            return filepath
+        return output_file
+
+    def check_file_is_pdf(self, filename):
+        try:
+            PyPDF2.PdfFileReader(open(filename, "rb"))
+            return True
+        except PyPDF2.utils.PdfReadError:
+            exception("Downloaded file isn't a valid pdf file.")
+
+    def upload_to_rm(self, filepath):
+        remarkable_dir = self.remarkable_dir.rstrip("/")
+        logger.info("Starting upload to reMarkable")
+        if remarkable_dir:
+            status = subprocess.call(
+                [self.rmapi_path, "mkdir", remarkable_dir],
+                stdout=subprocess.DEVNULL,
+            )
+            if not status == 0:
+                exception(
+                    "Creating directory %s on reMarkable failed"
+                    % remarkable_dir
+                )
+        status = subprocess.call(
+            [self.rmapi_path, "put", filepath, remarkable_dir + "/"],
+            stdout=subprocess.DEVNULL,
+        )
+        if not status == 0:
+            exception("Uploading file %s to reMarkable failed" % filepath)
+        logger.info("Upload successful.")
+
+    def run(self, src, filename=None, debug=False, upload=True):
+        info = self.get_paper_info(src)
         clean_filename = self.create_filename(info, filename)
         tmp_filename = "paper.pdf"
         self.retrieve_pdf(src, tmp_filename)
@@ -93,21 +165,24 @@ class Provider(metaclass=abc.ABCMeta):
         for op in ops:
             intermediate_fname = op(tmp_filename)
         shutil.move(intermediate_fname, clean_filename)
-        # TODO: here
 
+        if debug:
+            print("Paused in debug mode in dir: %s" % working_dir)
+            print("Press enter to exit.")
+            return input()
 
+        if upload:
+            return self.upload_to_rm(clean_filename)
 
-
-
-
-
-
+        if os.path.exists(os.path.join(start_wd, clean_filename)):
+            tmpfname = os.path.splitext(filename)[0] + "_cropped.pdf"
+            shutil.move(clean_filename, os.path.join(start_wd, tmpfname))
+        else:
+            shutil.move(clean_filename, start_wd)
 
 class ArxivProvider(Provider):
-    def __init__(self):
-        super().__init__()
-        self.abs_url = None
-        self.pdf_url = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
@@ -124,23 +199,7 @@ class ArxivProvider(Provider):
         return abs_url, pdf_url
 
     def validate(self, src):
-        """Check if the url is to an arXiv page.
-
-        >>> validate_url("https://arxiv.org/abs/1811.11242")
-        True
-        >>> validate_url("https://arxiv.org/pdf/1811.11242.pdf")
-        True
-        >>> validate_url("http://arxiv.org/abs/1811.11242")
-        True
-        >>> validate_url("http://arxiv.org/pdf/1811.11242.pdf")
-        True
-        >>> validate_url("https://arxiv.org/abs/1811.11242v1")
-        True
-        >>> validate_url("https://arxiv.org/pdf/1811.11242v1.pdf")
-        True
-        >>> validate_url("https://gertjanvandenburg.com")
-        False
-        """
+        """Check if the url is to an arXiv page. """
         m = re.match(
             "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", src
         )
@@ -166,87 +225,165 @@ class ArxivProvider(Provider):
         date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
         return dict(title=title, date=date, authors=authors)
 
+class PMCProvider(Provider):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_abs_pdf_urls(self, url):
+        """Get the pdf and html url from a given PMC url """
+        if re.match(
+            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf",
+            url,
+        ):
+            idx = url.index("pdf")
+            abs_url = url[: idx - 1]
+            pdf_url = url
+        elif re.match(
+            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?", url
+        ):
+            abs_url = url
+            pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
+        else:
+            exception("Couldn't figure out PMC urls.")
+        return pdf_url, abs_url
+
+    def validate(self, src):
+        m = re.fullmatch(
+            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", src
+        )
+        return not m is None
+
+    def retrieve_pdf(self, src, filename):
+        _, pdf_url = self.get_abs_pdf_urls(src)
+        download_url(pdf_url, filename)
+
+    def get_paper_info(self, src):
+        """ Extract the paper's authors, title, and publication year """
+        logger.info("Getting paper info from PMC")
+        page = get_page_with_retry(src)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        authors = [
+            x["content"]
+            for x in soup.find_all("meta", {"name": "citation_authors"})
+        ]
+        # We only use last names, and this method is a guess at best. I'm open to
+        # more advanced approaches.
+        authors = [
+            x.strip().split(" ")[-1].strip() for x in authors[0].split(",")
+        ]
+        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
+        if re.match("\w+\ \d{4}", date):
+            date = date.split(" ")[-1]
+        else:
+            date = date.replace(" ", "_")
+        return dict(title=title, date=date, authors=authors)
+
+class ACMProvider(Provider):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_acm_pdf_url(self, url):
+        page = get_page_with_retry(url)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        thea = None
+        for a in soup.find_all("a"):
+            if a.get("name") == "FullTextPDF":
+                thea = a
+                break
+        if thea is None:
+            return None
+        href = thea.get("href")
+        if href.startswith("http"):
+            return href
+        else:
+            return "https://dl.acm.org/" + href
+
+    def get_abs_pdf_urls(self, url):
+        if re.match("https?://dl.acm.org/citation.cfm\?id=\d+", url):
+            abs_url = url
+            pdf_url = self.get_acm_pdf_url(url)
+            if pdf_url is None:
+                exception("Couldn't extract PDF url from ACM citation page.")
+        else:
+            exception(
+                "Couldn't figure out ACM urls, please provide a URL of the "
+                "format: http(s)://dl.acm.org/citation.cfm?id=..."
+            )
+        return pdf_url, abs_url
+
+    def retrieve_pdf(self, src, filename):
+        _, pdf_url = self.get_abs_pdf_urls(src)
+        download_url(pdf_url, filename)
+
+    def validate(self, src):
+        m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", src)
+        return not m is None
+
+    def get_paper_info(self, src):
+        """ Extract the paper's authors, title, and publication year """
+        logger.info("Getting paper info from ACM")
+        page = get_page_with_retry(src)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        authors = [
+            x["content"]
+            for x in soup.find_all("meta", {"name": "citation_authors"})
+        ]
+        # We only use last names, and this method is a guess. I'm open to more
+        # advanced approaches.
+        authors = [
+            x.strip().split(",")[0].strip() for x in authors[0].split(";")
+        ]
+        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
+        if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
+            logger.warning(
+                "Couldn't extract year from ACM page, please raise an "
+                "issue on GitHub so I can fix it: %s",
+                GITHUB_URL,
+            )
+        date = date.strip().split("/")[-1]
+        return dict(title=title, date=date, authors=authors)
+
+class LocalFileProvider(Provider):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validate(self, src):
+        return os.path.exists(src)
+
+    def retrieve_pdf(self, src, filename):
+        shutil.copy(src, filename)
+
+    def get_paper_info(self, src):
+        return None
+
+class PdfUrlProvider(Provider):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validate(self, src):
+        try:
+            result = urllib.parse.urlparse(src)
+            return all([result.scheme, result.netloc, result.path])
+        except:
+            return False
+
+    def retrieve_pdf(self, url, filename):
+        if filename is None:
+            exception(
+                "Filename must be provided with pdf url (use --filename)"
+            )
+        download_url(url, filename)
+
+    def get_paper_info(self, src):
+        return None
+
 
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
     raise SystemExit(1)
-
-
-def pmc_url(url):
-    m = re.fullmatch(
-        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", url
-    )
-    return not m is None
-
-
-def acm_url(url):
-    m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", url)
-    return not m is None
-
-
-def valid_url(url):
-    try:
-        result = urllib.parse.urlparse(url)
-        return all([result.scheme, result.netloc, result.path])
-    except:
-        return False
-
-
-def check_file_is_pdf(filename):
-    try:
-        PyPDF2.PdfFileReader(open(filename, "rb"))
-        return True
-    except PyPDF2.utils.PdfReadError:
-        return False
-
-
-def get_pmc_urls(url):
-    """Get the pdf and html url from a given PMC url """
-    if re.match(
-        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf",
-        url,
-    ):
-        idx = url.index("pdf")
-        abs_url = url[: idx - 1]
-        pdf_url = url
-    elif re.match("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?", url):
-        abs_url = url
-        pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
-    else:
-        exception("Couldn't figure out PMC urls.")
-    return pdf_url, abs_url
-
-
-def get_acm_pdf_url(url):
-    page = get_page_with_retry(url)
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    thea = None
-    for a in soup.find_all("a"):
-        if a.get("name") == "FullTextPDF":
-            thea = a
-            break
-    if thea is None:
-        return None
-    href = thea.get("href")
-    if href.startswith("http"):
-        return href
-    else:
-        return "https://dl.acm.org/" + href
-
-
-def get_acm_urls(url):
-    if re.match("https?://dl.acm.org/citation.cfm\?id=\d+", url):
-        abs_url = url
-        pdf_url = get_acm_pdf_url(url)
-        if pdf_url is None:
-            exception("Couldn't extract PDF url from ACM citation page.")
-    else:
-        exception(
-            "Couldn't figure out ACM urls, please provide a URL of the "
-            "format: http(s)://dl.acm.org/citation.cfm?id=..."
-        )
-    return pdf_url, abs_url
 
 
 def get_page_with_retry(url):
@@ -325,123 +462,6 @@ def dearxiv(input_file, pdftk_path="pdftk"):
     return output_file
 
 
-def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
-    logger.info("Cropping pdf file")
-    status = subprocess.call(
-        [pdfcrop_path, "--margins", "15 40 15 15", filepath],
-        stdout=subprocess.DEVNULL,
-    )
-    if not status == 0:
-        logger.warning("Failed to crop the pdf file at: %s" % filepath)
-        return filepath
-    cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
-    if not os.path.exists(cropped_file):
-        logger.warning(
-            "Can't find cropped file '%s' where expected." % cropped_file
-        )
-        return filepath
-    return cropped_file
-
-
-def shrink_pdf(filepath, gs_path="gs"):
-    logger.info("Shrinking pdf file")
-    output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
-    status = subprocess.call(
-        [
-            "gs",
-            "-sDEVICE=pdfwrite",
-            "-dCompatibilityLevel=1.4",
-            "-dPDFSETTINGS=/printer",
-            "-dNOPAUSE",
-            "-dBATCH",
-            "-dQUIET",
-            "-sOutputFile=%s" % output_file,
-            filepath,
-        ]
-    )
-    if not status == 0:
-        logger.warning("Failed to shrink the pdf file")
-        return filepath
-    return output_file
-
-
-def get_paper_info_arxiv(url):
-    """ Extract the paper's authors, title, and publication year """
-    logger.info("Getting paper info from arXiv")
-    page = get_page_with_retry(url)
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    authors = [
-        x["content"]
-        for x in soup.find_all("meta", {"name": "citation_author"})
-    ]
-    authors = [x.split(",")[0].strip() for x in authors]
-    title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-    date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-    return dict(title=title, date=date, authors=authors)
-
-
-def get_paper_info_pmc(url):
-    """ Extract the paper's authors, title, and publication year """
-    logger.info("Getting paper info from PMC")
-    page = get_page_with_retry(url)
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    authors = [
-        x["content"]
-        for x in soup.find_all("meta", {"name": "citation_authors"})
-    ]
-    # We only use last names, and this method is a guess at best. I'm open to
-    # more advanced approaches.
-    authors = [x.strip().split(" ")[-1].strip() for x in authors[0].split(",")]
-    title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-    date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-    if re.match("\w+\ \d{4}", date):
-        date = date.split(" ")[-1]
-    else:
-        date = date.replace(" ", "_")
-    return dict(title=title, date=date, authors=authors)
-
-
-def get_paper_info_acm(url):
-    """ Extract the paper's authors, title, and publication year """
-    logger.info("Getting paper info from ACM")
-    page = get_page_with_retry(url)
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    authors = [
-        x["content"]
-        for x in soup.find_all("meta", {"name": "citation_authors"})
-    ]
-    # We only use last names, and this method is a guess. I'm open to more
-    # advanced approaches.
-    authors = [x.strip().split(",")[0].strip() for x in authors[0].split(";")]
-    title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-    date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-    if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
-        logger.warning(
-            "Couldn't extract year from ACM page, please raise an "
-            "issue on GitHub so I can fix it: %s",
-            GITHUB_URL,
-        )
-    date = date.strip().split("/")[-1]
-    return dict(title=title, date=date, authors=authors)
-
-
-def generate_filename(info):
-    """ Generate a nice filename for a paper given the info dict """
-    # we assume that the list of authors is lastname only.
-    logger.info("Generating output filename")
-    if len(info["authors"]) > 3:
-        author_part = info["authors"][0] + "_et_al"
-    else:
-        author_part = "_".join(info["authors"])
-    author_part = author_part.replace(" ", "_")
-    title = info["title"].replace(",", "").replace(":", "").replace(" ", "_")
-    title_part = titlecase.titlecase(title)
-    year_part = info["date"].split("/")[0]
-    name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
-    logger.info("Created filename: %s" % name)
-    return name
-
-
 def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     remarkable_dir = remarkable_dir.rstrip("/")
     logger.info("Starting upload to reMarkable")
@@ -513,6 +533,14 @@ def parse_args():
 def newmain():
     args = parse_args()
 
+    providers = [
+        ArxivProvider,
+        PMCProvider,
+        ACMProvider,
+        LocalFileProvider,
+        PdfUrlProvider,
+    ]
+
     provider = next((p for p in providers if p.validate(args.input)), None)
     if provider is None:
         exception("Input not valid, no provider can handle this source.")
@@ -520,9 +548,10 @@ def newmain():
     if not args.verbose:
         logger.remove(0)
 
+
     start_wd = os.getcwd()
     with tempfile.TemporaryDirector() as working_dir:
-        provider.run(args.input)
+        provider.run(args.input, debug=args.debug, upload=not args.no_upload)
 
 
 @logger.catch
