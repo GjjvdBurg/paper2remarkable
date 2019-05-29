@@ -21,10 +21,11 @@ License: MIT
 
 """
 
-import abc
 import PyPDF2
+import abc
 import argparse
 import bs4
+import datetime
 import os
 import re
 import requests
@@ -35,8 +36,6 @@ import tempfile
 import time
 import titlecase
 import urllib.parse
-
-from loguru import logger
 
 GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
 
@@ -50,13 +49,45 @@ HEADERS = {
 class Provider(metaclass=abc.ABCMeta):
     """ ABC for providers of pdf sources """
 
-    def __init__(self, remarkable_dir="/", rmapi_path="rmapi"):
+    def __init__(
+        self,
+        verbose=False,
+        upload=True,
+        debug=False,
+        remarkable_dir="/",
+        rmapi_path="rmapi",
+        pdfcrop_path="pdfcrop",
+        pdftk_path="pdftk",
+        gs_path="gs",
+    ):
+        self.verbose = verbose
+        self.upload = upload
+        self.debug = debug
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
+        self.pdfcrop_path = pdfcrop_path
+        self.pdftk_path = pdftk_path
+        self.gs_path = gs_path
+
+        self.log("Starting %s" % type(self).__name__)
+
+    def log(self, msg, mode="info"):
+        if not self.verbose:
+            return
+        if not mode in ["info", "warning"]:
+            raise ValueError("unknown logging mode.")
+        now = datetime.datetime.now()
+        print(
+            now.strftime("%Y-%m-%d %H:%M:%S")
+            + " - "
+            + mode.upper()
+            + " - "
+            + msg
+        )
 
     @staticmethod
     @abc.abstractmethod
-    def validate(self, src):
+    def validate(src):
         """ Validate whether ``src`` is appropriate for this provider """
 
     @abc.abstractmethod
@@ -72,40 +103,41 @@ class Provider(metaclass=abc.ABCMeta):
         if not filename is None:
             return filename
         # we assume that the list of authors is surname only.
-        logger.info("Generating output filename")
+        self.log("Generating output filename")
         if len(info["authors"]) > 3:
             author_part = info["authors"][0] + "_et_al"
         else:
             author_part = "_".join(info["authors"])
         author_part = author_part.replace(" ", "_")
-        title = (
-            info["title"].replace(",", "").replace(":", "").replace(" ", "_")
-        )
-        title_part = titlecase.titlecase(title)
+        title = info["title"].replace(",", "").replace(":", "")
+        title_part = titlecase.titlecase(title).replace(" ", "_")
         year_part = info["date"].split("/")[0]
         name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
-        logger.info("Created filename: %s" % name)
+        self.log("Created filename: %s" % name)
         return name
 
     def crop_pdf(self, filepath):
-        logger.info("Cropping pdf file")
+        self.log("Cropping pdf file")
         status = subprocess.call(
             [self.pdfcrop_path, "--margins", "15 40 15 15", filepath],
             stdout=subprocess.DEVNULL,
         )
         if not status == 0:
-            logger.warning("Failed to crop the pdf file at: %s" % filepath)
+            self.log(
+                "Failed to crop the pdf file at: %s" % filepath, mode="warning"
+            )
             return filepath
         cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
         if not os.path.exists(cropped_file):
-            logger.warning(
-                "Can't find cropped file '%s' where expected." % cropped_file
+            self.log(
+                "Can't find cropped file '%s' where expected." % cropped_file,
+                mode="warning",
             )
             return filepath
         return cropped_file
 
     def shrink_pdf(self, filepath):
-        logger.info("Shrinking pdf file")
+        self.log("Shrinking pdf file")
         output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
         status = subprocess.call(
             [
@@ -121,20 +153,58 @@ class Provider(metaclass=abc.ABCMeta):
             ]
         )
         if not status == 0:
-            logger.warning("Failed to shrink the pdf file")
+            self.log("Failed to shrink the pdf file", mode="warning")
             return filepath
         return output_file
 
     def check_file_is_pdf(self, filename):
         try:
-            PyPDF2.PdfFileReader(open(filename, "rb"))
+            fp = open(filename, "rb")
+            pdf = PyPDF2.PdfFileReader(fp, strict=False)
+            fp.close()
+            del pdf
             return True
         except PyPDF2.utils.PdfReadError:
             exception("Downloaded file isn't a valid pdf file.")
 
+    def download_url(self, url, filename):
+        """Download the content of an url and save it to a filename """
+        self.log("Downloading file at url: %s" % url)
+        content = self.get_page_with_retry(url)
+        with open(filename, "wb") as fid:
+            fid.write(content)
+
+    def get_page_with_retry(self, url, times=5):
+        """ Get the content of an url, retrying on failure.
+        """
+
+        def retry(url, count):
+            if count < times:
+                self.log(
+                    "Caught error for url %s. Retrying in 5 seconds." % url,
+                    mode="warning",
+                )
+                time.sleep(5)
+            else:
+                exception("Failed to download url: %s" % url)
+
+        count = 0
+        while True:
+            count += 1
+            try:
+                res = requests.get(url, headers=HEADERS)
+            except requests.exceptions.ConnectionError:
+                retry(url, count)
+                continue
+            if res.ok:
+                self.log("Downloading url: %s" % url)
+                return res.content
+            else:
+                retry(url, count)
+
     def upload_to_rm(self, filepath):
         remarkable_dir = self.remarkable_dir.rstrip("/")
-        logger.info("Starting upload to reMarkable")
+        self.log("Starting upload to reMarkable")
         if remarkable_dir:
             status = subprocess.call(
                 [self.rmapi_path, "mkdir", remarkable_dir],
@@ -151,34 +221,86 @@ class Provider(metaclass=abc.ABCMeta):
         )
         if not status == 0:
             exception("Uploading file %s to reMarkable failed" % filepath)
-        logger.info("Upload successful.")
+        self.log("Upload successful.")
 
-    def run(self, src, filename=None, debug=False, upload=True):
+    def dearxiv(self, input_file):
+        """Remove the arXiv timestamp from a pdf"""
+        self.log("Removing arXiv timestamp")
+        basename = os.path.splitext(input_file)[0]
+        uncompress_file = basename + "_uncompress.pdf"
+
+        status = subprocess.call(
+            [
+                self.pdftk_path,
+                input_file,
+                "output",
+                uncompress_file,
+                "uncompress",
+            ]
+        )
+        if not status == 0:
+            exception("pdftk failed to uncompress the pdf.")
+
+        with open(uncompress_file, "rb") as fid:
+            data = fid.read()
+            # Remove the text element
+            data = re.sub(
+                b"\(arXiv:\d{4}\.\d{4,5}v\d\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
+                b"()Tj",
+                data,
+            )
+            # Remove the URL element
+            data = re.sub(
+                b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d\)\\n\/S /URI\\n>>\\n",
+                b"",
+                data,
+            )
+
+        removed_file = basename + "_removed.pdf"
+        with open(removed_file, "wb") as oid:
+            oid.write(data)
+
+        output_file = basename + "_dearxiv.pdf"
+        status = subprocess.call(
+            [self.pdftk_path, removed_file, "output", output_file, "compress"]
+        )
+        if not status == 0:
+            exception("pdftk failed to compress the pdf.")
+
+        return output_file
+
+    def run(self, src, filename=None):
         info = self.get_paper_info(src)
         clean_filename = self.create_filename(info, filename)
         tmp_filename = "paper.pdf"
-        self.retrieve_pdf(src, tmp_filename)
-        self.check_file_is_pdf(tmp_filename)
 
-        ops = [self.dearxiv, self.crop, self.shrink]
-        intermediate_fname = tmp_filename
-        for op in ops:
-            intermediate_fname = op(tmp_filename)
-        shutil.move(intermediate_fname, clean_filename)
+        self.initial_dir = os.getcwd()
+        with tempfile.TemporaryDirectory() as working_dir:
+            os.chdir(working_dir)
+            self.retrieve_pdf(src, tmp_filename)
+            self.check_file_is_pdf(tmp_filename)
 
-        if debug:
-            print("Paused in debug mode in dir: %s" % working_dir)
-            print("Press enter to exit.")
-            return input()
+            ops = [self.dearxiv, self.crop_pdf, self.shrink_pdf]
+            intermediate_fname = tmp_filename
+            for op in ops:
+                intermediate_fname = op(intermediate_fname)
+            shutil.move(intermediate_fname, clean_filename)
 
-        if upload:
-            return self.upload_to_rm(clean_filename)
+            if self.debug:
+                print("Paused in debug mode in dir: %s" % working_dir)
+                print("Press enter to exit.")
+                return input()
 
-        if os.path.exists(os.path.join(start_wd, clean_filename)):
-            tmpfname = os.path.splitext(filename)[0] + "_cropped.pdf"
-            shutil.move(clean_filename, os.path.join(start_wd, tmpfname))
-        else:
-            shutil.move(clean_filename, start_wd)
+            if self.upload:
+                return self.upload_to_rm(clean_filename)
+
+            target_path = os.path.join(self.initial_dir, clean_filename)
+            while os.path.exists(target_path):
+                base = os.path.splitext(target_path)[0]
+                target_path = base + "_.pdf"
+            shutil.move(clean_filename, target_path)
+            return target_path
+
 
 class ArxivProvider(Provider):
     def __init__(self, *args, **kwargs):
@@ -198,7 +320,7 @@ class ArxivProvider(Provider):
             exception("Couldn't figure out arXiv urls.")
         return abs_url, pdf_url
 
-    def validate(self, src):
+    def validate(src):
         """Check if the url is to an arXiv page. """
         m = re.match(
             "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", src
@@ -208,13 +330,13 @@ class ArxivProvider(Provider):
     def retrieve_pdf(self, src, filename):
         """ Download the file and save as filename """
         _, pdf_url = self.get_abs_pdf_urls(src)
-        download_url(pdf_url, filename)
+        self.download_url(pdf_url, filename)
 
     def get_paper_info(self, src):
         """ Extract the paper's authors, title, and publication year """
         abs_url, _ = self.get_abs_pdf_urls(src)
-        logger.info("Getting paper info from arXiv")
-        page = get_page_with_retry(abs_url)
+        self.log("Getting paper info from arXiv")
+        page = self.get_page_with_retry(abs_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = [
             x["content"]
@@ -224,6 +346,7 @@ class ArxivProvider(Provider):
         title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
         date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
         return dict(title=title, date=date, authors=authors)
+
 
 class PMCProvider(Provider):
     def __init__(self, *args, **kwargs):
@@ -245,9 +368,9 @@ class PMCProvider(Provider):
             pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
         else:
             exception("Couldn't figure out PMC urls.")
-        return pdf_url, abs_url
+        return abs_url, pdf_url
 
-    def validate(self, src):
+    def validate(src):
         m = re.fullmatch(
             "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", src
         )
@@ -255,12 +378,12 @@ class PMCProvider(Provider):
 
     def retrieve_pdf(self, src, filename):
         _, pdf_url = self.get_abs_pdf_urls(src)
-        download_url(pdf_url, filename)
+        self.download_url(pdf_url, filename)
 
     def get_paper_info(self, src):
         """ Extract the paper's authors, title, and publication year """
-        logger.info("Getting paper info from PMC")
-        page = get_page_with_retry(src)
+        self.log("Getting paper info from PMC")
+        page = self.get_page_with_retry(src)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = [
             x["content"]
@@ -279,12 +402,13 @@ class PMCProvider(Provider):
             date = date.replace(" ", "_")
         return dict(title=title, date=date, authors=authors)
 
+
 class ACMProvider(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_acm_pdf_url(self, url):
-        page = get_page_with_retry(url)
+        page = self.get_page_with_retry(url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         thea = None
         for a in soup.find_all("a"):
@@ -304,26 +428,28 @@ class ACMProvider(Provider):
             abs_url = url
             pdf_url = self.get_acm_pdf_url(url)
             if pdf_url is None:
-                exception("Couldn't extract PDF url from ACM citation page.")
+                exception(
+                    "Couldn't extract PDF url from ACM citation page. Maybe it's behind a paywall?"
+                )
         else:
             exception(
                 "Couldn't figure out ACM urls, please provide a URL of the "
                 "format: http(s)://dl.acm.org/citation.cfm?id=..."
             )
-        return pdf_url, abs_url
+        return abs_url, pdf_url
 
     def retrieve_pdf(self, src, filename):
         _, pdf_url = self.get_abs_pdf_urls(src)
-        download_url(pdf_url, filename)
+        self.download_url(pdf_url, filename)
 
-    def validate(self, src):
+    def validate(src):
         m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", src)
         return not m is None
 
     def get_paper_info(self, src):
         """ Extract the paper's authors, title, and publication year """
-        logger.info("Getting paper info from ACM")
-        page = get_page_with_retry(src)
+        self.log("Getting paper info from ACM")
+        page = self.get_page_with_retry(src)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = [
             x["content"]
@@ -337,32 +463,40 @@ class ACMProvider(Provider):
         title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
         date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
         if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
-            logger.warning(
+            self.log(
                 "Couldn't extract year from ACM page, please raise an "
-                "issue on GitHub so I can fix it: %s",
-                GITHUB_URL,
+                "issue on GitHub so I can fix it: %s" % GITHUB_URL,
+                mode="warning",
             )
         date = date.strip().split("/")[-1]
         return dict(title=title, date=date, authors=authors)
+
 
 class LocalFileProvider(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def validate(self, src):
+    def validate(src):
         return os.path.exists(src)
 
     def retrieve_pdf(self, src, filename):
-        shutil.copy(src, filename)
+        source = os.path.join(self.initial_dir, src)
+        shutil.copy(source, filename)
 
     def get_paper_info(self, src):
-        return None
+        return {"filename": src}
+
+    def create_filename(self, info, filename=None):
+        if not filename is None:
+            return filename
+        return os.path.basename(info["filename"])
+
 
 class PdfUrlProvider(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def validate(self, src):
+    def validate(src):
         try:
             result = urllib.parse.urlparse(src)
             return all([result.scheme, result.netloc, result.path])
@@ -370,116 +504,23 @@ class PdfUrlProvider(Provider):
             return False
 
     def retrieve_pdf(self, url, filename):
-        if filename is None:
-            exception(
-                "Filename must be provided with pdf url (use --filename)"
-            )
-        download_url(url, filename)
+        self.download_url(url, filename)
 
     def get_paper_info(self, src):
         return None
+
+    def create_filename(self, info, filename=None):
+        if filename is None:
+            exception(
+                "Filename must be provided with PDFUrlProvider (use --filename)"
+            )
+        return filename
 
 
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
     raise SystemExit(1)
-
-
-def get_page_with_retry(url):
-    """Get the content of an url, retrying up to five times on failure. """
-
-    def retry(url, count):
-        if count < 5:
-            logger.info(
-                "Caught error for url %s. Retrying in 5 seconds." % url
-            )
-            time.sleep(5)
-        else:
-            exception("Failed to download url: %s" % url)
-
-    count = 0
-    while True:
-        count += 1
-        try:
-            res = requests.get(url, headers=HEADERS)
-        except requests.exceptions.ConnectionError:
-            retry(url, count)
-            continue
-        if res.ok:
-            logger.info("Downloading url: %s" % url)
-            return res.content
-        else:
-            retry(url, count)
-
-
-def download_url(url, filename):
-    """Download the content of an url and save it to a filename """
-    logger.info("Downloading file at url: %s" % url)
-    content = get_page_with_retry(url)
-    with open(filename, "wb") as fid:
-        fid.write(content)
-
-
-def dearxiv(input_file, pdftk_path="pdftk"):
-    """Remove the arXiv timestamp from a pdf"""
-    logger.info("Removing arXiv timestamp")
-    basename = os.path.splitext(input_file)[0]
-    uncompress_file = basename + "_uncompress.pdf"
-
-    status = subprocess.call(
-        [pdftk_path, input_file, "output", uncompress_file, "uncompress"]
-    )
-    if not status == 0:
-        exception("pdftk failed to uncompress the pdf.")
-
-    with open(uncompress_file, "rb") as fid:
-        data = fid.read()
-        # Remove the text element
-        data = re.sub(
-            b"\(arXiv:\d{4}\.\d{4,5}v\d\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
-            b"()Tj",
-            data,
-        )
-        # Remove the URL element
-        data = re.sub(
-            b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d\)\\n\/S /URI\\n>>\\n",
-            b"",
-            data,
-        )
-
-    removed_file = basename + "_removed.pdf"
-    with open(removed_file, "wb") as oid:
-        oid.write(data)
-
-    output_file = basename + "_dearxiv.pdf"
-    status = subprocess.call(
-        [pdftk_path, removed_file, "output", output_file, "compress"]
-    )
-    if not status == 0:
-        exception("pdftk failed to compress the pdf.")
-
-    return output_file
-
-
-def upload_to_rm(filepath, remarkable_dir="/", rmapi_path="rmapi"):
-    remarkable_dir = remarkable_dir.rstrip("/")
-    logger.info("Starting upload to reMarkable")
-    if remarkable_dir:
-        status = subprocess.call(
-            [rmapi_path, "mkdir", remarkable_dir], stdout=subprocess.DEVNULL
-        )
-        if not status == 0:
-            exception(
-                "Creating directory %s on reMarkable failed" % remarkable_dir
-            )
-    status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir + "/"],
-        stdout=subprocess.DEVNULL,
-    )
-    if not status == 0:
-        exception("Uploading file %s to reMarkable failed" % filepath)
-    logger.info("Upload successful.")
 
 
 def parse_args():
@@ -529,8 +570,7 @@ def parse_args():
     return parser.parse_args()
 
 
-@logger.catch
-def newmain():
+def main():
     args = parse_args()
 
     providers = [
@@ -545,91 +585,18 @@ def newmain():
     if provider is None:
         exception("Input not valid, no provider can handle this source.")
 
-    if not args.verbose:
-        logger.remove(0)
+    prov = provider(
+        args.verbose,
+        not args.no_upload,
+        args.debug,
+        args.remarkable_dir,
+        args.rmapi,
+        args.pdfcrop,
+        args.pdftk,
+        args.gs,
+    )
 
-
-    start_wd = os.getcwd()
-    with tempfile.TemporaryDirector() as working_dir:
-        provider.run(args.input, debug=args.debug, upload=not args.no_upload)
-
-
-@logger.catch
-def main():
-    args = parse_args()
-
-    if os.path.exists(args.input):
-        mode = "local_file"
-    elif arxiv_url(args.input):
-        mode = "arxiv_url"
-    elif pmc_url(args.input):
-        mode = "pmc_url"
-    elif acm_url(args.input):
-        mode = "acm_url"
-    elif valid_url(args.input):
-        if args.filename is None:
-            exception(
-                "Filename must be provided with pdf url (use --filename)"
-            )
-        mode = "pdf_url"
-    else:
-        exception("Input not a valid url, arxiv url, or existing file.")
-
-    if not args.verbose:
-        logger.remove(0)
-
-    start_wd = os.getcwd()
-
-    with tempfile.TemporaryDirectory() as working_dir:
-        if mode == "local_file":
-            shutil.copy(args.input, working_dir)
-            filename = os.path.basename(args.input)
-            clean_filename = args.filename if args.filename else filename
-
-        os.chdir(working_dir)
-        if mode in ["arxiv_url", "pmc_url", "acm_url", "pdf_url"]:
-            filename = "paper.pdf"
-            if mode == "arxiv_url":
-                pdf_url, abs_url = get_arxiv_urls(args.input)
-                paper_info = get_paper_info_arxiv(abs_url)
-            elif mode == "pmc_url":
-                pdf_url, abs_url = get_pmc_urls(args.input)
-                paper_info = get_paper_info_pmc(abs_url)
-            elif mode == "acm_url":
-                pdf_url, abs_url = get_acm_urls(args.input)
-                paper_info = get_paper_info_acm(abs_url)
-            else:
-                pdf_url = args.input
-            download_url(pdf_url, filename)
-            if not check_file_is_pdf(filename):
-                exception("Downloaded file isn't a valid pdf file.")
-            if args.filename:
-                clean_filename = args.filename
-            else:
-                clean_filename = generate_filename(paper_info)
-
-        dearxived = dearxiv(filename, pdftk_path=args.pdftk)
-        cropped = crop_pdf(dearxived, pdfcrop_path=args.pdfcrop)
-        shrinked = shrink_pdf(cropped)
-        shutil.move(shrinked, clean_filename)
-
-        if args.debug:
-            print("Paused in debug mode in dir: %s" % working_dir)
-            print("Press enter to exit.")
-            return input()
-
-        if args.no_upload:
-            if os.path.exists(os.path.join(start_wd, clean_filename)):
-                tmpfname = os.path.splitext(filename)[0] + "_cropped.pdf"
-                shutil.move(clean_filename, os.path.join(start_wd, tmpfname))
-            else:
-                shutil.move(clean_filename, start_wd)
-        else:
-            upload_to_rm(
-                clean_filename,
-                remarkable_dir=args.remarkable_dir,
-                rmapi_path=args.rmapi,
-            )
+    prov.run(args.input, filename=args.filename)
 
 
 if __name__ == "__main__":
