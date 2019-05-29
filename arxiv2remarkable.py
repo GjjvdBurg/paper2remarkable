@@ -5,15 +5,7 @@ __version__ = "0.2.0"
 __author__ = "G.J.J. van den Burg"
 
 """
-Given an arXiv paper url this script:
-
-1. Downloads the paper
-2. Strips the timestamp
-3. Crops the pdf to remove unnecessary borders
-4. Shrinks the pdf to reduce the filesize
-5. Renames it using the format:
-    '_'.join(author_lastnames) + '_-_' + title + '_' + year.pdf
-6. Uploads it to the reMarkable using rMapi.
+Download a paper from various sources and send it to the reMarkable.
 
 Author: G.J.J. van den Burg
 Date: 2019-02-02
