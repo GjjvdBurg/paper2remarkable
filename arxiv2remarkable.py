@@ -166,33 +166,21 @@ class Provider(metaclass=abc.ABCMeta):
         with open(filename, "wb") as fid:
             fid.write(content)
 
-    def get_page_with_retry(self, url, times=5):
-        """ Get the content of an url, retrying on failure.
-        """
-
-        def retry(url, count):
-            if count < times:
-                self.log(
-                    "Caught error for url %s. Retrying in 5 seconds." % url,
-                    mode="warning",
-                )
-                time.sleep(5)
-            else:
-                exception("Failed to download url: %s" % url)
-
+    def get_page_with_retry(self, url, tries=5):
         count = 0
-        while True:
+        while count < tries:
             count += 1
+            error = False
             try:
                 res = requests.get(url, headers=HEADERS)
             except requests.exceptions.ConnectionError:
-                retry(url, count)
+                error = True
+            if error or not res.ok:
+                time.sleep(5)
+                self.warn("Error getting url %s. Retrying in 5 seconds" % url)
                 continue
-            if res.ok:
-                self.log("Downloading url: %s" % url)
-                return res.content
-            else:
-                retry(url, count)
+            self.log("Downloading url: %s" % url)
+            return res.content
 
     def upload_to_rm(self, filepath):
         remarkable_dir = self.remarkable_dir.rstrip("/")
