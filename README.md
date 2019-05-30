@@ -57,16 +57,18 @@ And here's an example with verbose mode enabled that shows everything the
 script does:
 ```bash
 $ python arxiv2remarkable.py -v https://arxiv.org/abs/1811.11242
-2019-02-03 18:11:41.816 | INFO     | __main__:download_url:106 - Downloading file at url: https://arxiv.org/pdf/1811.11242v1.pdf
-2019-02-03 18:11:46.833 | INFO     | __main__:get_page_with_retry:92 - Downloading url: https://arxiv.org/pdf/1811.11242v1.pdf
-2019-02-03 18:11:46.835 | INFO     | __main__:get_paper_info:194 - Getting paper info from arXiv
-2019-02-03 18:11:47.496 | INFO     | __main__:get_page_with_retry:92 - Downloading url: https://arxiv.org/abs/1811.11242v1
-2019-02-03 18:11:47.508 | INFO     | __main__:generate_filename:206 - Generating output filename
-2019-02-03 18:11:47.508 | INFO     | __main__:dearxiv:114 - Removing arXiv timestamp
-2019-02-03 18:11:49.221 | INFO     | __main__:crop_pdf:154 - Cropping pdf file
-2019-02-03 18:11:53.247 | INFO     | __main__:shrink_pdf:172 - Shrinking pdf file
-2019-02-03 18:11:54.802 | INFO     | __main__:upload_to_rm:218 - Starting upload to reMarkable
-2019-02-03 18:11:57.767 | INFO     | __main__:upload_to_rm:223 - Upload successful.
+2019-05-30 00:38:27 - INFO - Starting ArxivProvider
+2019-05-30 00:38:27 - INFO - Getting paper info from arXiv
+2019-05-30 00:38:27 - INFO - Downloading url: https://arxiv.org/abs/1811.11242
+2019-05-30 00:38:27 - INFO - Generating output filename
+2019-05-30 00:38:27 - INFO - Created filename: Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf
+2019-05-30 00:38:27 - INFO - Downloading file at url: https://arxiv.org/pdf/1811.11242.pdf
+2019-05-30 00:38:32 - INFO - Downloading url: https://arxiv.org/pdf/1811.11242.pdf
+2019-05-30 00:38:32 - INFO - Removing arXiv timestamp
+2019-05-30 00:38:34 - INFO - Cropping pdf file
+2019-05-30 00:38:37 - INFO - Shrinking pdf file
+2019-05-30 00:38:38 - INFO - Starting upload to reMarkable
+2019-05-30 00:38:42 - INFO - Upload successful.
 ```
 
 ## Dependencies
@@ -79,21 +81,20 @@ The script requires the following external programs to be available:
 - [GhostScript](https://www.ghostscript.com/)
 - [rMAPI](https://github.com/juruen/rmapi)
 
-If these scripts are not available on the PATH variable, you can supply them 
+If these scripts are not available on the ``PATH`` variable, you can supply them 
 with the relevant options to the script.
 
 The script also needs the following Python packages:
 
 - [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/): parsing HTML
 - [requests](https://pypi.org/project/requests/): getting HTML
-- [loguru](https://pypi.org/project/loguru/): easy logging
 - [PyPDF2](https://github.com/mstamy2/PyPDF2): verifying urls point to PDF
 - [titlecase](https://pypi.org/project/titlecase/): fancy titles
 
 You can use this line:
 
 ```bash
-pip install --user bs4 requests loguru PyPDF2 titlecase
+pip install --user bs4 requests PyPDF2 titlecase
 ```
 
 # Notes

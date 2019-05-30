@@ -9,7 +9,6 @@ license = "MIT"
 python = "^3.5"
 bs4 = "^0.0.1"
 requests = "^2.21"
-loguru = "^0.2.5"
 
 [tool.poetry.dev-dependencies]
 
