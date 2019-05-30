@@ -77,6 +77,9 @@ class Provider(metaclass=abc.ABCMeta):
             + msg
         )
 
+    def warn(self, msg):
+        self.log(msg, mode="warning")
+
     @staticmethod
     @abc.abstractmethod
     def validate(src):
@@ -115,15 +118,12 @@ class Provider(metaclass=abc.ABCMeta):
             stdout=subprocess.DEVNULL,
         )
         if not status == 0:
-            self.log(
-                "Failed to crop the pdf file at: %s" % filepath, mode="warning"
-            )
+            self.warn("Failed to crop the pdf file at: %s" % filepath)
             return filepath
         cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
         if not os.path.exists(cropped_file):
-            self.log(
-                "Can't find cropped file '%s' where expected." % cropped_file,
-                mode="warning",
+            self.warn(
+                "Can't find cropped file '%s' where expected." % cropped_file
             )
             return filepath
         return cropped_file
@@ -145,7 +145,7 @@ class Provider(metaclass=abc.ABCMeta):
             ]
         )
         if not status == 0:
-            self.log("Failed to shrink the pdf file", mode="warning")
+            self.warn("Failed to shrink the pdf file")
             return filepath
         return output_file
 
@@ -455,10 +455,9 @@ class ACMProvider(Provider):
         title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
         date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
         if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
-            self.log(
+            self.warn(
                 "Couldn't extract year from ACM page, please raise an "
-                "issue on GitHub so I can fix it: %s" % GITHUB_URL,
-                mode="warning",
+                "issue on GitHub so I can fix it: %s" % GITHUB_URL
             )
         date = date.strip().split("/")[-1]
         return dict(title=title, date=date, authors=authors)
