@@ -15,18 +15,21 @@ The script takes the source and:
 2. Removes the arXiv timestamp
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
-5. Generates a nice filename based on author/title/year of the paper (arXiv 
-   only)
+5. Generates a nice filename based on author/title/year of the paper
 6. Uploads it to your reMarkable using ``rMapi``.
 
-Optionally, you can download a paper but not have it uploaded to the 
-reMarkable using the ``-n`` switch. Also, the ``--filename`` parameter to the 
-script can be used to provide an explicit filename for on the reMarkable.
+Optionally, you can:
+
+- Download a paper but not upload to the reMarkable using the ``-n`` switch.
+- Insert a blank page after each page using the ``-b`` switch (useful for note 
+  taking!)
+- Provide an explicit filename using the ``--filename`` parameter
+- Specify the location on the reMarkable to place the file (default ``/``)
 
 Here's the full help of the script:
 
 ```text
-usage: arxiv2remarkable.py [-h] [-v] [-n] [-d] [--filename FILENAME]
+usage: arxiv2remarkable.py [-h] [-b] [-v] [-n] [-d] [--filename FILENAME]
                            [-p REMARKABLE_DIR] [--rmapi RMAPI]
                            [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
                            input
@@ -37,6 +40,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  -b, --blank           Add a blank page after every page of the PDF (default:
+                        False)
   -v, --verbose         be verbose (default: False)
   -n, --no-upload       don't upload to the reMarkable, save the output in
                         current working dir (default: False)
@@ -54,7 +59,7 @@ optional arguments:
 ```
 
 And here's an example with verbose mode enabled that shows everything the 
-script does:
+script does by default:
 
 ```bash
 $ python arxiv2remarkable.py -v https://arxiv.org/abs/1811.11242

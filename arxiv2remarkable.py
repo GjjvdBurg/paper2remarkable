@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "G.J.J. van den Burg"
 
 """
@@ -50,6 +50,7 @@ class Provider(metaclass=abc.ABCMeta):
         upload=True,
         debug=False,
         center=False,
+        blank=False,
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdfcrop_path="pdfcrop",
@@ -60,6 +61,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.upload = upload
         self.debug = debug
         self.center = center
+        self.blank = blank
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdfcrop_path = pdfcrop_path
@@ -146,6 +148,22 @@ class Provider(metaclass=abc.ABCMeta):
             )
             return filepath
         return centered_file
+
+    def blank_pdf(self, filepath):
+        if not self.blank:
+            return filepath
+
+        self.log("Adding blank pages")
+        input_pdf = PyPDF2.PdfFileReader(filepath)
+        output_pdf = PyPDF2.PdfFileWriter()
+        for page in input_pdf.pages:
+            output_pdf.addPage(page)
+            output_pdf.addBlankPage()
+
+        output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
+        with open(output_file, "wb") as fp:
+            output_pdf.write(fp)
+        return output_file
 
     def crop_pdf(self, filepath):
         self.log("Cropping pdf file")
@@ -300,6 +318,7 @@ class Provider(metaclass=abc.ABCMeta):
                 self.dearxiv,
                 self.crop_pdf,
                 self.center_pdf,
+                self.blank_pdf,
                 self.shrink_pdf,
             ]
             intermediate_fname = tmp_filename
@@ -548,6 +567,12 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
+        "-b",
+        "--blank",
+        help="Add a blank page after every page of the PDF",
+        action="store_true",
+    )
+    parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )
     parser.add_argument(
@@ -616,6 +641,7 @@ def main():
         upload=not args.no_upload,
         debug=args.debug,
         center=args.center,
+        blank=args.blank,
         remarkable_dir=args.remarkable_dir,
         rmapi_path=args.rmapi,
         pdfcrop_path=args.pdfcrop,
