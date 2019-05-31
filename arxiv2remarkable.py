@@ -37,6 +37,9 @@ HEADERS = {
     "Safari/537.36"
 }
 
+RM_WIDTH = 1404
+RM_HEIGHT = 1872
+
 
 class Provider(metaclass=abc.ABCMeta):
     """ ABC for providers of pdf sources """
@@ -46,6 +49,7 @@ class Provider(metaclass=abc.ABCMeta):
         verbose=False,
         upload=True,
         debug=False,
+        center=False,
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdfcrop_path="pdfcrop",
@@ -55,6 +59,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.verbose = verbose
         self.upload = upload
         self.debug = debug
+        self.center = center
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdfcrop_path = pdfcrop_path
@@ -110,6 +115,37 @@ class Provider(metaclass=abc.ABCMeta):
         name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
         self.log("Created filename: %s" % name)
         return name
+
+    def center_pdf(self, filepath):
+        if not self.center:
+            return filepath
+        pdf_file = PyPDF2.PdfFileReader(filepath)
+        mediaBox = pdf_file.getPage(0).mediaBox
+        width = mediaBox[2] - mediaBox[0]
+        height = mediaBox[3] - mediaBox[1]
+        padding = (height * RM_WIDTH - width * RM_HEIGHT) / RM_HEIGHT
+        left_margin = padding / 2 + 15
+
+        self.log("Centering PDF file")
+        status = subprocess.call(
+            [
+                self.pdfcrop_path,
+                "--margins",
+                "%i 40 15 15" % left_margin,
+                filepath,
+            ],
+            stdout=subprocess.DEVNULL,
+        )
+        if not status == 0:
+            self.warn("Failed to crop the pdf file at: %s" % filepath)
+            return filepath
+        centered_file = os.path.splitext(filepath)[0] + "-crop.pdf"
+        if not os.path.exists(centered_file):
+            self.warn(
+                "Can't find centered file '%s' where expected." % centered_file
+            )
+            return filepath
+        return centered_file
 
     def crop_pdf(self, filepath):
         self.log("Cropping pdf file")
@@ -260,7 +296,12 @@ class Provider(metaclass=abc.ABCMeta):
             self.retrieve_pdf(src, tmp_filename)
             self.check_file_is_pdf(tmp_filename)
 
-            ops = [self.dearxiv, self.crop_pdf, self.shrink_pdf]
+            ops = [
+                self.dearxiv,
+                self.crop_pdf,
+                self.center_pdf,
+                self.shrink_pdf,
+            ]
             intermediate_fname = tmp_filename
             for op in ops:
                 intermediate_fname = op(intermediate_fname)
@@ -522,6 +563,12 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "-c",
+        "--center",
+        help="Center the PDF on the page, instead of left align",
+        action="store_true",
+    )
+    parser.add_argument(
         "--filename",
         help="Filename to use for the file on reMarkable",
         default=None,
@@ -565,14 +612,15 @@ def main():
         exception("Input not valid, no provider can handle this source.")
 
     prov = provider(
-        args.verbose,
-        not args.no_upload,
-        args.debug,
-        args.remarkable_dir,
-        args.rmapi,
-        args.pdfcrop,
-        args.pdftk,
-        args.gs,
+        verbose=args.verbose,
+        upload=not args.no_upload,
+        debug=args.debug,
+        center=args.center,
+        remarkable_dir=args.remarkable_dir,
+        rmapi_path=args.rmapi,
+        pdfcrop_path=args.pdfcrop,
+        pdftk_path=args.pdftk,
+        gs_path=args.gs,
     )
 
     prov.run(args.input, filename=args.filename)
