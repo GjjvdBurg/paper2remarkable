@@ -46,6 +46,7 @@ class Provider(metaclass=abc.ABCMeta):
         verbose=False,
         upload=True,
         debug=False,
+        blank=False,
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdfcrop_path="pdfcrop",
@@ -55,6 +56,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.verbose = verbose
         self.upload = upload
         self.debug = debug
+        self.blank = blank
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdfcrop_path = pdfcrop_path
@@ -110,6 +112,22 @@ class Provider(metaclass=abc.ABCMeta):
         name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
         self.log("Created filename: %s" % name)
         return name
+
+    def blank_pdf(self, filepath):
+        if not self.blank:
+            return filepath
+
+        self.log("Adding blank pages")
+        input_pdf = PyPDF2.PdfFileReader(filepath)
+        output_pdf = PyPDF2.PdfFileWriter()
+        for page in input_pdf.pages:
+            output_pdf.addPage(page)
+            output_pdf.addBlankPage()
+
+        output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
+        with open(output_file, "wb") as fp:
+            output_pdf.write(fp)
+        return output_file
 
     def crop_pdf(self, filepath):
         self.log("Cropping pdf file")
@@ -260,7 +278,12 @@ class Provider(metaclass=abc.ABCMeta):
             self.retrieve_pdf(src, tmp_filename)
             self.check_file_is_pdf(tmp_filename)
 
-            ops = [self.dearxiv, self.crop_pdf, self.shrink_pdf]
+            ops = [
+                self.dearxiv,
+                self.crop_pdf,
+                self.blank_pdf,
+                self.shrink_pdf,
+            ]
             intermediate_fname = tmp_filename
             for op in ops:
                 intermediate_fname = op(intermediate_fname)
@@ -507,6 +530,12 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
+        "-b",
+        "--blank",
+        help="Add a blank page after every page of the PDF",
+        action="store_true",
+    )
+    parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )
     parser.add_argument(
@@ -565,14 +594,15 @@ def main():
         exception("Input not valid, no provider can handle this source.")
 
     prov = provider(
-        args.verbose,
-        not args.no_upload,
-        args.debug,
-        args.remarkable_dir,
-        args.rmapi,
-        args.pdfcrop,
-        args.pdftk,
-        args.gs,
+        verbose=args.verbose,
+        upload=not args.no_upload,
+        debug=args.debug,
+        blank=args.blank,
+        remarkable_dir=args.remarkable_dir,
+        rmapi_path=args.rmapi,
+        pdfcrop_path=args.pdfcrop,
+        pdftk_path=args.pdftk,
+        gs_path=args.gs,
     )
 
     prov.run(args.input, filename=args.filename)
