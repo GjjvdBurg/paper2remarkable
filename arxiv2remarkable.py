@@ -243,13 +243,13 @@ class Provider(metaclass=abc.ABCMeta):
             data = fid.read()
             # Remove the text element
             data = re.sub(
-                b"\(arXiv:\d{4}\.\d{4,5}v\d\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
+                b"\(arXiv:\d{4}\.\d{4,5}v\d+\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
                 b"()Tj",
                 data,
             )
             # Remove the URL element
             data = re.sub(
-                b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d\)\\n\/S /URI\\n>>\\n",
+                b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d+\)\\n\/S /URI\\n>>\\n",
                 b"",
                 data,
             )
