@@ -25,7 +25,7 @@ script can be used to provide an explicit filename for on the reMarkable.
 
 Here's the full help of the script:
 
-```bash
+```text
 usage: arxiv2remarkable.py [-h] [-v] [-n] [-d] [--filename FILENAME]
                            [-p REMARKABLE_DIR] [--rmapi RMAPI]
                            [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
@@ -55,6 +55,7 @@ optional arguments:
 
 And here's an example with verbose mode enabled that shows everything the 
 script does:
+
 ```bash
 $ python arxiv2remarkable.py -v https://arxiv.org/abs/1811.11242
 2019-05-30 00:38:27 - INFO - Starting ArxivProvider
