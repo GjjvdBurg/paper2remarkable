@@ -23,13 +23,14 @@ Optionally, you can:
 - Download a paper but not upload to the reMarkable using the ``-n`` switch.
 - Insert a blank page after each page using the ``-b`` switch (useful for note 
   taking!)
+- Center the pdf on the reMarkable (default is left-aligned)
 - Provide an explicit filename using the ``--filename`` parameter
 - Specify the location on the reMarkable to place the file (default ``/``)
 
 Here's the full help of the script:
 
 ```text
-usage: arxiv2remarkable.py [-h] [-b] [-v] [-n] [-d] [--filename FILENAME]
+usage: arxiv2remarkable.py [-h] [-b] [-v] [-n] [-d] [-c] [--filename FILENAME]
                            [-p REMARKABLE_DIR] [--rmapi RMAPI]
                            [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
                            input
@@ -47,6 +48,8 @@ optional arguments:
                         current working dir (default: False)
   -d, --debug           debug mode, doesn't upload to reMarkable (default:
                         False)
+  -c, --center          Center the PDF on the page, instead of left align
+                        (default: False)
   --filename FILENAME   Filename to use for the file on reMarkable (default:
                         None)
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
