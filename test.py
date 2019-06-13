@@ -15,6 +15,7 @@ from arxiv2remarkable import (
     ArxivProvider,
     PMCProvider,
     ACMProvider,
+    OpenReviewProvider,
     LocalFileProvider,
     PdfUrlProvider,
 )
@@ -72,6 +73,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(exp_filename, os.path.basename(filename))
         fsize = os.path.getsize(filename)
         self.assertTrue(1691444 < fsize <= 1693444)
+
+    def test_openreview(self):
+        prov = OpenReviewProvider(upload=False)
+        url = "https://openreview.net/forum?id=S1x4ghC9tQ"
+        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+        fsize = os.path.getsize(filename)
+        self.assertTrue(1110316 < fsize <= 1112316)
 
     def test_local(self):
         local_filename = "test.pdf"
