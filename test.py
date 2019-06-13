@@ -66,12 +66,12 @@ class Tests(unittest.TestCase):
 
     def test_acm(self):
         prov = ACMProvider(upload=False)
-        url = "https://dl.acm.org/citation.cfm?id=3300356"
-        exp_filename = "Muller_et_al_-_How_Data_Science_Workers_Work_With_Data_Discovery_Capture_Curation_Design_Creation_2019.pdf"
+        url = "https://dl.acm.org/citation.cfm?id=3025626"
+        exp_filename = "Kery_Horvath_Myers_-_Variolite_Supporting_Exploratory_Programming_by_Data_Scientists_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
         fsize = os.path.getsize(filename)
-        self.assertTrue(1691444 < fsize <= 1693444)
+        self.assertTrue(2349734 < fsize <= 2351734)
 
     def test_local(self):
         local_filename = "test.pdf"
@@ -92,6 +92,7 @@ class Tests(unittest.TestCase):
         self.assertEqual("test.pdf", os.path.basename(filename))
         fsize = os.path.getsize(filename)
         self.assertTrue(1828169 < fsize <= 1830169)
+
 
 if __name__ == "__main__":
     unittest.main()
