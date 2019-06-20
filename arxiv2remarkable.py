@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __author__ = "G.J.J. van den Burg"
 
 """
@@ -673,6 +673,7 @@ def main():
         ArxivProvider,
         PMCProvider,
         ACMProvider,
+        OpenReviewProvider,
         LocalFileProvider,
         PdfUrlProvider,
     ]
