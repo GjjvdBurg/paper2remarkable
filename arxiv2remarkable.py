@@ -517,13 +517,11 @@ class OpenReviewProvider(Provider):
 
     def get_abs_pdf_urls(self, url):
         """ Get the pdf and abstract url from a OpenReview url """
-        if re.match(
-                "https?://openreview.net/forum\?id=[A-Za-z0-9]+", url):
+        if re.match("https?://openreview.net/forum\?id=[A-Za-z0-9]+", url):
             abs_url = url
-            pdf_url = url.replace('forum', 'pdf')
-        elif re.match(
-                "https?://openreview.net/pdf\?id=[A-Za-z0-9]+", url):
-            abs_url = url.replace('pdf', 'forum')
+            pdf_url = url.replace("forum", "pdf")
+        elif re.match("https?://openreview.net/pdf\?id=[A-Za-z0-9]+", url):
+            abs_url = url.replace("pdf", "forum")
             pdf_url = url
         else:
             exception("Couldn't figure out OpenReview urls.")
@@ -548,13 +546,16 @@ class OpenReviewProvider(Provider):
         page = self.get_page_with_retry(abs_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = [
-                x["content"] for x in soup.find_all("meta", {"name": 
-                    "citation_author"})]
-        authors = [x.split(' ')[-1].strip() for x in authors]
+            x["content"]
+            for x in soup.find_all("meta", {"name": "citation_author"})
+        ]
+        authors = [x.split(" ")[-1].strip() for x in authors]
         title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": 
-            "citation_publication_date"})[0]["content"]
+        date = soup.find_all("meta", {"name": "citation_publication_date"})[0][
+            "content"
+        ]
         return dict(title=title, date=date, authors=authors)
+
 
 class LocalFileProvider(Provider):
     def __init__(self, *args, **kwargs):
