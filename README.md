@@ -101,11 +101,13 @@ The script also needs the following Python packages:
 - [requests](https://pypi.org/project/requests/): getting HTML
 - [PyPDF2](https://github.com/mstamy2/PyPDF2): verifying urls point to PDF
 - [titlecase](https://pypi.org/project/titlecase/): fancy titles
+- [pdfplumber](https://github.com/jsvine/pdfplumber): used for better page 
+  cropping
 
 You can use this line:
 
 ```bash
-pip install --user bs4 requests PyPDF2 titlecase
+pip install --user bs4 requests PyPDF2 titlecase pdfplumber
 ```
 
 # Notes
