@@ -309,7 +309,7 @@ class Provider(metaclass=abc.ABCMeta):
         tmp_filename = "paper.pdf"
 
         self.initial_dir = os.getcwd()
-        with tempfile.TemporaryDirectory() as working_dir:
+        with tempfile.TemporaryDirectory(prefix="a2r_") as working_dir:
             os.chdir(working_dir)
             self.retrieve_pdf(src, tmp_filename)
             self.check_file_is_pdf(tmp_filename)
