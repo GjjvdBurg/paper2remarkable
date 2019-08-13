@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __author__ = "G.J.J. van den Burg"
 
 """
@@ -157,7 +157,7 @@ class Provider(metaclass=abc.ABCMeta):
         if not self.center:
             return filepath
 
-        self.log("Centering PDF file")
+        self.log("Centering pdf file")
         centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
         cropper = Cropper(
             filepath, centered_file, pdfcrop_path=self.pdfcrop_path
@@ -232,7 +232,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.log("Starting upload to reMarkable")
         if remarkable_dir:
             status = subprocess.call(
-                [self.rmapi_path, "mkdir", remarkable_dir],
+                [self.rmapi_path, "mkdir", remarkable_dir + "/"],
                 stdout=subprocess.DEVNULL,
             )
             if not status == 0:
