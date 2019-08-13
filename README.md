@@ -1,7 +1,10 @@
 # arxiv2remarkable.py
 
-This script makes it as easy to get a PDF on your reMarkable from any of the 
-following sources:
+``arxiv2remarkable`` is a command line program to quickly transfer a paper to 
+your reMarkable.
+
+This script makes it as easy as possible to get a PDF on your reMarkable from 
+any of the following sources:
 
 - an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
 - a PubMed Central url (either to the HTML or the PDF)
