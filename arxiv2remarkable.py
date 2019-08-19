@@ -548,6 +548,50 @@ class OpenReview(Provider):
         return dict(title=title, date=date, authors=authors)
 
 
+class Springer(Provider):
+
+    re_abs = "https?:\/\/link.springer.com\/article\/10\.\d{4}\/[a-z0-9\-]+"
+    re_pdf = "https?:\/\/link\.springer\.com\/content\/pdf\/10\.\d{4}(%2F|\/)[a-z0-9\-]+\.pdf"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_abs_pdf_urls(self, url):
+        """ Get the pdf and abstract urls from a Springer url """
+        if re.match(self.re_abs, url):
+            abs_url = url
+            pdf_url = url.replace("article", "content/pdf")
+        elif re.match(self.re_pdf, url):
+            abs_url = url.replace("content/pdf", "article")
+            pdf_url = url
+        else:
+            exception("Couldn't figure out Springer urls.")
+        return abs_url, pdf_url
+
+    def validate(src):
+        return re.match(Springer.re_abs, src) or re.match(Springer.re_pdf, src)
+
+    def retrieve_pdf(self, src, filename):
+        _, pdf_url = self.get_abs_pdf_urls(src)
+        self.download_url(pdf_url, filename)
+
+    def get_paper_info(self, src):
+        abs_url, _ = self.get_abs_pdf_urls(src)
+        self.log("Getting paper info from Springer")
+        page = self.get_page_with_retry(abs_url)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        authors = [
+            x["content"]
+            for x in soup.find_all("meta", {"name": "citation_author"})
+        ]
+        authors = [x.split(" ")[-1].strip() for x in authors]
+        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
+        date = soup.find_all("meta", {"name": "citation_online_date"})[0][
+            "content"
+        ]
+        return dict(title=title, date=date, authors=authors)
+
+
 class LocalFile(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -804,14 +848,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    providers = [
-        Arxiv,
-        Pubmed,
-        ACM,
-        OpenReview,
-        LocalFile,
-        PdfUrl,
-    ]
+    providers = [Arxiv, Pubmed, ACM, OpenReview, Springer, LocalFile, PdfUrl]
 
     provider = next((p for p in providers if p.validate(args.input)), None)
     if provider is None:
