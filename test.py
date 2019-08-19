@@ -12,12 +12,13 @@ import shutil
 import os
 
 from arxiv2remarkable import (
-    Arxiv,
-    Pubmed,
     ACM,
-    OpenReview,
+    Arxiv,
     LocalFile,
+    OpenReview,
     PdfUrl,
+    Pubmed,
+    Springer,
 )
 
 VERBOSE = False
@@ -74,6 +75,13 @@ class Tests(unittest.TestCase):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
         exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_springer(self):
+        prov = Springer(upload=False, verbose=VERBOSE)
+        url = "https://link.springer.com/article/10.1007/s10618-019-00631-5"
+        exp_filename = "Mauw_Ramirez-Cruz_Trujillo-Rasua_-_Robust_Active_Attacks_on_Social_Graphs_2019.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
