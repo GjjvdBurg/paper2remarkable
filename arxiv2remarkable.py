@@ -378,17 +378,19 @@ class Provider(metaclass=abc.ABCMeta):
 
 
 class Arxiv(Provider):
+
+    re_abs = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
+    re_pdf = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
-        if re.match("https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?", url):
+        if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = url.replace("abs", "pdf") + ".pdf"
-        elif re.match(
-            "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf", url
-        ):
+        elif re.match(self.re_pdf, url):
             abs_url = url[:-4].replace("pdf", "abs")
             pdf_url = url
         else:
@@ -397,10 +399,7 @@ class Arxiv(Provider):
 
     def validate(src):
         """Check if the url is to an arXiv page. """
-        m = re.match(
-            "https?://arxiv.org/(abs|pdf)/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?", src
-        )
-        return not m is None
+        return re.match(Arxiv.re_abs, src) or re.match(Arxiv.re_pdf, src)
 
     def retrieve_pdf(self, src, filename):
         """ Download the file and save as filename """
@@ -412,21 +411,21 @@ class Pubmed(Provider):
 
     meta_author_key = "citation_authors"
 
+    re_abs = "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?"
+    re_pdf = (
+        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf"
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and html url from a given PMC url """
-        if re.match(
-            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf",
-            url,
-        ):
+        if re.match(self.re_pdf, url):
             idx = url.index("pdf")
             abs_url = url[: idx - 1]
             pdf_url = url
-        elif re.match(
-            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?", url
-        ):
+        elif re.match(self.re_abs, url):
             abs_url = url
             pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
         else:
@@ -434,10 +433,7 @@ class Pubmed(Provider):
         return abs_url, pdf_url
 
     def validate(src):
-        m = re.fullmatch(
-            "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+.*", src
-        )
-        return not m is None
+        return re.match(Pubmed.re_abs, src) or re.match(Pubmed.re_pdf, src)
 
     def retrieve_pdf(self, src, filename):
         _, pdf_url = self.get_abs_pdf_urls(src)
@@ -456,6 +452,8 @@ class Pubmed(Provider):
 class ACM(Provider):
 
     meta_author_key = "citation_authors"
+
+    re_abs = "https?://dl.acm.org/citation.cfm\?id=\d+"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -477,7 +475,7 @@ class ACM(Provider):
             return "https://dl.acm.org/" + href
 
     def get_abs_pdf_urls(self, url):
-        if re.match("https?://dl.acm.org/citation.cfm\?id=\d+", url):
+        if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = self.get_acm_pdf_url(url)
             if pdf_url is None:
@@ -496,7 +494,7 @@ class ACM(Provider):
         self.download_url(pdf_url, filename)
 
     def validate(src):
-        m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", src)
+        m = re.fullmatch(ACM.re_abs, src)
         return not m is None
 
     def _format_authors(self, soup_authors):
@@ -516,15 +514,18 @@ class OpenReview(Provider):
 
     meta_date_key = "citation_publication_date"
 
+    re_abs = "https?://openreview.net/forum\?id=[A-Za-z0-9]+"
+    re_pdf = "https?://openreview.net/pdf\?id=[A-Za-z0-9]+"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_abs_pdf_urls(self, url):
         """ Get the pdf and abstract url from a OpenReview url """
-        if re.match("https?://openreview.net/forum\?id=[A-Za-z0-9]+", url):
+        if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = url.replace("forum", "pdf")
-        elif re.match("https?://openreview.net/pdf\?id=[A-Za-z0-9]+", url):
+        elif re.match(self.re_pdf, url):
             abs_url = url.replace("pdf", "forum")
             pdf_url = url
         else:
@@ -533,10 +534,9 @@ class OpenReview(Provider):
 
     def validate(src):
         """ Check if the url is a valid OpenReview url. """
-        m = re.match(
-            "https?://openreview.net/(forum|pdf)\?id=[A-Za-z0-9]+", src
+        return re.match(OpenReview.re_abs, src) or re.match(
+            OpenReview.re_pdf, src
         )
-        return not m is None
 
     def retrieve_pdf(self, src, filename):
         """ Download the file and save as filename """
