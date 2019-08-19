@@ -11,6 +11,7 @@ any of the following sources:
 - an ACM citation page url (``https://dl.acm.org/citation.cfm?id=...``)
 - an OpenReview paper (either ``openreview.net/forum?id=...`` or 
   ``openreview.net/pdf?id=...``)
+- a Springer paper url (either to the HTML or the PDF)
 - a url to a PDF file
 - a local file.
 
@@ -106,11 +107,15 @@ The script also needs the following Python packages:
 - [titlecase](https://pypi.org/project/titlecase/): fancy titles
 - [pdfplumber](https://github.com/jsvine/pdfplumber): used for better page 
   cropping
+- [unidecode](https://pypi.org/project/Unidecode/): clean accented characters 
+  from the filename
 
-You can use this line:
+If you use [Poetry](https://poetry.eustace.io/) you can install these 
+dependencies using ``poetry install`` in the project directory. Alternatively, 
+you can use ``pip`` with the following command:
 
 ```bash
-pip install --user bs4 requests PyPDF2 titlecase pdfplumber
+pip install --user bs4 requests PyPDF2 titlecase pdfplumber unidecode
 ```
 
 # Notes
