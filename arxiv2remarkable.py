@@ -333,7 +333,7 @@ class Provider(metaclass=abc.ABCMeta):
             return target_path
 
 
-class ArxivProvider(Provider):
+class Arxiv(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -379,7 +379,7 @@ class ArxivProvider(Provider):
         return dict(title=title, date=date, authors=authors)
 
 
-class PMCProvider(Provider):
+class Pubmed(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -434,7 +434,7 @@ class PMCProvider(Provider):
         return dict(title=title, date=date, authors=authors)
 
 
-class ACMProvider(Provider):
+class ACM(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -502,7 +502,7 @@ class ACMProvider(Provider):
         return dict(title=title, date=date, authors=authors)
 
 
-class OpenReviewProvider(Provider):
+class OpenReview(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -548,7 +548,7 @@ class OpenReviewProvider(Provider):
         return dict(title=title, date=date, authors=authors)
 
 
-class LocalFileProvider(Provider):
+class LocalFile(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -568,7 +568,7 @@ class LocalFileProvider(Provider):
         return os.path.basename(info["filename"])
 
 
-class PdfUrlProvider(Provider):
+class PdfUrl(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -805,12 +805,12 @@ def main():
     args = parse_args()
 
     providers = [
-        ArxivProvider,
-        PMCProvider,
-        ACMProvider,
-        OpenReviewProvider,
-        LocalFileProvider,
-        PdfUrlProvider,
+        Arxiv,
+        Pubmed,
+        ACM,
+        OpenReview,
+        LocalFile,
+        PdfUrl,
     ]
 
     provider = next((p for p in providers if p.validate(args.input)), None)
