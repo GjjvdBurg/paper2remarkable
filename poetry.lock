@@ -137,6 +137,14 @@ version = "0.14.1"
 
 [[package]]
 category = "main"
+description = "ASCII transliterations of Unicode text"
+name = "unidecode"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.1.1"
+
+[[package]]
+category = "main"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
@@ -152,7 +160,7 @@ python-versions = "*"
 version = "0.5.4"
 
 [metadata]
-content-hash = "21a857f686e73e377feae7bf7c09ed5933d51a3f90ca77315408a3d7fc362c42"
+content-hash = "51a0dc0e8f6e6e23395cd5aca6a81e9b3aa121ec86f120f1304f2142eb2b65b0"
 python-versions = "^3.5"
 
 [metadata.hashes]
@@ -170,5 +178,6 @@ six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a
 sortedcontainers = ["974e9a32f56b17c1bac2aebd9dcf197f3eb9cd30553c5852a3187ad162e1a03a", "d9e96492dd51fae31e60837736b38fe42a187b5404c16606ff7ee7cd582d4c60"]
 soupsieve = ["466910df7561796a60748826781ebe9a888f7a1668a636ae86783f44d10aae73", "87db12ae79194f0ff9808d2b1641c4f031ae39ffa3cab6b907ea7c1e5e5ed445"]
 unicodecsv = ["018c08037d48649a0412063ff4eda26eaa81eff1546dbffa51fa5293276ff7fc"]
+unidecode = ["1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a", "2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8"]
 urllib3 = ["61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39", "de9529817c93f27c8ccbfead6985011db27bd0ddfcdb2d86f3f663385c6a9c22"]
 wand = ["c52d647a34205f9b3948baae739db461a7379a04818548fe8042b5ce751ea6ea", "e2e08e19a37c61e85eaa307fe319889af46fe4cac6c23e3ae668b96be3e497ff"]

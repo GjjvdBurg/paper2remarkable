@@ -28,6 +28,7 @@ import sys
 import tempfile
 import time
 import titlecase
+import unidecode
 import urllib.parse
 
 GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
@@ -158,6 +159,7 @@ class Provider(metaclass=abc.ABCMeta):
         title_part = titlecase.titlecase(title).replace(" ", "_")
         year_part = info["date"].split("/")[0]
         name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
+        name = unidecode.unidecode(name)
         self.log("Created filename: %s" % name)
         return name
 
