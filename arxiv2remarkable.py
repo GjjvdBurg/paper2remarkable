@@ -45,6 +45,10 @@ RM_HEIGHT = 1872
 class Provider(metaclass=abc.ABCMeta):
     """ ABC for providers of pdf sources """
 
+    meta_author_key = "citation_author"
+    meta_title_key = "citation_title"
+    meta_date_key = "citation_date"
+
     def __init__(
         self,
         verbose=False,
@@ -97,9 +101,47 @@ class Provider(metaclass=abc.ABCMeta):
     def retrieve_pdf(self, src, filename):
         """ Download pdf from src and save to filename """
 
-    @abc.abstractmethod
-    def get_paper_info(self, src):
+    def _format_authors(self, soup_authors, sep=",", idx=0, op=None):
+        op = (lambda x: x) if op is None else op
+        # format the author list retrieved by bs4
+        return [x.strip().split(sep)[idx].strip() for x in op(soup_authors)]
+
+    def get_authors(self, soup):
+        authors = [
+            x["content"]
+            for x in soup.find_all("meta", {"name": self.meta_author_key})
+        ]
+        return self._format_authors(authors)
+
+    def get_title(self, soup):
+        target = soup.find_all("meta", {"name": self.meta_title_key})
+        return target[0]["content"]
+
+    def _format_date(self, soup_date):
+        return soup_date
+
+    def get_date(self, soup):
+        date = soup.find_all("meta", {"name": self.meta_date_key})[0][
+            "content"
+        ]
+        return self._format_date(date)
+
+    def get_paper_info(
+        self,
+        src,
+        author_key="citation_author",
+        title_key="citation_title",
+        date_key="citation_date",
+    ):
         """ Retrieve the title/author (surnames)/year information """
+        abs_url, _ = self.get_abs_pdf_urls(src)
+        self.log("Getting paper info")
+        page = self.get_page_with_retry(abs_url)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        authors = self.get_authors(soup)
+        title = self.get_title(soup)
+        date = self.get_date(soup)
+        return dict(title=title, date=date, authors=authors)
 
     def create_filename(self, info, filename=None):
         """ Generate filename using the info dict or filename if provided """
@@ -363,23 +405,11 @@ class Arxiv(Provider):
         _, pdf_url = self.get_abs_pdf_urls(src)
         self.download_url(pdf_url, filename)
 
-    def get_paper_info(self, src):
-        """ Extract the paper's authors, title, and publication year """
-        abs_url, _ = self.get_abs_pdf_urls(src)
-        self.log("Getting paper info from arXiv")
-        page = self.get_page_with_retry(abs_url)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": "citation_author"})
-        ]
-        authors = [x.split(",")[0].strip() for x in authors]
-        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-        return dict(title=title, date=date, authors=authors)
-
 
 class Pubmed(Provider):
+
+    meta_author_key = "citation_authors"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -411,30 +441,20 @@ class Pubmed(Provider):
         _, pdf_url = self.get_abs_pdf_urls(src)
         self.download_url(pdf_url, filename)
 
-    def get_paper_info(self, src):
-        """ Extract the paper's authors, title, and publication year """
-        self.log("Getting paper info from PMC")
-        page = self.get_page_with_retry(src)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": "citation_authors"})
-        ]
-        # We only use last names, and this method is a guess at best. I'm open to
-        # more advanced approaches.
-        authors = [
-            x.strip().split(" ")[-1].strip() for x in authors[0].split(",")
-        ]
-        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-        if re.match("\w+\ \d{4}", date):
-            date = date.split(" ")[-1]
-        else:
-            date = date.replace(" ", "_")
-        return dict(title=title, date=date, authors=authors)
+    def _format_authors(self, soup_authors):
+        op = lambda x: x[0].split(",")
+        return super()._format_authors(soup_authors, sep=" ", idx=-1, op=op)
+
+    def _format_date(self, soup_date):
+        if re.match("\w+\ \d{4}", soup_date):
+            return soup_date.split(" ")[-1]
+        return soup_date.replace(" ", "_")
 
 
 class ACM(Provider):
+
+    meta_author_key = "citation_authors"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -477,32 +497,23 @@ class ACM(Provider):
         m = re.fullmatch("https?://dl.acm.org/citation.cfm\?id=\d+", src)
         return not m is None
 
-    def get_paper_info(self, src):
-        """ Extract the paper's authors, title, and publication year """
-        self.log("Getting paper info from ACM")
-        page = self.get_page_with_retry(src)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": "citation_authors"})
-        ]
-        # We only use last names, and this method is a guess. I'm open to more
-        # advanced approaches.
-        authors = [
-            x.strip().split(",")[0].strip() for x in authors[0].split(";")
-        ]
-        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": "citation_date"})[0]["content"]
-        if not re.match("\d{2}/\d{2}/\d{4}", date.strip()):
+    def _format_authors(self, soup_authors):
+        op = lambda x: x[0].split(";")
+        return super()._format_authors(soup_authors, sep=",", idx=0, op=op)
+
+    def _format_date(self, soup_date):
+        if not re.match("\d{2}/\d{2}/\d{4}", soup_date.strip()):
             self.warn(
                 "Couldn't extract year from ACM page, please raise an "
-                "issue on GitHub so I can fix it: %s" % GITHUB_URL
+                "issue on GitHub so it can be fixed: %s" % GITHUB_URL
             )
-        date = date.strip().split("/")[-1]
-        return dict(title=title, date=date, authors=authors)
+        return soup_date.strip().split("/")[-1]
 
 
 class OpenReview(Provider):
+
+    meta_date_key = "citation_publication_date"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -530,25 +541,13 @@ class OpenReview(Provider):
         _, pdf_url = self.get_abs_pdf_urls(src)
         self.download_url(pdf_url, filename)
 
-    def get_paper_info(self, src):
-        """ Extract the paper's authors, title, and publication year """
-        abs_url, _ = self.get_abs_pdf_urls(src)
-        self.log("Getting paper info from OpenReview")
-        page = self.get_page_with_retry(abs_url)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": "citation_author"})
-        ]
-        authors = [x.split(" ")[-1].strip() for x in authors]
-        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": "citation_publication_date"})[0][
-            "content"
-        ]
-        return dict(title=title, date=date, authors=authors)
+    def _format_authors(self, soup_authors):
+        return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
 
 class Springer(Provider):
+
+    meta_date_key = "citation_online_date"
 
     re_abs = "https?:\/\/link.springer.com\/article\/10\.\d{4}\/[a-z0-9\-]+"
     re_pdf = "https?:\/\/link\.springer\.com\/content\/pdf\/10\.\d{4}(%2F|\/)[a-z0-9\-]+\.pdf"
@@ -575,21 +574,8 @@ class Springer(Provider):
         _, pdf_url = self.get_abs_pdf_urls(src)
         self.download_url(pdf_url, filename)
 
-    def get_paper_info(self, src):
-        abs_url, _ = self.get_abs_pdf_urls(src)
-        self.log("Getting paper info from Springer")
-        page = self.get_page_with_retry(abs_url)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": "citation_author"})
-        ]
-        authors = [x.split(" ")[-1].strip() for x in authors]
-        title = soup.find_all("meta", {"name": "citation_title"})[0]["content"]
-        date = soup.find_all("meta", {"name": "citation_online_date"})[0][
-            "content"
-        ]
-        return dict(title=title, date=date, authors=authors)
+    def _format_authors(self, soup_authors):
+        return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
 
 class LocalFile(Provider):
