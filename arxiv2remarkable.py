@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __author__ = "G.J.J. van den Burg"
 
 """
@@ -546,8 +546,8 @@ class Springer(Provider):
             abs_url = url
             pdf_url = url.replace("article", "content/pdf")
         elif re.match(self.re_pdf, url):
-            abs_url = url.replace("content/pdf", "article")
-            pdf_url = url
+            abs_url = url.replace("content/pdf", "article")[: -len(".pdf")]
+            pdf_url = urllib.parse.unquote(url)
         else:
             exception("Couldn't figure out Springer urls.")
         return abs_url, pdf_url
