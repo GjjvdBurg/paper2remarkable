@@ -51,8 +51,6 @@ class Tests(unittest.TestCase):
         exp_filename = "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(1054082 < fsize <= 1056082)
 
     def test_pmc(self):
         prov = Pubmed(upload=False)
@@ -62,8 +60,6 @@ class Tests(unittest.TestCase):
         )
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(376640 < fsize <= 378640)
 
     def test_acm(self):
         prov = ACM(upload=False)
@@ -71,8 +67,6 @@ class Tests(unittest.TestCase):
         exp_filename = "Kery_Horvath_Myers_-_Variolite_Supporting_Exploratory_Programming_by_Data_Scientists_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(2349734 < fsize <= 2351734)
 
     def test_openreview(self):
         prov = OpenReview(upload=False)
@@ -80,8 +74,6 @@ class Tests(unittest.TestCase):
         exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(1110316 < fsize <= 1112316)
 
     def test_local(self):
         local_filename = "test.pdf"
@@ -92,16 +84,12 @@ class Tests(unittest.TestCase):
         prov = LocalFile(upload=False)
         filename = prov.run(local_filename)
         self.assertEqual("test_.pdf", os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(5843 < fsize <= 7843)
 
     def test_pdfurl(self):
         prov = PdfUrl(upload=False)
         url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"
         filename = prov.run(url, filename="test.pdf")
         self.assertEqual("test.pdf", os.path.basename(filename))
-        fsize = os.path.getsize(filename)
-        self.assertTrue(1828169 < fsize <= 1830169)
 
 
 if __name__ == "__main__":
