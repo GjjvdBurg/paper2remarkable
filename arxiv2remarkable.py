@@ -750,6 +750,11 @@ class Cropper(object):
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
+    print("", file=sys.stderr)
+    print(
+        "If you think this might be a bug, please raise an issue on GitHub: %s"
+        % GITHUB_URL
+    )
     raise SystemExit(1)
 
 
