@@ -98,9 +98,10 @@ class Provider(metaclass=abc.ABCMeta):
     def validate(src):
         """ Validate whether ``src`` is appropriate for this provider """
 
-    @abc.abstractmethod
     def retrieve_pdf(self, src, filename):
         """ Download pdf from src and save to filename """
+        _, pdf_url = self.get_abs_pdf_urls(src)
+        self.download_url(pdf_url, filename)
 
     def _format_authors(self, soup_authors, sep=",", idx=0, op=None):
         op = (lambda x: x) if op is None else op
@@ -401,11 +402,6 @@ class Arxiv(Provider):
         """Check if the url is to an arXiv page. """
         return re.match(Arxiv.re_abs, src) or re.match(Arxiv.re_pdf, src)
 
-    def retrieve_pdf(self, src, filename):
-        """ Download the file and save as filename """
-        _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
-
 
 class Pubmed(Provider):
 
@@ -434,10 +430,6 @@ class Pubmed(Provider):
 
     def validate(src):
         return re.match(Pubmed.re_abs, src) or re.match(Pubmed.re_pdf, src)
-
-    def retrieve_pdf(self, src, filename):
-        _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
 
     def _format_authors(self, soup_authors):
         op = lambda x: x[0].split(",")
@@ -489,10 +481,6 @@ class ACM(Provider):
             )
         return abs_url, pdf_url
 
-    def retrieve_pdf(self, src, filename):
-        _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
-
     def validate(src):
         m = re.fullmatch(ACM.re_abs, src)
         return not m is None
@@ -538,11 +526,6 @@ class OpenReview(Provider):
             OpenReview.re_pdf, src
         )
 
-    def retrieve_pdf(self, src, filename):
-        """ Download the file and save as filename """
-        _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
-
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
@@ -571,10 +554,6 @@ class Springer(Provider):
 
     def validate(src):
         return re.match(Springer.re_abs, src) or re.match(Springer.re_pdf, src)
-
-    def retrieve_pdf(self, src, filename):
-        _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
 
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
