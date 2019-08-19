@@ -42,8 +42,7 @@ usage: arxiv2remarkable.py [-h] [-b] [-v] [-n] [-d] [-c] [--filename FILENAME]
                            input
 
 positional arguments:
-  input                 url to an arxiv paper, url to pdf, or existing pdf
-                        file
+  input                 URL to a paper or the path of a local PDF file
 
 optional arguments:
   -h, --help            show this help message and exit

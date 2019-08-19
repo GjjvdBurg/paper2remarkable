@@ -812,7 +812,7 @@ def parse_args():
     )
     parser.add_argument("--gs", help="path to gs executable", default="gs")
     parser.add_argument(
-        "input", help="url to an arxiv paper, url to pdf, or existing pdf file"
+        "input", help="URL to a paper or the path of a local PDF file"
     )
     return parser.parse_args()
 
