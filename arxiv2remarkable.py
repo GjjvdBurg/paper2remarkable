@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 __author__ = "G.J.J. van den Burg"
 
 """
@@ -266,8 +266,8 @@ class Provider(metaclass=abc.ABCMeta):
             except requests.exceptions.ConnectionError:
                 error = True
             if error or not res.ok:
-                time.sleep(5)
                 self.warn("Error getting url %s. Retrying in 5 seconds" % url)
+                time.sleep(5)
                 continue
             self.log("Downloading url: %s" % url)
             return res.content
