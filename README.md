@@ -117,6 +117,43 @@ you can use ``pip`` with the following command:
 pip install --user bs4 requests PyPDF2 titlecase pdfplumber unidecode
 ```
 
+## Docker
+
+You can also use our Dockerfile to avoid installing dependencies on your machine. You will need `git` and `docker` installed.
+
+First clone this repository with `git clone` and `cd` inside of it, then build the container:
+
+```bash
+docker build -t arxiv2remarkable .
+```
+
+### Authorization
+
+If you already have a `~/.rmapi` file, you can skip this section. Otherwise we'll use `rmapi` to create it.
+
+```bash
+touch ${HOME}/.rmapi
+docker run --rm --it -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi arxiv2remarkable version
+```
+
+which should end with output like
+
+```bash
+ReMarkable Cloud API Shell
+rmapi version: 0.0.5
+```
+
+### Usage
+
+Use the container by replacing `python arxiv2remarkable.py` with `docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable`, e.g.
+```
+# print help and exit
+docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable --help
+
+# equivalent to above usage via `python`
+docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable -v https://arxiv.org/abs/1811.11242
+```
+
 # Notes
 
 License: MIT
