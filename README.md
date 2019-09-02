@@ -1,7 +1,8 @@
 # arxiv2remarkable.py
 
 ``arxiv2remarkable`` is a command line program to quickly transfer a paper to 
-your reMarkable.
+your reMarkable. The script can be run as a plain Python script or via Docker 
+(see below).
 
 This script makes it as easy as possible to get a PDF on your reMarkable from 
 any of the following sources:
@@ -119,9 +120,11 @@ pip install --user bs4 requests PyPDF2 titlecase pdfplumber unidecode
 
 ## Docker
 
-You can also use our Dockerfile to avoid installing dependencies on your machine. You will need `git` and `docker` installed.
+You can also use our Dockerfile to avoid installing dependencies on your 
+machine. You will need `git` and `docker` installed.
 
-First clone this repository with `git clone` and `cd` inside of it, then build the container:
+First clone this repository with `git clone` and `cd` inside of it, then build 
+the container:
 
 ```bash
 docker build -t arxiv2remarkable .
@@ -129,7 +132,8 @@ docker build -t arxiv2remarkable .
 
 ### Authorization
 
-If you already have a `~/.rmapi` file, you can skip this section. Otherwise we'll use `rmapi` to create it.
+If you already have a `~/.rmapi` file, you can skip this section. Otherwise 
+we'll use `rmapi` to create it.
 
 ```bash
 touch ${HOME}/.rmapi
@@ -145,7 +149,9 @@ rmapi version: 0.0.5
 
 ### Usage
 
-Use the container by replacing `python arxiv2remarkable.py` with `docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable`, e.g.
+Use the container by replacing `python arxiv2remarkable.py` with `docker run 
+--rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable`, e.g.
+
 ```
 # print help and exit
 docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable --help
