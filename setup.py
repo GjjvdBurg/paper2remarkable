@@ -19,15 +19,19 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-        "bs4>=4.8.0",
-        "requests>=2.21",
-        "pdfplumber>=0.5.12",
-        "unidecode>=1.1"
+    "beautifulsoup4>=4.8",
+    "requests>=2.21",
+    "pdfplumber>=0.5",
+    "unidecode>=1.1",
+    "titlecase>=0.12",
+    "PyPDF2>=1.26"
+
 ]
 
 docs_require = []
 test_require = []
-dev_require = []
+dev_require = [
+        'green']
 
 # What packages are optional?
 EXTRAS = {
