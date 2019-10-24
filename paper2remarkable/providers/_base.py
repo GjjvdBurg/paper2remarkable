@@ -15,14 +15,13 @@ import os
 import requests
 import shutil
 import string
-import subprocess
 import tempfile
 import time
 import titlecase
 import unidecode
 
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
-from ..utils import exception
+from ..utils import upload_to_remarkable, check_file_is_pdf
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -191,27 +190,6 @@ class Provider(metaclass=abc.ABCMeta):
             logging.info("Downloading url: %s" % url)
             return res.content
 
-    def upload_to_rm(self, filepath):
-        remarkable_dir = self.remarkable_dir.rstrip("/")
-        logging.info("Starting upload to reMarkable")
-        if remarkable_dir:
-            status = subprocess.call(
-                [self.rmapi_path, "mkdir", remarkable_dir + "/"],
-                stdout=subprocess.DEVNULL,
-            )
-            if not status == 0:
-                exception(
-                    "Creating directory %s on reMarkable failed"
-                    % remarkable_dir
-                )
-        status = subprocess.call(
-            [self.rmapi_path, "put", filepath, remarkable_dir + "/"],
-            stdout=subprocess.DEVNULL,
-        )
-        if not status == 0:
-            exception("Uploading file %s to reMarkable failed" % filepath)
-        logging.info("Upload successful.")
-
     def run(self, src, filename=None):
         info = self.get_paper_info(src)
         clean_filename = self.create_filename(info, filename)
@@ -234,7 +212,11 @@ class Provider(metaclass=abc.ABCMeta):
                 return input()
 
             if self.upload:
-                return self.upload_to_rm(clean_filename)
+                return upload_to_remarkable(
+                    clean_filename,
+                    remarkable_dir=self.remarkable_dir,
+                    rmapi_path=self.rmapi_path,
+                )
 
             target_path = os.path.join(self.initial_dir, clean_filename)
             while os.path.exists(target_path):
