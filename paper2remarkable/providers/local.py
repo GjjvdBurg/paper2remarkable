@@ -25,7 +25,7 @@ class LocalFile(Provider):
         super().__init__(*args, **kwargs)
         self.informer = LocalFileInformer()
 
-    def get_abs_pdf_url(self, url):
+    def get_abs_pdf_urls(self, url):
         # The 'url' is the path to the local file. We use this as abs_url and
         # pdf_url.
         return url, url
