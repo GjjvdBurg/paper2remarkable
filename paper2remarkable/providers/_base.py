@@ -181,17 +181,6 @@ class Provider(metaclass=abc.ABCMeta):
         self.log("Created filename: %s" % name)
         return name
 
-
-    def check_file_is_pdf(self, filename):
-        try:
-            fp = open(filename, "rb")
-            pdf = PyPDF2.PdfFileReader(fp, strict=False)
-            fp.close()
-            del pdf
-            return True
-        except PyPDF2.utils.PdfReadError:
-            exception("Downloaded file isn't a valid pdf file.")
-
     def download_url(self, url, filename):
         """Download the content of an url and save it to a filename """
         self.log("Downloading file at url: %s" % url)

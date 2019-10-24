@@ -9,6 +9,7 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 
+import PyPDF2
 import sys
 
 GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
@@ -23,3 +24,14 @@ def exception(msg):
         % GITHUB_URL
     )
     raise SystemExit(1)
+
+
+def check_file_is_pdf(filename):
+    try:
+        fp = open(filename, "rb")
+        pdf = PyPDF2.PdfFileReader(fp, strict=False)
+        fp.close()
+        del pdf
+        return True
+    except PyPDF2.utils.PdfReadError:
+        exception("Downloaded file isn't a valid pdf file.")
