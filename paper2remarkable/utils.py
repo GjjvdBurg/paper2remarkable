@@ -28,6 +28,7 @@ HEADERS = {
 
 logger = Logger()
 
+
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
     print("Error occurred. Exiting.", file=sys.stderr)
@@ -39,14 +40,15 @@ def exception(msg):
     raise SystemExit(1)
 
 
-
 def clean_string(s):
     """ Clean a string by replacing accented characters with equivalents and 
     keeping only the allowed characters (ascii letters, digits, underscore, 
-    space, and period)"""
+    space, dash, and period)"""
     normalized = unidecode.unidecode(s)
-    allowed = string.ascii_letters + string.digits + "_ ."
+    allowed = string.ascii_letters + string.digits + "_ .-"
     cleaned = "".join(c if c in allowed else "_" for c in normalized)
+    while "__" in cleaned:
+        cleaned = cleaned.replace("__", "_")
     return cleaned
 
 

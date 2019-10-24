@@ -56,6 +56,7 @@ class Informer:
         title = clean_string(self.title)
         title = titlecase.titlecase(title)
         title = title.replace(" ", "_")
+        title = clean_string(title)
 
         year = str(self.year)
 
