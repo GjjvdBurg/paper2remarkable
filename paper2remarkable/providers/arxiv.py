@@ -8,7 +8,9 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
+import os
 import re
+import subprocess
 
 from ._base import Provider
 from ..utils import exception
@@ -21,6 +23,9 @@ class Arxiv(Provider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # register the dearxiv operation
+        self.operations.insert(0, ("dearxiv", self.dearxiv))
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
@@ -37,3 +42,49 @@ class Arxiv(Provider):
     def validate(src):
         """Check if the url is to an arXiv page. """
         return re.match(Arxiv.re_abs, src) or re.match(Arxiv.re_pdf, src)
+
+    def dearxiv(self, input_file):
+        """Remove the arXiv timestamp from a pdf"""
+        self.log("Removing arXiv timestamp")
+        basename = os.path.splitext(input_file)[0]
+        uncompress_file = basename + "_uncompress.pdf"
+
+        status = subprocess.call(
+            [
+                self.pdftk_path,
+                input_file,
+                "output",
+                uncompress_file,
+                "uncompress",
+            ]
+        )
+        if not status == 0:
+            exception("pdftk failed to uncompress the pdf.")
+
+        with open(uncompress_file, "rb") as fid:
+            data = fid.read()
+            # Remove the text element
+            data = re.sub(
+                b"\(arXiv:\d{4}\.\d{4,5}v\d+\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
+                b"()Tj",
+                data,
+            )
+            # Remove the URL element
+            data = re.sub(
+                b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d+\)\\n\/S /URI\\n>>\\n",
+                b"",
+                data,
+            )
+
+        removed_file = basename + "_removed.pdf"
+        with open(removed_file, "wb") as oid:
+            oid.write(data)
+
+        output_file = basename + "_dearxiv.pdf"
+        status = subprocess.call(
+            [self.pdftk_path, removed_file, "output", output_file, "compress"]
+        )
+        if not status == 0:
+            exception("pdftk failed to compress the pdf.")
+
+        return output_file

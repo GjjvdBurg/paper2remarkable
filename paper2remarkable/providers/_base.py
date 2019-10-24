@@ -13,7 +13,6 @@ import abc
 import bs4
 import datetime
 import os
-import re
 import requests
 import shutil
 import string
@@ -56,13 +55,19 @@ class Provider(metaclass=abc.ABCMeta):
         self.verbose = verbose
         self.upload = upload
         self.debug = debug
-        self.center = center
-        self.blank = blank
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdfcrop_path = pdfcrop_path
         self.pdftk_path = pdftk_path
         self.gs_path = gs_path
+
+        # Define the operations to run on the pdf. Providers can add others
+        self.operations = [("crop", self.crop_pdf)]
+        if center:
+            self.operations.append(("center", self.center_pdf))
+        if blank:
+            self.operations.append(("blank", self.blank_pdf))
+        self.operations.append(("shrink", self.shrink_pdf))
 
         self.log("Starting %s" % type(self).__name__)
 
@@ -167,9 +172,6 @@ class Provider(metaclass=abc.ABCMeta):
         return name
 
     def blank_pdf(self, filepath):
-        if not self.blank:
-            return filepath
-
         self.log("Adding blank pages")
         input_pdf = PyPDF2.PdfFileReader(filepath)
         output_pdf = PyPDF2.PdfFileWriter()
@@ -201,9 +203,6 @@ class Provider(metaclass=abc.ABCMeta):
         return cropped_file
 
     def center_pdf(self, filepath):
-        if not self.center:
-            return filepath
-
         self.log("Centering pdf file")
         centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
         cropper = Cropper(
@@ -295,52 +294,6 @@ class Provider(metaclass=abc.ABCMeta):
             exception("Uploading file %s to reMarkable failed" % filepath)
         self.log("Upload successful.")
 
-    def dearxiv(self, input_file):
-        """Remove the arXiv timestamp from a pdf"""
-        self.log("Removing arXiv timestamp")
-        basename = os.path.splitext(input_file)[0]
-        uncompress_file = basename + "_uncompress.pdf"
-
-        status = subprocess.call(
-            [
-                self.pdftk_path,
-                input_file,
-                "output",
-                uncompress_file,
-                "uncompress",
-            ]
-        )
-        if not status == 0:
-            exception("pdftk failed to uncompress the pdf.")
-
-        with open(uncompress_file, "rb") as fid:
-            data = fid.read()
-            # Remove the text element
-            data = re.sub(
-                b"\(arXiv:\d{4}\.\d{4,5}v\d+\s+\[\w+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}\)Tj",
-                b"()Tj",
-                data,
-            )
-            # Remove the URL element
-            data = re.sub(
-                b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d+\)\\n\/S /URI\\n>>\\n",
-                b"",
-                data,
-            )
-
-        removed_file = basename + "_removed.pdf"
-        with open(removed_file, "wb") as oid:
-            oid.write(data)
-
-        output_file = basename + "_dearxiv.pdf"
-        status = subprocess.call(
-            [self.pdftk_path, removed_file, "output", output_file, "compress"]
-        )
-        if not status == 0:
-            exception("pdftk failed to compress the pdf.")
-
-        return output_file
-
     def run(self, src, filename=None):
         info = self.get_paper_info(src)
         clean_filename = self.create_filename(info, filename)
@@ -352,15 +305,8 @@ class Provider(metaclass=abc.ABCMeta):
             self.retrieve_pdf(src, tmp_filename)
             self.check_file_is_pdf(tmp_filename)
 
-            ops = [
-                self.dearxiv,
-                self.crop_pdf,
-                self.center_pdf,
-                self.blank_pdf,
-                self.shrink_pdf,
-            ]
             intermediate_fname = tmp_filename
-            for op in ops:
+            for op in self.operations:
                 intermediate_fname = op(intermediate_fname)
             shutil.move(intermediate_fname, clean_filename)
 
