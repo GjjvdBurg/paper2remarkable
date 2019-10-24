@@ -13,8 +13,16 @@ import PyPDF2
 import logging
 import subprocess
 import sys
+import requests
+import time
 
 GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 "
+    "Safari/537.36"
+}
 
 
 def exception(msg):
@@ -41,6 +49,34 @@ def check_file_is_pdf(filename):
         return True
     except PyPDF2.utils.PdfReadError:
         exception("File %s isn't a valid pdf file." % filename)
+
+
+def download_url(url, filename):
+    """Download the content of an url and save it to a filename """
+    logging.info("Downloading file at url: %s" % url)
+    content = get_page_with_retry(url)
+    with open(filename, "wb") as fid:
+        fid.write(content)
+
+
+def get_page_with_retry(url, tries=5):
+    count = 0
+    while count < tries:
+        count += 1
+        error = False
+        try:
+            res = requests.get(url, headers=HEADERS)
+        except requests.exceptions.ConnectionError:
+            error = True
+        if error or not res.ok:
+            logging.warning(
+                "(%i/%i) Error getting url %s. Retrying in 5 seconds." % 
+                (count, tries, url)
+            )
+            time.sleep(5)
+            continue
+        logging.info("Downloading url: %s" % url)
+        return res.content
 
 
 def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):

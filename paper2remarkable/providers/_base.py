@@ -12,22 +12,19 @@ import abc
 import bs4
 import logging
 import os
-import requests
 import shutil
 import string
 import tempfile
-import time
 import titlecase
 import unidecode
 
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
-from ..utils import upload_to_remarkable, check_file_is_pdf
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 "
-    "Safari/537.36"
-}
+from ..utils import (
+    upload_to_remarkable,
+    check_file_is_pdf,
+    download_url,
+    get_page_with_retry,
+)
 
 
 class Provider(metaclass=abc.ABCMeta):
@@ -90,7 +87,7 @@ class Provider(metaclass=abc.ABCMeta):
     def retrieve_pdf(self, src, filename):
         """ Download pdf from src and save to filename """
         _, pdf_url = self.get_abs_pdf_urls(src)
-        self.download_url(pdf_url, filename)
+        download_url(pdf_url, filename)
 
     def _format_authors(self, soup_authors, sep=",", idx=0, op=None):
         op = (lambda x: x) if op is None else op
@@ -127,7 +124,7 @@ class Provider(metaclass=abc.ABCMeta):
         """ Retrieve the title/author (surnames)/year information """
         abs_url, _ = self.get_abs_pdf_urls(src)
         logging.info("Getting paper info")
-        page = self.get_page_with_retry(abs_url)
+        page = get_page_with_retry(abs_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = self.get_authors(soup)
         title = self.get_title(soup)
@@ -164,31 +161,6 @@ class Provider(metaclass=abc.ABCMeta):
         name = unidecode.unidecode(name)
         logging.info("Created filename: %s" % name)
         return name
-
-    def download_url(self, url, filename):
-        """Download the content of an url and save it to a filename """
-        logging.info("Downloading file at url: %s" % url)
-        content = self.get_page_with_retry(url)
-        with open(filename, "wb") as fid:
-            fid.write(content)
-
-    def get_page_with_retry(self, url, tries=5):
-        count = 0
-        while count < tries:
-            count += 1
-            error = False
-            try:
-                res = requests.get(url, headers=HEADERS)
-            except requests.exceptions.ConnectionError:
-                error = True
-            if error or not res.ok:
-                logging.warning(
-                    "Error getting url %s. Retrying in 5 seconds" % url
-                )
-                time.sleep(5)
-                continue
-            logging.info("Downloading url: %s" % url)
-            return res.content
 
     def run(self, src, filename=None):
         info = self.get_paper_info(src)
