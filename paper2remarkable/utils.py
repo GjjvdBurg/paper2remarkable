@@ -29,6 +29,10 @@ def exception(msg):
 
 
 def check_file_is_pdf(filename):
+    """Check that a given file is a PDF file.
+
+    This is done by trying to open it using PyPDF2.
+    """
     try:
         fp = open(filename, "rb")
         pdf = PyPDF2.PdfFileReader(fp, strict=False)
@@ -36,7 +40,7 @@ def check_file_is_pdf(filename):
         del pdf
         return True
     except PyPDF2.utils.PdfReadError:
-        exception("Downloaded file isn't a valid pdf file.")
+        exception("File %s isn't a valid pdf file." % filename)
 
 
 def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):

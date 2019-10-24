@@ -199,7 +199,7 @@ class Provider(metaclass=abc.ABCMeta):
         with tempfile.TemporaryDirectory(prefix="a2r_") as working_dir:
             os.chdir(working_dir)
             self.retrieve_pdf(src, tmp_filename)
-            self.check_file_is_pdf(tmp_filename)
+            check_file_is_pdf(tmp_filename)
 
             intermediate_fname = tmp_filename
             for op in self.operations:
