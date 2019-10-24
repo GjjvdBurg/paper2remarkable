@@ -13,17 +13,17 @@ import bs4
 import logging
 import os
 import shutil
-import string
 import tempfile
 import titlecase
 import unidecode
 
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
 from ..utils import (
-    upload_to_remarkable,
     check_file_is_pdf,
+    clean_string,
     download_url,
     get_page_with_retry,
+    upload_to_remarkable,
 )
 
 
@@ -131,13 +131,6 @@ class Provider(metaclass=abc.ABCMeta):
         date = self.get_date(soup)
         return dict(title=title, date=date, authors=authors)
 
-    def string_clean(self, s):
-        """ Clean a string to replace accented characters with equivalents and 
-        keep only the allowed characters """
-        normalized = unidecode.unidecode(s)
-        allowed = string.ascii_letters + string.digits + "_ ."
-        cleaned = "".join(c if c in allowed else "_" for c in normalized)
-        return cleaned
 
     def create_filename(self, info, filename=None):
         """ Generate filename using the info dict or filename if provided """
@@ -150,9 +143,9 @@ class Provider(metaclass=abc.ABCMeta):
             author_part = info["authors"][0] + "_et_al"
         else:
             author_part = "_".join(info["authors"])
-        author_part = self.string_clean(author_part)
+        author_part = clean_string(author_part)
 
-        title_part = self.string_clean(info["title"])
+        title_part = clean_string(info["title"])
         title_part = titlecase.titlecase(title_part).replace(" ", "_")
 
         year_part = info["date"].split("/")[0]

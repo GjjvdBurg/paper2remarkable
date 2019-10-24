@@ -8,13 +8,14 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-
 import PyPDF2
 import logging
+import requests
+import string
 import subprocess
 import sys
-import requests
 import time
+import unidecode
 
 GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
 
@@ -34,6 +35,16 @@ def exception(msg):
         % GITHUB_URL
     )
     raise SystemExit(1)
+
+
+def clean_string(s):
+    """ Clean a string by replacing accented characters with equivalents and 
+    keeping only the allowed characters (ascii letters, digits, underscore, 
+    space, and period)"""
+    normalized = unidecode.unidecode(s)
+    allowed = string.ascii_letters + string.digits + "_ ."
+    cleaned = "".join(c if c in allowed else "_" for c in normalized)
+    return cleaned
 
 
 def check_file_is_pdf(filename):
@@ -70,8 +81,8 @@ def get_page_with_retry(url, tries=5):
             error = True
         if error or not res.ok:
             logging.warning(
-                "(%i/%i) Error getting url %s. Retrying in 5 seconds." % 
-                (count, tries, url)
+                "(%i/%i) Error getting url %s. Retrying in 5 seconds."
+                % (count, tries, url)
             )
             time.sleep(5)
             continue
