@@ -22,7 +22,7 @@ import time
 import titlecase
 import unidecode
 
-from ..crop import Cropper
+from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
 from ..utils import exception
 
 HEADERS = {
@@ -66,7 +66,7 @@ class Provider(metaclass=abc.ABCMeta):
         if center:
             self.operations.append(("center", self.center_pdf))
         if blank:
-            self.operations.append(("blank", self.blank_pdf))
+            self.operations.append(("blank", blank_pdf))
         self.operations.append(("shrink", self.shrink_pdf))
 
         self.log("Starting %s" % type(self).__name__)
@@ -92,6 +92,16 @@ class Provider(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def validate(src):
         """ Validate whether ``src`` is appropriate for this provider """
+
+    # Wrappers for pdf operations that have additional arguments
+    def crop_pdf(self, filepath):
+        return crop_pdf(filepath, pdfcrop_path=self.pdfcrop_path)
+
+    def center_pdf(self, filepath):
+        return center_pdf(filepath, pdfcrop_path=self.pdfcrop_path)
+
+    def shrink_pdf(self, filepath):
+        return shrink_pdf(filepath, gs_path=self.gs_path)
 
     def retrieve_pdf(self, src, filename):
         """ Download pdf from src and save to filename """
@@ -171,74 +181,6 @@ class Provider(metaclass=abc.ABCMeta):
         self.log("Created filename: %s" % name)
         return name
 
-    def blank_pdf(self, filepath):
-        self.log("Adding blank pages")
-        input_pdf = PyPDF2.PdfFileReader(filepath)
-        output_pdf = PyPDF2.PdfFileWriter()
-        for page in input_pdf.pages:
-            output_pdf.addPage(page)
-            output_pdf.addBlankPage()
-
-        output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
-        with open(output_file, "wb") as fp:
-            output_pdf.write(fp)
-        return output_file
-
-    def crop_pdf(self, filepath):
-        self.log("Cropping pdf file")
-        cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
-        cropper = Cropper(
-            filepath, cropped_file, pdfcrop_path=self.pdfcrop_path
-        )
-        status = cropper.crop(margins=15)
-
-        if not status == 0:
-            self.warn("Failed to crop the pdf file at: %s" % filepath)
-            return filepath
-        if not os.path.exists(cropped_file):
-            self.warn(
-                "Can't find cropped file '%s' where expected." % cropped_file
-            )
-            return filepath
-        return cropped_file
-
-    def center_pdf(self, filepath):
-        self.log("Centering pdf file")
-        centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
-        cropper = Cropper(
-            filepath, centered_file, pdfcrop_path=self.pdfcrop_path
-        )
-        status = cropper.center()
-        if not status == 0:
-            self.warn("Failed to center the pdf file at: %s" % filepath)
-            return filepath
-        if not os.path.exists(centered_file):
-            self.warn(
-                "Can't find centered file '%s' where expected." % centered_file
-            )
-            return filepath
-        return centered_file
-
-    def shrink_pdf(self, filepath):
-        self.log("Shrinking pdf file")
-        output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
-        status = subprocess.call(
-            [
-                self.gs_path,
-                "-sDEVICE=pdfwrite",
-                "-dCompatibilityLevel=1.4",
-                "-dPDFSETTINGS=/printer",
-                "-dNOPAUSE",
-                "-dBATCH",
-                "-dQUIET",
-                "-sOutputFile=%s" % output_file,
-                filepath,
-            ]
-        )
-        if not status == 0:
-            self.warn("Failed to shrink the pdf file")
-            return filepath
-        return output_file
 
     def check_file_is_pdf(self, filename):
         try:
