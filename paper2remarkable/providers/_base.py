@@ -8,10 +8,9 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-import PyPDF2
 import abc
 import bs4
-import datetime
+import logging
 import os
 import requests
 import shutil
@@ -52,7 +51,6 @@ class Provider(metaclass=abc.ABCMeta):
         pdftk_path="pdftk",
         gs_path="gs",
     ):
-        self.verbose = verbose
         self.upload = upload
         self.debug = debug
         self.remarkable_dir = remarkable_dir
@@ -61,32 +59,19 @@ class Provider(metaclass=abc.ABCMeta):
         self.pdftk_path = pdftk_path
         self.gs_path = gs_path
 
+        if not self.verbose:
+            logging.disable()
+
         # Define the operations to run on the pdf. Providers can add others
         self.operations = [("crop", self.crop_pdf)]
         if center:
             self.operations.append(("center", self.center_pdf))
+
         if blank:
             self.operations.append(("blank", blank_pdf))
         self.operations.append(("shrink", self.shrink_pdf))
 
-        self.log("Starting %s" % type(self).__name__)
-
-    def log(self, msg, mode="info"):
-        if not self.verbose:
-            return
-        if not mode in ["info", "warning"]:
-            raise ValueError("unknown logging mode.")
-        now = datetime.datetime.now()
-        print(
-            now.strftime("%Y-%m-%d %H:%M:%S")
-            + " - "
-            + mode.upper()
-            + " - "
-            + msg
-        )
-
-    def warn(self, msg):
-        self.log(msg, mode="warning")
+        logging.info("Starting %s" % type(self).__name__)
 
     @staticmethod
     @abc.abstractmethod
@@ -142,7 +127,7 @@ class Provider(metaclass=abc.ABCMeta):
     ):
         """ Retrieve the title/author (surnames)/year information """
         abs_url, _ = self.get_abs_pdf_urls(src)
-        self.log("Getting paper info")
+        logging.info("Getting paper info")
         page = self.get_page_with_retry(abs_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         authors = self.get_authors(soup)
@@ -163,7 +148,7 @@ class Provider(metaclass=abc.ABCMeta):
         if not filename is None:
             return filename
         # we assume that the list of authors is surname only.
-        self.log("Generating output filename")
+        logging.info("Generating output filename")
 
         if len(info["authors"]) > 3:
             author_part = info["authors"][0] + "_et_al"
@@ -178,12 +163,12 @@ class Provider(metaclass=abc.ABCMeta):
 
         name = author_part + "_-_" + title_part + "_" + year_part + ".pdf"
         name = unidecode.unidecode(name)
-        self.log("Created filename: %s" % name)
+        logging.info("Created filename: %s" % name)
         return name
 
     def download_url(self, url, filename):
         """Download the content of an url and save it to a filename """
-        self.log("Downloading file at url: %s" % url)
+        logging.info("Downloading file at url: %s" % url)
         content = self.get_page_with_retry(url)
         with open(filename, "wb") as fid:
             fid.write(content)
@@ -198,15 +183,17 @@ class Provider(metaclass=abc.ABCMeta):
             except requests.exceptions.ConnectionError:
                 error = True
             if error or not res.ok:
-                self.warn("Error getting url %s. Retrying in 5 seconds" % url)
+                logging.warning(
+                    "Error getting url %s. Retrying in 5 seconds" % url
+                )
                 time.sleep(5)
                 continue
-            self.log("Downloading url: %s" % url)
+            logging.info("Downloading url: %s" % url)
             return res.content
 
     def upload_to_rm(self, filepath):
         remarkable_dir = self.remarkable_dir.rstrip("/")
-        self.log("Starting upload to reMarkable")
+        logging.info("Starting upload to reMarkable")
         if remarkable_dir:
             status = subprocess.call(
                 [self.rmapi_path, "mkdir", remarkable_dir + "/"],
@@ -223,7 +210,7 @@ class Provider(metaclass=abc.ABCMeta):
         )
         if not status == 0:
             exception("Uploading file %s to reMarkable failed" % filepath)
-        self.log("Upload successful.")
+        logging.info("Upload successful.")
 
     def run(self, src, filename=None):
         info = self.get_paper_info(src)
