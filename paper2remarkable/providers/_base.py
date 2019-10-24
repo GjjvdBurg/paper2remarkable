@@ -131,11 +131,8 @@ class Provider(metaclass=abc.ABCMeta):
         date = self.get_date(soup)
         return dict(title=title, date=date, authors=authors)
 
-
-    def create_filename(self, info, filename=None):
+    def create_filename(self, info):
         """ Generate filename using the info dict or filename if provided """
-        if not filename is None:
-            return filename
         # we assume that the list of authors is surname only.
         logging.info("Generating output filename")
 
@@ -157,7 +154,7 @@ class Provider(metaclass=abc.ABCMeta):
 
     def run(self, src, filename=None):
         info = self.get_paper_info(src)
-        clean_filename = self.create_filename(info, filename)
+        clean_filename = filename or self.create_filename(info)
         tmp_filename = "paper.pdf"
 
         self.initial_dir = os.getcwd()
