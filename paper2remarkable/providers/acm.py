@@ -11,23 +11,38 @@ Copyright: 2019, G.J.J. van den Burg
 import bs4
 import re
 
-from . import Provider
-from ..utils import exception
+from ._base import Provider
+from ._info import Informer
+from .. import GITHUB_URL
+from ..utils import exception, get_page_with_retry
 
-# TODO: put this somewhere central, now multiply defined
-GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
+
+class ACMInformer(Informer):
+    meta_author_key = "citation_authors"
+
+    def _format_authors(self, soup_authors):
+        op = lambda x: x[0].split(";")
+        return super()._format_authors(soup_authors, sep=",", idx=0, op=op)
+
+    def _format_year(self, soup_date):
+        if not re.match("\d{2}/\d{2}/\d{4}", soup_date.strip()):
+            self.warn(
+                "Couldn't extract year from ACM page, please raise an "
+                "issue on GitHub so it can be fixed: %s" % GITHUB_URL
+            )
+        return soup_date.strip().split("/")[-1]
+
 
 class ACM(Provider):
-
-    meta_author_key = "citation_authors"
 
     re_abs = "https?://dl.acm.org/citation.cfm\?id=\d+"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.informer = ACMInformer()
 
     def get_acm_pdf_url(self, url):
-        page = self.get_page_with_retry(url)
+        page = get_page_with_retry(url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         thea = None
         for a in soup.find_all("a"):
@@ -60,15 +75,3 @@ class ACM(Provider):
     def validate(src):
         m = re.fullmatch(ACM.re_abs, src)
         return not m is None
-
-    def _format_authors(self, soup_authors):
-        op = lambda x: x[0].split(";")
-        return super()._format_authors(soup_authors, sep=",", idx=0, op=op)
-
-    def _format_date(self, soup_date):
-        if not re.match("\d{2}/\d{2}/\d{4}", soup_date.strip()):
-            self.warn(
-                "Couldn't extract year from ACM page, please raise an "
-                "issue on GitHub so it can be fixed: %s" % GITHUB_URL
-            )
-        return soup_date.strip().split("/")[-1]

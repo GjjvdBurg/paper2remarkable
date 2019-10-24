@@ -11,9 +11,15 @@ Copyright: 2019, G.J.J. van den Burg
 import os
 import re
 import subprocess
+import logging
 
+from ._info import Informer
 from ._base import Provider
 from ..utils import exception
+
+
+class ArxivInformer(Informer):
+    pass
 
 
 class Arxiv(Provider):
@@ -23,6 +29,7 @@ class Arxiv(Provider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.informer = ArxivInformer()
 
         # register the dearxiv operation
         self.operations.insert(0, ("dearxiv", self.dearxiv))
@@ -45,7 +52,7 @@ class Arxiv(Provider):
 
     def dearxiv(self, input_file):
         """Remove the arXiv timestamp from a pdf"""
-        self.log("Removing arXiv timestamp")
+        logging.info("Removing arXiv timestamp")
         basename = os.path.splitext(input_file)[0]
         uncompress_file = basename + "_uncompress.pdf"
 

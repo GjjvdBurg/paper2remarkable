@@ -11,24 +11,28 @@ Copyright: 2019, G.J.J. van den Burg
 import os
 import shutil
 
-from . import Provider
+from ._base import Provider
+from ._info import Informer
+
+
+class LocalFileInformer(Informer):
+    def get_filenames(self, abs_url):
+        return os.path.basename(abs_url)
 
 
 class LocalFile(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.informer = LocalFileInformer()
+
+    def get_abs_pdf_url(self, url):
+        # The 'url' is the path to the local file. We use this as abs_url and
+        # pdf_url.
+        return url, url
 
     def validate(src):
         return os.path.exists(src)
 
-    def retrieve_pdf(self, src, filename):
-        source = os.path.join(self.initial_dir, src)
+    def retrieve_pdf(self, pdf_url, filename):
+        source = os.path.join(self.initial_dir, pdf_url)
         shutil.copy(source, filename)
-
-    def get_paper_info(self, src):
-        return {"filename": src}
-
-    def create_filename(self, info, filename=None):
-        if not filename is None:
-            return filename
-        return os.path.basename(info["filename"])

@@ -17,7 +17,7 @@ import sys
 import time
 import unidecode
 
-GITHUB_URL = "https://github.com/GjjvdBurg/arxiv2remarkable"
+from . import GITHUB_URL
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -47,8 +47,8 @@ def clean_string(s):
     return cleaned
 
 
-def check_file_is_pdf(filename):
-    """Check that a given file is a PDF file.
+def assert_file_is_pdf(filename):
+    """Assert that a given file is a PDF file.
 
     This is done by trying to open it using PyPDF2.
     """
