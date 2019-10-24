@@ -26,7 +26,7 @@ install: ## Install for the current user using the default python command
 
 
 test: venv ## Run unit tests
-	source $(VENV_DIR)/bin/activate && green -v ./tests
+	source $(VENV_DIR)/bin/activate && green -f -vv -a ./tests
 
 
 clean: ## Clean build dist and egg directories left after install
