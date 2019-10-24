@@ -9,7 +9,6 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import abc
-import logging
 import os
 import shutil
 import tempfile
@@ -17,6 +16,9 @@ import tempfile
 from ._info import Informer
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
 from ..utils import assert_file_is_pdf, download_url, upload_to_remarkable
+from ..log import Logger
+
+logger = Logger()
 
 
 class Provider(metaclass=abc.ABCMeta):
@@ -45,9 +47,8 @@ class Provider(metaclass=abc.ABCMeta):
         self.informer = Informer()
 
         # disable logging if requested
-        logging.basicConfig(level=logging.INFO)
         if not verbose:
-            logging.disable()
+            logger.disable()
 
         # Define the operations to run on the pdf. Providers can add others.
         self.operations = [("crop", self.crop_pdf)]
@@ -58,7 +59,7 @@ class Provider(metaclass=abc.ABCMeta):
             self.operations.append(("blank", blank_pdf))
         self.operations.append(("shrink", self.shrink_pdf))
 
-        logging.info("Starting %s" % type(self).__name__)
+        logger.info("Starting %s" % type(self).__name__)
 
     @staticmethod
     @abc.abstractmethod

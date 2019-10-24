@@ -3,12 +3,14 @@
 """Functionality for retrieving paper info
 """
 
-import logging
 import titlecase
 import unidecode
 import bs4
 
 from ..utils import clean_string, get_page_with_retry
+from ..log import Logger
+
+logger = Logger()
 
 
 class Informer:
@@ -38,7 +40,7 @@ class Informer:
         The provided url must be to a HTMl page where this information can be 
         found, not to the PDF file itself.
         """
-        logging.info("Generating output filename")
+        logger.info("Generating output filename")
 
         # Retrieve the paper information
         self.get_info(abs_url)
@@ -59,11 +61,11 @@ class Informer:
 
         name = authors + "_-_" + title + "_" + year + ".pdf"
         name = unidecode.unidecode(name)
-        logging.info("Created filename: %s" % name)
+        logger.info("Created filename: %s" % name)
         return name
 
     def get_info(self, url):
-        logging.info("Getting paper info")
+        logger.info("Getting paper info")
         page = get_page_with_retry(url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         self.authors = self.authors or self.get_authors(soup)

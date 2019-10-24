@@ -12,7 +12,6 @@ import urllib
 
 from ._base import Provider
 from ._info import Informer
-
 from ..utils import exception
 
 class PdfUrlInformer(Informer):

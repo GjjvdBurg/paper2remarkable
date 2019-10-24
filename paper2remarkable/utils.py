@@ -9,7 +9,6 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import PyPDF2
-import logging
 import requests
 import string
 import subprocess
@@ -18,6 +17,7 @@ import time
 import unidecode
 
 from . import GITHUB_URL
+from .log import Logger
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -25,6 +25,8 @@ HEADERS = {
     "Safari/537.36"
 }
 
+
+logger = Logger()
 
 def exception(msg):
     print("ERROR: " + msg, file=sys.stderr)
@@ -35,6 +37,7 @@ def exception(msg):
         % GITHUB_URL
     )
     raise SystemExit(1)
+
 
 
 def clean_string(s):
@@ -64,7 +67,7 @@ def assert_file_is_pdf(filename):
 
 def download_url(url, filename):
     """Download the content of an url and save it to a filename """
-    logging.info("Downloading file at url: %s" % url)
+    logger.info("Downloading file at url: %s" % url)
     content = get_page_with_retry(url)
     with open(filename, "wb") as fid:
         fid.write(content)
@@ -80,18 +83,18 @@ def get_page_with_retry(url, tries=5):
         except requests.exceptions.ConnectionError:
             error = True
         if error or not res.ok:
-            logging.warning(
+            logger.warning(
                 "(%i/%i) Error getting url %s. Retrying in 5 seconds."
                 % (count, tries, url)
             )
             time.sleep(5)
             continue
-        logging.info("Downloading url: %s" % url)
+        logger.info("Downloading url: %s" % url)
         return res.content
 
 
 def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
-    logging.info("Starting upload to reMarkable")
+    logger.info("Starting upload to reMarkable")
 
     # Create the reMarkable dir if it doesn't exist
     remarkable_dir = remarkable_dir.rstrip("/")
@@ -112,4 +115,4 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     )
     if not status == 0:
         exception("Uploading file %s to reMarkable failed" % filepath)
-    logging.info("Upload successful.")
+    logger.info("Upload successful.")

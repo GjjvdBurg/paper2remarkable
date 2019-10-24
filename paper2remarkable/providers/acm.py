@@ -15,6 +15,9 @@ from ._base import Provider
 from ._info import Informer
 from .. import GITHUB_URL
 from ..utils import exception, get_page_with_retry
+from ..log import Logger
+
+logger = Logger()
 
 
 class ACMInformer(Informer):
@@ -26,7 +29,7 @@ class ACMInformer(Informer):
 
     def _format_year(self, soup_date):
         if not re.match("\d{2}/\d{2}/\d{4}", soup_date.strip()):
-            self.warn(
+            logger.warning(
                 "Couldn't extract year from ACM page, please raise an "
                 "issue on GitHub so it can be fixed: %s" % GITHUB_URL
             )

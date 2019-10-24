@@ -11,11 +11,13 @@ Copyright: 2019, G.J.J. van den Burg
 import os
 import re
 import subprocess
-import logging
 
 from ._info import Informer
 from ._base import Provider
 from ..utils import exception
+from ..log import Logger
+
+logger = Logger()
 
 
 class ArxivInformer(Informer):
@@ -52,7 +54,7 @@ class Arxiv(Provider):
 
     def dearxiv(self, input_file):
         """Remove the arXiv timestamp from a pdf"""
-        logging.info("Removing arXiv timestamp")
+        logger.info("Removing arXiv timestamp")
         basename = os.path.splitext(input_file)[0]
         uncompress_file = basename + "_uncompress.pdf"
 
