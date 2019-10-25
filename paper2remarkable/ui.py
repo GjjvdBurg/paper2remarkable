@@ -18,8 +18,7 @@ from .utils import exception
 
 def parse_args():
     parser = argparse.ArgumentParser(
-            description='Paper2reMarkable version %s' % __version__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description="Paper2reMarkable version %s" % __version__
     )
     parser.add_argument(
         "-b",
@@ -48,7 +47,7 @@ def parse_args():
     parser.add_argument(
         "-p",
         "--remarkable-path",
-        help="directory on reMarkable to put the file (created if missing)",
+        help="directory on reMarkable to put the file (created if missing, default: /)",
         dest="remarkable_dir",
         default="/",
     )
@@ -60,18 +59,27 @@ def parse_args():
         help="Filename to use for the file on reMarkable",
         default=None,
     )
-    parser.add_argument("--gs", help="path to gs executable", default="gs")
     parser.add_argument(
-        "--pdfcrop", help="path to pdfcrop executable", default="pdfcrop"
+        "--gs", help="path to gs executable (default: gs)", default="gs"
     )
     parser.add_argument(
-        "--pdftk", help="path to pdftk executable", default="pdftk"
+        "--pdfcrop",
+        help="path to pdfcrop executable (default: pdfcrop)",
+        default="pdfcrop",
     )
     parser.add_argument(
-        "--rmapi", help="path to rmapi executable", default="rmapi"
+        "--pdftk",
+        help="path to pdftk executable (default: pdftk)",
+        default="pdftk",
     )
     parser.add_argument(
-        "input", help="URL to a paper or the path of a local PDF file"
+        "--rmapi",
+        help="path to rmapi executable (default: rmapi)",
+        default="rmapi",
+    )
+    parser.add_argument(
+        "input",
+        help="URL to a paper or the path of a local PDF file",
     )
     return parser.parse_args()
 
