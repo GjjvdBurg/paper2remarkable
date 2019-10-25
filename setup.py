@@ -24,14 +24,12 @@ REQUIRED = [
     "pdfplumber>=0.5",
     "unidecode>=1.1",
     "titlecase>=0.12",
-    "PyPDF2>=1.26"
-
+    "PyPDF2>=1.26",
 ]
 
 docs_require = []
 test_require = []
-dev_require = [
-        'green']
+dev_require = ["green"]
 
 # What packages are optional?
 EXTRAS = {
