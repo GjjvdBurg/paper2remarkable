@@ -1,11 +1,21 @@
-# arxiv2remarkable.py
+# paper2remarkable
 
-``arxiv2remarkable`` is a command line program to quickly transfer a paper to 
-your reMarkable. The script can be run as a plain Python script or via Docker 
+*Note: ``paper2remarkable`` is the new name for the ``arxiv2remarkable`` 
+script. The name was changed because it better captures what the program 
+does.*
+
+``paper2remarkable`` is a command line program for quickly and easily 
+transferring an academic paper to your reMarkable:
+
+```
+$ p2r https://arxiv.org/abs/1811.11242
+```
+
+The script can be run through the ``p2r`` command line program or via Docker 
 (see below).
 
-This script makes it as easy as possible to get a PDF on your reMarkable from 
-any of the following sources:
+paper2remarkable makes it as easy as possible to get a PDF on your reMarkable 
+from any of the following sources:
 
 - an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
 - a PubMed Central url (either to the HTML or the PDF)
@@ -16,10 +26,10 @@ any of the following sources:
 - a url to a PDF file
 - a local file.
 
-The script takes the source and:
+When called, the paper2remarkable takes the source and:
 
 1. Downloads the pdf if necessary
-2. Removes the arXiv timestamp
+2. Removes the arXiv timestamp (for arXiv sources)
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
 5. Generates a nice filename based on author/title/year of the paper
@@ -37,41 +47,39 @@ Optionally, you can:
 Here's the full help of the script:
 
 ```text
-usage: arxiv2remarkable.py [-h] [-b] [-v] [-n] [-d] [-c] [--filename FILENAME]
-                           [-p REMARKABLE_DIR] [--rmapi RMAPI]
-                           [--pdfcrop PDFCROP] [--pdftk PDFTK] [--gs GS]
-                           input
+usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v]
+           [--filename FILENAME] [--gs GS] [--pdfcrop PDFCROP] [--pdftk PDFTK]
+           [--rmapi RMAPI]
+           input
+
+Paper2reMarkable version 0.4.0
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file
 
 optional arguments:
   -h, --help            show this help message and exit
-  -b, --blank           Add a blank page after every page of the PDF (default:
-                        False)
-  -v, --verbose         be verbose (default: False)
-  -n, --no-upload       don't upload to the reMarkable, save the output in
-                        current working dir (default: False)
-  -d, --debug           debug mode, doesn't upload to reMarkable (default:
-                        False)
+  -b, --blank           Add a blank page after every page of the PDF
   -c, --center          Center the PDF on the page, instead of left align
-                        (default: False)
-  --filename FILENAME   Filename to use for the file on reMarkable (default:
-                        None)
+  -d, --debug           debug mode, doesn't upload to reMarkable
+  -n, --no-upload       don't upload to the reMarkable, save the output in
+                        current working dir
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
                         directory on reMarkable to put the file (created if
-                        missing) (default: /)
-  --rmapi RMAPI         path to rmapi executable (default: rmapi)
+                        missing, default: /)
+  -v, --verbose         be verbose
+  --filename FILENAME   Filename to use for the file on reMarkable
+  --gs GS               path to gs executable (default: gs)
   --pdfcrop PDFCROP     path to pdfcrop executable (default: pdfcrop)
   --pdftk PDFTK         path to pdftk executable (default: pdftk)
-  --gs GS               path to gs executable (default: gs)
+  --rmapi RMAPI         path to rmapi executable (default: rmapi)
 ```
 
 And here's an example with verbose mode enabled that shows everything the 
 script does by default:
 
-```bash
-$ python arxiv2remarkable.py -v https://arxiv.org/abs/1811.11242
+```
+$ p2r -v https://arxiv.org/abs/1811.11242
 2019-05-30 00:38:27 - INFO - Starting ArxivProvider
 2019-05-30 00:38:27 - INFO - Getting paper info from arXiv
 2019-05-30 00:38:27 - INFO - Downloading url: https://arxiv.org/abs/1811.11242
@@ -86,7 +94,7 @@ $ python arxiv2remarkable.py -v https://arxiv.org/abs/1811.11242
 2019-05-30 00:38:42 - INFO - Upload successful.
 ```
 
-## Dependencies
+## Installation
 
 The script requires the following external programs to be available:
 
@@ -96,27 +104,15 @@ The script requires the following external programs to be available:
 - [GhostScript](https://www.ghostscript.com/)
 - [rMAPI](https://github.com/juruen/rmapi)
 
-If these scripts are not available on the ``PATH`` variable, you can supply them 
-with the relevant options to the script.
+If these scripts are not available on the ``PATH`` variable, you can supply 
+them with the relevant options to the script. Then, you can install 
+paper2remarkable from PyPI:
 
-The script also needs the following Python packages:
-
-- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/): parsing HTML
-- [requests](https://pypi.org/project/requests/): getting HTML
-- [PyPDF2](https://github.com/mstamy2/PyPDF2): verifying urls point to PDF
-- [titlecase](https://pypi.org/project/titlecase/): fancy titles
-- [pdfplumber](https://github.com/jsvine/pdfplumber): used for better page 
-  cropping
-- [unidecode](https://pypi.org/project/Unidecode/): clean accented characters 
-  from the filename
-
-If you use [Poetry](https://poetry.eustace.io/) you can install these 
-dependencies using ``poetry install`` in the project directory. Alternatively, 
-you can use ``pip`` with the following command:
-
-```bash
-pip install --user bs4 requests PyPDF2 titlecase pdfplumber unidecode
 ```
+pip install paper2remarkable
+```
+
+This installs the ``p2r`` command line program.
 
 ## Docker
 
@@ -127,7 +123,7 @@ First clone this repository with `git clone` and `cd` inside of it, then build
 the container:
 
 ```bash
-docker build -t arxiv2remarkable .
+docker build -t paper2remarkable .
 ```
 
 ### Authorization
@@ -137,7 +133,7 @@ we'll use `rmapi` to create it.
 
 ```bash
 touch ${HOME}/.rmapi
-docker run --rm --it -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi arxiv2remarkable version
+docker run --rm --it -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi paper2remarkable version
 ```
 
 which should end with output like
@@ -149,15 +145,15 @@ rmapi version: 0.0.5
 
 ### Usage
 
-Use the container by replacing `python arxiv2remarkable.py` with `docker run 
---rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable`, e.g.
+Use the container by replacing `p2r` with `docker run --rm -v 
+"${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable`, e.g.
 
 ```
 # print help and exit
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable --help
+docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable --help
 
 # equivalent to above usage via `python`
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" arxiv2remarkable -v https://arxiv.org/abs/1811.11242
+docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable -v https://arxiv.org/abs/1811.11242
 ```
 
 # Notes
