@@ -1,0 +1,10 @@
+include setup.py
+include README.md
+include LICENSE
+recursive-include paper2remarkable *.py
+recursive-include tests *.py
+exclude Makefile
+exclude .gitignore
+exclude Dockerfile
+exclude make_release.py
+prune old
