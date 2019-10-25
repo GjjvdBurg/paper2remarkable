@@ -17,6 +17,7 @@ from paper2remarkable.providers import (
     Arxiv,
     LocalFile,
     OpenReview,
+    PMLR,
     PdfUrl,
     PubMed,
     Springer,
@@ -121,6 +122,34 @@ class TestProviders(unittest.TestCase):
         url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"
         filename = prov.run(url, filename="test.pdf")
         self.assertEqual("test.pdf", os.path.basename(filename))
+
+    def test_pmlr_1(self):
+        prov = PMLR(upload=False, verbose=VERBOSE)
+        url = "http://proceedings.mlr.press/v97/behrmann19a.html"
+        exp = "Behrmann_et_al_-_Invertible_Residual_Networks_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_pmlr_2(self):
+        prov = PMLR(upload=False, verbose=VERBOSE)
+        url = "http://proceedings.mlr.press/v15/maaten11b/maaten11b.pdf"
+        exp = "Maaten_Welling_Saul_-_Hidden-Unit_Conditional_Random_Fields_2011.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_pmlr_3(self):
+        prov = PMLR(upload=False, verbose=VERBOSE)
+        url = "http://proceedings.mlr.press/v48/melnyk16.pdf"
+        exp = "Melnyk_Banerjee_-_Estimating_Structured_Vector_Autoregressive_Models_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_pmlr_4(self):
+        prov = PMLR(upload=False, verbose=VERBOSE)
+        url = "http://proceedings.mlr.press/v48/zhangf16.html"
+        exp = "Zhang_Paisley_-_Markov_Latent_Feature_Models_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
 
 
 if __name__ == "__main__":
