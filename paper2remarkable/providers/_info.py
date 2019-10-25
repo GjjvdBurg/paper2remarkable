@@ -81,17 +81,17 @@ class Informer:
 
     ## Authors
 
+    def _format_authors(self, soup_authors, sep=",", idx=0, op=None):
+        op = (lambda x: x) if op is None else op
+        # format the author list retrieved by bs4
+        return [x.strip().split(sep)[idx].strip() for x in op(soup_authors)]
+
     def get_authors(self, soup):
         authors = [
             x["content"]
             for x in soup.find_all("meta", {"name": self.meta_author_key})
         ]
         return self._format_authors(authors)
-
-    def _format_authors(self, soup_authors, sep=",", idx=0, op=None):
-        op = (lambda x: x) if op is None else op
-        # format the author list retrieved by bs4
-        return [x.strip().split(sep)[idx].strip() for x in op(soup_authors)]
 
     ## Year
 

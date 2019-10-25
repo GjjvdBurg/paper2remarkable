@@ -91,7 +91,7 @@ def get_page_with_retry(url, tries=5):
             )
             time.sleep(5)
             continue
-        logger.info("Downloading url: %s" % url)
+        logger.info("Downloaded url: %s" % url)
         return res.content
 
 
