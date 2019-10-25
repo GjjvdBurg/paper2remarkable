@@ -15,7 +15,7 @@ import tempfile
 
 from ._info import Informer
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
-from ..utils import assert_file_is_pdf, download_url, upload_to_remarkable
+from ..utils import assert_file_is_pdf, download_url, upload_to_remarkable, follow_redirects
 from ..log import Logger
 
 logger = Logger()
@@ -82,7 +82,13 @@ class Provider(metaclass=abc.ABCMeta):
         download_url(pdf_url, filename)
 
     def run(self, src, filename=None):
+        # needed with library use
+        src = follow_redirects(src)
+
+        # extract page and pdf file urls
         abs_url, pdf_url = self.get_abs_pdf_urls(src)
+
+        # generate nice filename if needed
         clean_filename = filename or self.informer.get_filename(abs_url)
         tmp_filename = "paper.pdf"
 

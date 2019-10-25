@@ -12,8 +12,8 @@ import argparse
 
 from . import __version__
 
-from .providers import providers
-from .utils import exception
+from .providers import providers, LocalFile
+from .utils import exception, follow_redirects
 
 
 def parse_args():
@@ -78,8 +78,7 @@ def parse_args():
         default="rmapi",
     )
     parser.add_argument(
-        "input",
-        help="URL to a paper or the path of a local PDF file",
+        "input", help="URL to a paper or the path of a local PDF file"
     )
     return parser.parse_args()
 
@@ -87,7 +86,16 @@ def parse_args():
 def main():
     args = parse_args()
 
-    provider = next((p for p in providers if p.validate(args.input)), None)
+    if LocalFile.validate(args.input):
+        # input is a local file
+        provider = LocalFile
+    else:
+        # input is a url
+        url = args.input
+        # follow all redirects of the url
+        url = follow_redirects(url)
+        provider = next((p for p in providers if p.validate(url)), None)
+
     if provider is None:
         exception("Input not valid, no provider can handle this source.")
 

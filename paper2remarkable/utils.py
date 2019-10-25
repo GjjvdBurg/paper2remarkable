@@ -95,6 +95,20 @@ def get_page_with_retry(url, tries=5):
         return res.content
 
 
+def follow_redirects(url):
+    """Follow redirects from the URL (at most 10)"""
+    it = 0
+    while it < 10:
+        req = requests.head(url, allow_redirects=False)
+        if req.status_code == 200:
+            break
+        if not "Location" in req.headers:
+            break
+        url = req.headers["Location"]
+        it += 1
+    return url
+
+
 def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     logger.info("Starting upload to reMarkable")
 

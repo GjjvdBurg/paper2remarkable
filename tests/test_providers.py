@@ -35,7 +35,7 @@ def md5sum(filename):
     return hasher.hexdigest()
 
 
-class Tests(unittest.TestCase):
+class TestProviders(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.original_dir = os.getcwd()
@@ -48,10 +48,17 @@ class Tests(unittest.TestCase):
         os.chdir(self.original_dir)
         shutil.rmtree(self.test_dir)
 
-    def test_arxiv(self):
+    def test_arxiv_1(self):
         prov = Arxiv(upload=False, verbose=VERBOSE)
         url = "https://arxiv.org/abs/1811.11242v1"
         exp_filename = "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_arxiv_2(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        url = "http://arxiv.org/abs/arXiv:1908.03213"
+        exp_filename = "Ecker_et_al_-_Gravitational_Waves_From_Holographic_Neutron_Star_Mergers_2019.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
