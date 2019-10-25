@@ -16,7 +16,7 @@ from ._info import Informer
 
 
 class LocalFileInformer(Informer):
-    def get_filenames(self, abs_url):
+    def get_filename(self, abs_url):
         return os.path.basename(abs_url)
 
 
