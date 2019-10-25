@@ -28,12 +28,9 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-        "-v", "--verbose", help="be verbose", action="store_true"
-    )
-    parser.add_argument(
-        "-n",
-        "--no-upload",
-        help="don't upload to the reMarkable, save the output in current working dir",
+        "-c",
+        "--center",
+        help="Center the PDF on the page, instead of left align",
         action="store_true",
     )
     parser.add_argument(
@@ -43,15 +40,10 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-        "-c",
-        "--center",
-        help="Center the PDF on the page, instead of left align",
+        "-n",
+        "--no-upload",
+        help="don't upload to the reMarkable, save the output in current working dir",
         action="store_true",
-    )
-    parser.add_argument(
-        "--filename",
-        help="Filename to use for the file on reMarkable",
-        default=None,
     )
     parser.add_argument(
         "-p",
@@ -61,15 +53,23 @@ def parse_args():
         default="/",
     )
     parser.add_argument(
-        "--rmapi", help="path to rmapi executable", default="rmapi"
+        "-v", "--verbose", help="be verbose", action="store_true"
     )
+    parser.add_argument(
+        "--filename",
+        help="Filename to use for the file on reMarkable",
+        default=None,
+    )
+    parser.add_argument("--gs", help="path to gs executable", default="gs")
     parser.add_argument(
         "--pdfcrop", help="path to pdfcrop executable", default="pdfcrop"
     )
     parser.add_argument(
         "--pdftk", help="path to pdftk executable", default="pdftk"
     )
-    parser.add_argument("--gs", help="path to gs executable", default="gs")
+    parser.add_argument(
+        "--rmapi", help="path to rmapi executable", default="rmapi"
+    )
     parser.add_argument(
         "input", help="URL to a paper or the path of a local PDF file"
     )
