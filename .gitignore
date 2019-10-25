@@ -1,1 +1,6 @@
 __pycache__/
+paper2remarkable.egg-info/
+dist/*
+build/*
+*.pyc
+*/__pycache__/

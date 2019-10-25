@@ -11,17 +11,17 @@ import hashlib
 import shutil
 import os
 
-from arxiv2remarkable import (
+from paper2remarkable.providers import (
     ACM,
     Arxiv,
     LocalFile,
     OpenReview,
     PdfUrl,
-    Pubmed,
+    PubMed,
     Springer,
 )
 
-VERBOSE = False
+VERBOSE = True
 
 
 def md5sum(filename):
@@ -56,7 +56,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(exp_filename, os.path.basename(filename))
 
     def test_pmc(self):
-        prov = Pubmed(upload=False, verbose=VERBOSE)
+        prov = PubMed(upload=False, verbose=VERBOSE)
         url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3474301/"
         exp_filename = (
             "Hoogenboom_Manske_-_How_to_Write_a_Scientific_Article_2012.pdf"
