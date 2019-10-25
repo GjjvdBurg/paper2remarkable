@@ -10,12 +10,15 @@ Copyright: 2019, G.J.J. van den Burg
 
 import argparse
 
+from . import __version__
+
 from .providers import providers
 from .utils import exception
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
+            description='Paper2reMarkable version %s' % __version__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
