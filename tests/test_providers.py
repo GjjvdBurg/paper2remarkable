@@ -5,11 +5,12 @@ __author__ = "G.J.J. van den Burg"
 
 """Tests"""
 
-import unittest
-import tempfile
 import hashlib
-import shutil
 import os
+import re
+import shutil
+import tempfile
+import unittest
 
 from paper2remarkable.providers import (
     ACM,
@@ -20,8 +21,9 @@ from paper2remarkable.providers import (
     PubMed,
     Springer,
 )
+from paper2remarkable.providers.arxiv import DEARXIV_TEXT_REGEX
 
-VERBOSE = True
+VERBOSE = False
 
 
 def md5sum(filename):
@@ -35,7 +37,19 @@ def md5sum(filename):
     return hasher.hexdigest()
 
 
-class Tests(unittest.TestCase):
+class TestArxiv(unittest.TestCase):
+    def test_text_regex_1(self):
+        key = b"arXiv:1908.03213v1 [astro.HE] 8 Aug 2019"
+        m = re.fullmatch(DEARXIV_TEXT_REGEX, key)
+        self.assertIsNotNone(m)
+
+    def test_text_regex_2(self):
+        key = b"arXiv:1908.03213v1 [astro-ph.HE] 8 Aug 2019"
+        m = re.fullmatch(DEARXIV_TEXT_REGEX, key)
+        self.assertIsNotNone(m)
+
+
+class TestProviders(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.original_dir = os.getcwd()
@@ -48,10 +62,17 @@ class Tests(unittest.TestCase):
         os.chdir(self.original_dir)
         shutil.rmtree(self.test_dir)
 
-    def test_arxiv(self):
+    def test_arxiv_1(self):
         prov = Arxiv(upload=False, verbose=VERBOSE)
         url = "https://arxiv.org/abs/1811.11242v1"
         exp_filename = "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_arxiv_2(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        url = "http://arxiv.org/abs/arXiv:1908.03213"
+        exp_filename = "Ecker_et_al_-_Gravitational_Waves_From_Holographic_Neutron_Star_Mergers_2019.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
