@@ -15,7 +15,12 @@ import tempfile
 
 from ._info import Informer
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
-from ..utils import assert_file_is_pdf, download_url, upload_to_remarkable, follow_redirects
+from ..utils import (
+    assert_file_is_pdf,
+    download_url,
+    upload_to_remarkable,
+    follow_redirects,
+)
 from ..log import Logger
 
 logger = Logger()
@@ -66,6 +71,10 @@ class Provider(metaclass=abc.ABCMeta):
     def validate(src):
         """ Validate whether ``src`` is appropriate for this provider """
 
+    @abc.abstractmethod
+    def get_abs_pdf_urls(self, src):
+        """ Get the url for the HTML page and the PDF file """
+
     # Wrappers for pdf operations that have additional arguments
     def crop_pdf(self, filepath):
         return crop_pdf(filepath, pdfcrop_path=self.pdfcrop_path)
@@ -83,7 +92,7 @@ class Provider(metaclass=abc.ABCMeta):
 
     def run(self, src, filename=None):
         # needed with library use
-        src = follow_redirects(src)
+        src = src if os.path.exists(src) else follow_redirects(src)
 
         # extract page and pdf file urls
         abs_url, pdf_url = self.get_abs_pdf_urls(src)
