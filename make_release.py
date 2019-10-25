@@ -98,7 +98,8 @@ class UpdateChangelog(Step):
 
 class RunTests(Step):
     def action(self, context):
-        self.do_cmd("make test")
+        self.instruct("Run the unit tests")
+        self.print_run("make test")
 
 
 class BumpVersionPackage(Step):
@@ -158,7 +159,7 @@ class TestPackage(Step):
         self.instruct(
             f"Ensure that the following command gives version {context['version']}"
         )
-        self.print_run(f"{context['pkgname']} -h")
+        self.print_run(f"p2r -h")
 
 
 class DeactivateVenv(Step):
