@@ -19,14 +19,6 @@ RUN apt-get update \
         pdftk \
         texlive-extra-utils  # contains pdfcrop
 
-RUN pip install \
-    bs4 \
-    requests \
-    PyPDF2 \
-    titlecase \
-    pdfplumber \
-    unidecode
+RUN pip install paper2remarkable
 
-COPY arxiv2remarkable.py ./
-
-ENTRYPOINT ["python", "arxiv2remarkable.py"]
+ENTRYPOINT ["p2r"]
