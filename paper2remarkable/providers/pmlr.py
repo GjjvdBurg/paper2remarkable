@@ -56,7 +56,7 @@ class PMLR(Provider):
             abs_url = "/".join(parts[:-1]) + ".html"
             pdf_url = url
         else:
-            exception("Couldn't figure out OpenReview urls.")
+            exception("Couldn't figure out PLMR urls.")
         return abs_url, pdf_url
 
     def validate(src):
