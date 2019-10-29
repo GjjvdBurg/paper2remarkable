@@ -16,6 +16,7 @@ from paper2remarkable.providers import (
     ACM,
     Arxiv,
     LocalFile,
+    NeurIPS,
     OpenReview,
     PMLR,
     PdfUrl,
@@ -148,6 +149,20 @@ class TestProviders(unittest.TestCase):
         prov = PMLR(upload=False, verbose=VERBOSE)
         url = "http://proceedings.mlr.press/v48/zhangf16.html"
         exp = "Zhang_Paisley_-_Markov_Latent_Feature_Models_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_neurips_1(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf"
+        exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1991.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_neurips_2(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "https://papers.nips.cc/paper/7796-middle-out-decoding"
+        exp = "Mehri_Sigal_-_Middle-Out_Decoding_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

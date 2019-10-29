@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from .arxiv import Arxiv
-from .pubmed import PubMed
 from .acm import ACM
-from .openreview import OpenReview
-from .springer import Springer
+from .arxiv import Arxiv
 from .local import LocalFile
+from .neurips import NeurIPS
+from .openreview import OpenReview
 from .pdf_url import PdfUrl
 from .pmlr import PMLR
+from .pubmed import PubMed
+from .springer import Springer
 
 # NOTE: Order matters here, PdfUrl should be last
-providers = [Arxiv, PubMed, ACM, OpenReview, Springer, PMLR, LocalFile, PdfUrl]
+providers = [
+    ACM,
+    Arxiv,
+    NeurIPS,
+    OpenReview,
+    PMLR,
+    PubMed,
+    Springer,
+    LocalFile,
+    PdfUrl,
+]
