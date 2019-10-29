@@ -90,7 +90,9 @@ def shrink_pdf(filepath, gs_path="gs"):
             "-dQUIET",
             "-sOutputFile=%s" % output_file,
             filepath,
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
     )
     if not status == 0:
         logger.warning("Failed to shrink the pdf file")
