@@ -17,16 +17,17 @@ The script can be run through the ``p2r`` command line program or via Docker
 paper2remarkable makes it as easy as possible to get a PDF on your reMarkable 
 from any of the following sources:
 
-- an arXiv url (either ``arxiv.org/abs/...`` or ``arxiv.org/pdf/...``)
-- a PubMed Central url (either to the HTML or the PDF)
-- an ACM citation page url (``https://dl.acm.org/citation.cfm?id=...``)
-- an OpenReview paper (either ``openreview.net/forum?id=...`` or 
-  ``openreview.net/pdf?id=...``)
-- a Springer paper url (either to the HTML or the PDF)
-- a url to a PDF file
-- a local file.
+* [arXiv](https://arxiv.org/)
+* [ACM Digital Library](https://dl.acm.org/dl.cfm)
+* [NeurIPS](https://papers.nips.cc/)
+* [OpenReview](https://openreview.net/)
+* [PMLR](http://proceedings.mlr.press/)
+* [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/)
+* [SpringerLink](https://link.springer.com/)
+* A generic URL to a PDF file
+* A local PDF file
 
-When called, the paper2remarkable takes the source and:
+When called, the paper2remarkable takes the source URL and:
 
 1. Downloads the pdf if necessary
 2. Removes the arXiv timestamp (for arXiv sources)
