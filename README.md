@@ -134,7 +134,7 @@ we'll use `rmapi` to create it.
 
 ```bash
 touch ${HOME}/.rmapi
-docker run --rm -it -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi paper2remarkable version
+docker run --rm -i -t -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi paper2remarkable version
 ```
 
 which should end with output like
