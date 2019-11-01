@@ -4,7 +4,7 @@
 
 Author: G.J.J. van den Burg
 License: See LICENSE file.
-Copyright: 2019, The Alan Turing Institute
+Copyright: 2019, G.J.J. van den Burg
 
 """
 
