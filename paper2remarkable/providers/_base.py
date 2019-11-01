@@ -64,7 +64,7 @@ class Provider(metaclass=abc.ABCMeta):
             self.operations.append(("blank", blank_pdf))
         self.operations.append(("shrink", self.shrink_pdf))
 
-        logger.info("Starting %s" % type(self).__name__)
+        logger.info("Starting %s provider" % type(self).__name__)
 
     @staticmethod
     @abc.abstractmethod
