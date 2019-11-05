@@ -1,5 +1,8 @@
 # paper2remarkable
 
+[![PyPI 
+version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
+
 *Note: ``paper2remarkable`` is the new name for the ``arxiv2remarkable`` 
 script. The name was changed because it better captures what the program 
 does.*
@@ -14,8 +17,8 @@ $ p2r https://arxiv.org/abs/1811.11242
 The script can be run through the ``p2r`` command line program or via Docker 
 (see below).
 
-paper2remarkable makes it as easy as possible to get a PDF on your reMarkable 
-from any of the following sources:
+``paper2remarkable`` makes it as easy as possible to get a PDF on your 
+reMarkable from any of the following sources:
 
 * [arXiv](https://arxiv.org/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
@@ -27,14 +30,20 @@ from any of the following sources:
 * A generic URL to a PDF file
 * A local PDF file
 
-When called, the paper2remarkable takes the source URL and:
+The program aims to be flexible to the exact source URL, so for many of the 
+sources you can either provide a URL to the abstract page or to the PDF file. 
+If you have an source that you would like to see added to the list, let me 
+know!
+
+``paper2remarkable`` takes the source URL and:
 
 1. Downloads the pdf if necessary
 2. Removes the arXiv timestamp (for arXiv sources)
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
 5. Generates a nice filename based on author/title/year of the paper
-6. Uploads it to your reMarkable using ``rMapi``.
+6. Uploads it to your reMarkable using 
+   [rMapi](https://github.com/juruen/rmapi).
 
 Optionally, you can:
 
@@ -107,7 +116,7 @@ The script requires the following external programs to be available:
 
 If these scripts are not available on the ``PATH`` variable, you can supply 
 them with the relevant options to the script. Then, you can install 
-paper2remarkable from PyPI:
+``paper2remarkable`` from PyPI:
 
 ```
 pip install paper2remarkable
@@ -161,4 +170,5 @@ docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable -v https://
 
 License: MIT
 
-Author: G.J.J. van den Burg
+If you find a problem or want to suggest a feature, please let us know! You're 
+helping to make this project better!
