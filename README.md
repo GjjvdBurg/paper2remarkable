@@ -133,7 +133,7 @@ First clone this repository with `git clone` and `cd` inside of it, then build
 the container:
 
 ```bash
-docker build -t paper2remarkable .
+docker build -t p2r .
 ```
 
 ### Authorization
@@ -143,7 +143,7 @@ we'll use `rmapi` to create it.
 
 ```bash
 touch ${HOME}/.rmapi
-docker run --rm -i -t -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi paper2remarkable version
+docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
 ```
 
 which should end with output like
@@ -156,14 +156,14 @@ rmapi version: 0.0.5
 ### Usage
 
 Use the container by replacing `p2r` with `docker run --rm -v 
-"${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable`, e.g.
+"${HOME}/.rmapi:/home/user/.rmapi:rw" p2r`, e.g.
 
 ```
 # print help and exit
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable --help
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 
 # equivalent to above usage via `python`
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable -v https://arxiv.org/abs/1811.11242
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
 ```
 
 # Notes
