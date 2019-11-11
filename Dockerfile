@@ -1,24 +1,33 @@
-FROM python:3.7-stretch
+FROM golang:stretch AS rmapi
 
-ENV GO_VERSION 1.12.9
-ENV GO_TAR go${GO_VERSION}.linux-amd64.tar.gz
-ENV GOROOT /usr/local/go
-ENV GOPATH /root/go
-ENV PATH ${GOPATH}/bin:${GOROOT}/bin:${PATH}
+ENV GOPATH /go
+ENV PATH ${GOPATH}/bin:/usr/local/go/bin:$PATH
+ENV RMAPIREPO github.com/juruen/rmapi
+
+RUN go get -u ${RMAPIREPO}
+
+
+FROM python:3.7-slim-stretch
 
 # rmapi
-RUN wget https://dl.google.com/go/${GO_TAR} \
-    && tar -xf ${GO_TAR} \
-    && mv go ${GOROOT} \
-    && rm ${GO_TAR} \
-    && go get -u github.com/juruen/rmapi
+COPY --from=rmapi /go/bin/rmapi /usr/bin/rmapi
 
-# pdftk & pdfcrop
+# imagemagick, pdftk, ghostscript, pdfcrop
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install --no-install-recommends -y \
+        libmagickwand-dev \
         pdftk \
+        ghostscript \
         texlive-extra-utils  # contains pdfcrop
 
-RUN pip install paper2remarkable
+RUN pip install --no-cache-dir paper2remarkable
+
+RUN useradd -u 1000 -m -U user
+
+USER user
+
+ENV USER user
+
+WORKDIR /home/user
 
 ENTRYPOINT ["p2r"]

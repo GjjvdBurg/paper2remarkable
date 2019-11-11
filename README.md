@@ -1,23 +1,23 @@
 # paper2remarkable
 
-[![PyPI 
+[![PyPI
 version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
 
-*Note: ``paper2remarkable`` is the new name for the ``arxiv2remarkable`` 
-script. The name was changed because it better captures what the program 
+*Note: ``paper2remarkable`` is the new name for the ``arxiv2remarkable``
+script. The name was changed because it better captures what the program
 does.*
 
-``paper2remarkable`` is a command line program for quickly and easily 
+``paper2remarkable`` is a command line program for quickly and easily
 transferring an academic paper to your reMarkable:
 
 ```
 $ p2r https://arxiv.org/abs/1811.11242
 ```
 
-The script can be run through the ``p2r`` command line program or via Docker 
+The script can be run through the ``p2r`` command line program or via Docker
 (see below).
 
-``paper2remarkable`` makes it as easy as possible to get a PDF on your 
+``paper2remarkable`` makes it as easy as possible to get a PDF on your
 reMarkable from any of the following sources:
 
 * [arXiv](https://arxiv.org/)
@@ -30,9 +30,9 @@ reMarkable from any of the following sources:
 * A generic URL to a PDF file
 * A local PDF file
 
-The program aims to be flexible to the exact source URL, so for many of the 
-sources you can either provide a URL to the abstract page or to the PDF file. 
-If you have an source that you would like to see added to the list, let me 
+The program aims to be flexible to the exact source URL, so for many of the
+sources you can either provide a URL to the abstract page or to the PDF file.
+If you have an source that you would like to see added to the list, let me
 know!
 
 ``paper2remarkable`` takes the source URL and:
@@ -42,13 +42,13 @@ know!
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
 5. Generates a nice filename based on author/title/year of the paper
-6. Uploads it to your reMarkable using 
+6. Uploads it to your reMarkable using
    [rMapi](https://github.com/juruen/rmapi).
 
 Optionally, you can:
 
 - Download a paper but not upload to the reMarkable using the ``-n`` switch.
-- Insert a blank page after each page using the ``-b`` switch (useful for note 
+- Insert a blank page after each page using the ``-b`` switch (useful for note
   taking!)
 - Center the pdf on the reMarkable (default is left-aligned)
 - Provide an explicit filename using the ``--filename`` parameter
@@ -85,7 +85,7 @@ optional arguments:
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
 ```
 
-And here's an example with verbose mode enabled that shows everything the 
+And here's an example with verbose mode enabled that shows everything the
 script does by default:
 
 ```
@@ -109,13 +109,13 @@ $ p2r -v https://arxiv.org/abs/1811.11242
 The script requires the following external programs to be available:
 
 - [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/)
-- [pdfcrop](https://ctan.org/pkg/pdfcrop?lang=en): usually included with a 
+- [pdfcrop](https://ctan.org/pkg/pdfcrop?lang=en): usually included with a
   LaTeX installation.
 - [GhostScript](https://www.ghostscript.com/)
 - [rMAPI](https://github.com/juruen/rmapi)
 
-If these scripts are not available on the ``PATH`` variable, you can supply 
-them with the relevant options to the script. Then, you can install 
+If these scripts are not available on the ``PATH`` variable, you can supply
+them with the relevant options to the script. Then, you can install
 ``paper2remarkable`` from PyPI:
 
 ```
@@ -126,24 +126,24 @@ This installs the ``p2r`` command line program.
 
 ## Docker
 
-You can also use our Dockerfile to avoid installing dependencies on your 
+You can also use our Dockerfile to avoid installing dependencies on your
 machine. You will need `git` and `docker` installed.
 
-First clone this repository with `git clone` and `cd` inside of it, then build 
+First clone this repository with `git clone` and `cd` inside of it, then build
 the container:
 
 ```bash
-docker build -t paper2remarkable .
+docker build -t p2r .
 ```
 
 ### Authorization
 
-If you already have a `~/.rmapi` file, you can skip this section. Otherwise 
+If you already have a `~/.rmapi` file, you can skip this section. Otherwise
 we'll use `rmapi` to create it.
 
 ```bash
 touch ${HOME}/.rmapi
-docker run --rm -i -t -v "${HOME}/.rmapi:/root/.rmapi:rw" --entrypoint=rmapi paper2remarkable version
+docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
 ```
 
 which should end with output like
@@ -155,20 +155,20 @@ rmapi version: 0.0.5
 
 ### Usage
 
-Use the container by replacing `p2r` with `docker run --rm -v 
-"${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable`, e.g.
+Use the container by replacing `p2r` with `docker run --rm -v
+"${HOME}/.rmapi:/home/user/.rmapi:rw" p2r`, e.g.
 
 ```
 # print help and exit
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable --help
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 
 # equivalent to above usage via `python`
-docker run --rm -v "${HOME}/.rmapi:/root/.rmapi:rw" paper2remarkable -v https://arxiv.org/abs/1811.11242
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
 ```
 
 # Notes
 
 License: MIT
 
-If you find a problem or want to suggest a feature, please let us know! You're 
+If you find a problem or want to suggest a feature, please let us know! You're
 helping to make this project better!
