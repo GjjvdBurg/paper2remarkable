@@ -162,9 +162,20 @@ Use the container by replacing `p2r` with `docker run --rm -v
 # print help and exit
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 
-# equivalent to above usage via `python`
+# equivalent to above usage
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
 ```
+
+You can also create an [alias](http://tldp.org/LDP/abs/html/aliases.html) in 
+your ``~/.bashrc`` file to abstract away the Docker commands:
+
+```bash
+# in ~/.bashrc
+
+alias p2r="docker run --rm -v \"${HOME}/.rmapi:/home/user/.rmapi:rw\" p2r"
+```
+
+Then you can use ``paper2remarkable`` from the command line as ``p2r``!
 
 # Notes
 
