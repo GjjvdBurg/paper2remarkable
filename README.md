@@ -22,6 +22,7 @@ reMarkable from any of the following sources:
 
 * [arXiv](https://arxiv.org/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
+* [CiteSeerX](http://citeseerx.ist.psu.edu/index)
 * [NeurIPS](https://papers.nips.cc/)
 * [OpenReview](https://openreview.net/)
 * [PMLR](http://proceedings.mlr.press/)
