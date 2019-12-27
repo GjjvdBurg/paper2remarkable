@@ -2,6 +2,7 @@
 
 from .acm import ACM
 from .arxiv import Arxiv
+from .citeseerx import CiteSeerX
 from .local import LocalFile
 from .neurips import NeurIPS
 from .openreview import OpenReview
@@ -14,6 +15,7 @@ from .springer import Springer
 providers = [
     ACM,
     Arxiv,
+    CiteSeerX,
     NeurIPS,
     OpenReview,
     PMLR,
