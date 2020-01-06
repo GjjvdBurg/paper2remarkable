@@ -3,12 +3,8 @@
 [![PyPI 
 version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
 
-*Note: ``paper2remarkable`` is the new name for the ``arxiv2remarkable`` 
-script. The name was changed because it better captures what the program 
-does.*
-
 ``paper2remarkable`` is a command line program for quickly and easily 
-transferring an academic paper to your reMarkable:
+transferring an academic paper to your [reMarkable](https://remarkable.com/):
 
 ```
 $ p2r https://arxiv.org/abs/1811.11242
