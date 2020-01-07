@@ -12,11 +12,9 @@ import PyPDF2
 import requests
 import string
 import subprocess
-import sys
 import time
 import unidecode
 
-from . import GITHUB_URL
 from .log import Logger
 from .exceptions import FileTypeError, RemarkableError
 
@@ -28,17 +26,6 @@ HEADERS = {
 
 
 logger = Logger()
-
-
-def exception(msg):
-    print("ERROR: " + msg, file=sys.stderr)
-    print("Error occurred. Exiting.", file=sys.stderr)
-    print("", file=sys.stderr)
-    print(
-        "If you think this might be a bug, please raise an issue on GitHub: %s"
-        % GITHUB_URL
-    )
-    raise SystemExit(1)
 
 
 def clean_string(s):

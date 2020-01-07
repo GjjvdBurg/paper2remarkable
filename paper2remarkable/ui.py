@@ -9,11 +9,12 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import argparse
+import sys
 
-from . import __version__
+from . import __version__, GITHUB_URL
 
 from .providers import providers, LocalFile
-from .utils import exception, follow_redirects
+from .utils import follow_redirects
 
 
 def parse_args():
@@ -81,6 +82,17 @@ def parse_args():
         "input", help="URL to a paper or the path of a local PDF file"
     )
     return parser.parse_args()
+
+
+def exception(msg):
+    print("ERROR: " + msg, file=sys.stderr)
+    print("Error occurred. Exiting.", file=sys.stderr)
+    print("", file=sys.stderr)
+    print(
+        "If you think this might be a bug, please raise an issue on GitHub: %s"
+        % GITHUB_URL
+    )
+    raise SystemExit(1)
 
 
 def main():
