@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.4.3
+
+* Add provider for CiteSeerX
+* Update provider for ACM (website redesign)
+* Properly use exceptions when errors occur
+
 ## Version 0.4.2
 
 * Add provider for Proceedings of Machine Learning Research 
