@@ -56,5 +56,8 @@ venv: $(VENV_DIR)/bin/activate
 
 $(VENV_DIR)/bin/activate:
 	test -d $(VENV_DIR) || virtualenv $(VENV_DIR)
-	source $(VENV_DIR)/bin/activate && pip install -e .[dev]
+	source $(VENV_DIR)/bin/activate && pip install -e .[dev] && pip install six
 	touch $(VENV_DIR)/bin/activate
+
+clean_venv:
+	rm -rf $(VENV_DIR)
