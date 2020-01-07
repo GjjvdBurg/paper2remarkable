@@ -96,15 +96,17 @@ def get_page_with_retry(url, tries=5):
 
 
 def follow_redirects(url):
-    """Follow redirects from the URL (at most 10)"""
+    """Follow redirects from the URL (at most 100)"""
     it = 0
-    while it < 10:
-        req = requests.head(url, allow_redirects=False)
+    jar = {}
+    while it < 100:
+        req = requests.head(url, allow_redirects=False, cookies=jar)
         if req.status_code == 200:
             break
         if not "Location" in req.headers:
             break
         url = req.headers["Location"]
+        jar = req.cookies
         it += 1
     return url
 
