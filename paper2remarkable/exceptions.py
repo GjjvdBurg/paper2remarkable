@@ -8,6 +8,10 @@ from . import GITHUB_URL
 
 from subprocess import CalledProcessError
 
+GH_MSG = "\n\nIf you think this might be a bug, please raise an issue on GitHub at: {url}".format(
+    url=GITHUB_URL
+)
+
 
 class Error(Exception):
     """Base class for exceptions in p2r."""
@@ -37,9 +41,7 @@ class URLResolutionError(Error):
         )
         if self.reason:
             msg += "\nReason: {reason}".format(reason=self.reason)
-        msg += "\nIf you think this might be a bug, please raise an issue on GitHub at {url}".format(
-            url=GITHUB_URL
-        )
+        msg += GH_MSG
         return msg
 
 
@@ -53,9 +55,7 @@ class FilenameMissingError(Error):
         msg = "ERROR: Filename must be given with the {provider} provider (hint: use --filename)".format(
             provider=self.provider
         )
-        msg += "\nIf you think this might be a bug, please raise an issue on GitHub at {url}".format(
-            url=GITHUB_URL
-        )
+        msg += GH_MSG
         return msg
 
 
@@ -70,9 +70,7 @@ class FileTypeError(Error):
         msg = "ERROR: File {filename} isn't of type {filetype}.".format(
             filename=self.filename, filetype=self.filetype
         )
-        msg += "\nIf you think this might be a bug, please raise an issue on GitHub at {url}".format(
-            url=GITHUB_URL
-        )
+        msg += GH_MSG
         return msg
 
 
@@ -84,9 +82,7 @@ class RemarkableError(Error):
 
     def __str__(self):
         msg = "ERROR: {message}".format(message=self.message)
-        msg += "\nIf you think this might be a bug, please raise an issue on GitHub at {url}".format(
-            url=GITHUB_URL
-        )
+        msg += GH_MSG
         return msg
 
 
@@ -101,10 +97,5 @@ class _CalledProcessError(CalledProcessError):
 
     def __str__(self):
         parent = super().__str__()
-        msg = (
-            parent
-            + "\nIf you think this might be a bug, please raise an issue on GitHub at {url}".format(
-                url=GITHUB_URL
-            )
-        )
+        msg = parent + GH_MSG
         return msg
