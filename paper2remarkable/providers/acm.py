@@ -14,7 +14,6 @@ from ._base import Provider
 from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..log import Logger
-from ..utils import exception
 
 logger = Logger()
 
