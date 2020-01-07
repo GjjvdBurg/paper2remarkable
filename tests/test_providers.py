@@ -88,10 +88,19 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
-    def test_acm(self):
+    def test_acm_1(self):
         prov = ACM(upload=False, verbose=VERBOSE)
         url = "https://dl.acm.org/citation.cfm?id=3025626"
         exp_filename = "Kery_Horvath_Myers_-_Variolite_Supporting_Exploratory_Programming_by_Data_Scientists_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_acm_2(self):
+        prov = ACM(upload=False, verbose=VERBOSE)
+        url = (
+            "https://dl.acm.org/doi/pdf/10.1145/3219819.3220081?download=true"
+        )
+        exp_filename = "Bateni_Esfandiari_Mirrokni_-_Optimal_Distributed_Submodular_Optimization_via_Sketching_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
