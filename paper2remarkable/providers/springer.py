@@ -13,7 +13,7 @@ import urllib
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class SpringerInformer(Informer):
@@ -42,7 +42,7 @@ class Springer(Provider):
             abs_url = url.replace("content/pdf", "article")[: -len(".pdf")]
             pdf_url = urllib.parse.unquote(url)
         else:
-            exception("Couldn't figure out Springer urls.")
+            raise URLResolutionError("Springer", url)
         return abs_url, pdf_url
 
     def validate(src):

@@ -18,6 +18,7 @@ import unidecode
 
 from . import GITHUB_URL
 from .log import Logger
+from .exceptions import FileTypeError, RemarkableError
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -64,7 +65,7 @@ def assert_file_is_pdf(filename):
         del pdf
         return True
     except PyPDF2.utils.PdfReadError:
-        exception("File %s isn't a valid pdf file." % filename)
+        raise FileTypeError(filename, "pdf")
 
 
 def download_url(url, filename):
@@ -122,7 +123,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
             stdout=subprocess.DEVNULL,
         )
         if not status == 0:
-            exception(
+            raise RemarkableError(
                 "Creating directory %s on reMarkable failed" % remarkable_dir
             )
 
@@ -132,5 +133,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
         stdout=subprocess.DEVNULL,
     )
     if not status == 0:
-        exception("Uploading file %s to reMarkable failed" % filepath)
+        raise RemarkableError(
+            "Uploading file %s to reMarkable failed" % filepath
+        )
     logger.info("Upload successful.")

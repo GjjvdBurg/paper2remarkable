@@ -12,9 +12,9 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from .. import GITHUB_URL
-from ..utils import exception
+from ..exceptions import URLResolutionError
 from ..log import Logger
+from ..utils import exception
 
 logger = Logger()
 
@@ -57,7 +57,7 @@ class ACM(Provider):
         m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)
         if m:
             return m["doi"]
-        exception("Couldn't retrieve ACM publication DOI.")
+        raise URLResolutionError("ACM", url, reason="Failed to retrieve DOI.")
 
     def get_abs_pdf_urls(self, url):
         if re.match(self.re_abs, url):
@@ -71,9 +71,7 @@ class ACM(Provider):
             doi = self._get_doi(url)
             abs_url = "https://dl.acm.org/doi/{doi}".format(doi=doi)
         else:
-            exception(
-                "Couldn't figure out ACM urls from provided url: %s" % url
-            )
+            raise URLResolutionError("ACM", url)
         return abs_url, pdf_url
 
     def validate(src):

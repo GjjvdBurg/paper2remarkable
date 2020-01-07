@@ -12,7 +12,7 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class CiteSeerXInformer(Informer):
@@ -38,7 +38,9 @@ class CiteSeerX(Provider):
         m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)
         if m:
             return m["doi"]
-        exception("Couldn't retrieve CiteSeerX publication doi.")
+        raise URLResolutionError(
+            "CiteSeerX", url, reason="Failed to retrieve DOI."
+        )
 
     def get_abs_pdf_urls(self, url):
         """ Get the pdf and abstract url from a OpenReview url """
@@ -55,7 +57,7 @@ class CiteSeerX(Provider):
                 doi=doi
             )
         else:
-            exception("Couldn't figure out CiteSeerX urls.")
+            raise URLResolutionError("CiteSeerX", url)
         return abs_url, pdf_url
 
     def validate(src):

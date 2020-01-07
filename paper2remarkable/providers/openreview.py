@@ -12,7 +12,7 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class OpenReviewInformer(Informer):
@@ -41,7 +41,7 @@ class OpenReview(Provider):
             abs_url = url.replace("pdf", "forum")
             pdf_url = url
         else:
-            exception("Couldn't figure out OpenReview urls.")
+            raise URLResolutionError("OpenReview", url)
         return abs_url, pdf_url
 
     def validate(src):

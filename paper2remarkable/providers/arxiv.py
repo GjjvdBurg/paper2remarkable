@@ -14,7 +14,10 @@ import subprocess
 
 from ._info import Informer
 from ._base import Provider
-from ..utils import exception
+from ..exceptions import (
+    URLResolutionError,
+    _CalledProcessError as CalledProcessError,
+)
 from ..log import Logger
 
 logger = Logger()
@@ -49,7 +52,7 @@ class Arxiv(Provider):
             abs_url = url[:-4].replace("pdf", "abs")
             pdf_url = url
         else:
-            exception("Couldn't figure out arXiv urls.")
+            raise URLResolutionError("arXiv", url)
         return abs_url, pdf_url
 
     def validate(src):
@@ -72,7 +75,9 @@ class Arxiv(Provider):
             ]
         )
         if not status == 0:
-            exception("pdftk failed to uncompress the pdf.")
+            raise CalledProcessError(
+                "pdftk failed to uncompress the PDF file."
+            )
 
         with open(uncompress_file, "rb") as fid:
             data = fid.read()
@@ -94,6 +99,6 @@ class Arxiv(Provider):
             [self.pdftk_path, removed_file, "output", output_file, "compress"]
         )
         if not status == 0:
-            exception("pdftk failed to compress the pdf.")
+            raise CalledProcessError("pdftk failed to compress the PDF file.")
 
         return output_file

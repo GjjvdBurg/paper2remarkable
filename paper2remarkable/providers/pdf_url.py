@@ -12,15 +12,13 @@ import urllib
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import FilenameMissingError
 
 
 class PdfUrlInformer(Informer):
     def get_filename(self, abs_url):
-        # if this is called, filename must not be provided
-        exception(
-            "Filename must be provided with PDFUrlProvider (use --filename)"
-        )
+        # if this is called, filename must not have been provided
+        raise FilenameMissingError(provider="PDFUrl")
 
 
 class PdfUrl(Provider):

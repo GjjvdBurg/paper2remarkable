@@ -12,7 +12,7 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class NeurIPSInformer(Informer):
@@ -41,7 +41,7 @@ class NeurIPS(Provider):
             abs_url = url.replace(".pdf", "")
             pdf_url = url
         else:
-            exception("Couldn't figure out NeurIPS urls.")
+            raise URLResolutionError("NeurIPS", url)
         return abs_url, pdf_url
 
     def validate(src):
