@@ -91,7 +91,7 @@ class Provider(metaclass=abc.ABCMeta):
         download_url(pdf_url, filename)
 
     def run(self, src, filename=None):
-        # needed with library use
+        # follow_redirects here is needed with library use
         src = src if os.path.exists(src) else follow_redirects(src)
 
         # extract page and pdf file urls

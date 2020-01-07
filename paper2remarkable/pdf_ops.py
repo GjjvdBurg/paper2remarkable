@@ -18,6 +18,7 @@ from .log import Logger
 
 logger = Logger()
 
+
 def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
     """Crop the pdf file using Cropper
     """
@@ -92,7 +93,7 @@ def shrink_pdf(filepath, gs_path="gs"):
             filepath,
         ],
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
     )
     if not status == 0:
         logger.warning("Failed to shrink the pdf file")
