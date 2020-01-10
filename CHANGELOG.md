@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.4.4
+
+* Bugfix for creating a directory on the reMarkable 
+  ([#20](https://github.com/GjjvdBurg/paper2remarkable/issues/20))
+
 ## Version 0.4.3
 
 * Add provider for CiteSeerX
