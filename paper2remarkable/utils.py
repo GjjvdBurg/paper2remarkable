@@ -106,7 +106,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     remarkable_dir = remarkable_dir.rstrip("/")
     if remarkable_dir:
         status = subprocess.call(
-            [rmapi_path, "mkdir", remarkable_dir + "/"],
+            [rmapi_path, "mkdir", remarkable_dir],
             stdout=subprocess.DEVNULL,
         )
         if not status == 0:
