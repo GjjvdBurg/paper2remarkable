@@ -185,17 +185,8 @@ class TestProviders(unittest.TestCase):
 
     def test_citeseerx_2(self):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
-        url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.6521&rep=rep1&type=pdf"
-        exp = "Everingham_et_al_-_The_2005_Pascal_Visual_Object_Classes_Challenge_2006.pdf"
-        filename = prov.run(url)
-        self.assertEqual(exp, os.path.basename(filename))
-
-    def test_citeseerx_3(self):
-        prov = CiteSeerX(upload=False, verbose=VERBOSE)
-        url = (
-            "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.109.4049"
-        )
-        exp = "Brin_Page_-_The_Anatomy_of_a_Large-Scale_Hypertextual_Web_Search_Engine_1998.pdf"
+        url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf"
+        exp = "Kirkpatrick_Gelatt_Vecchi_-_Optimization_by_Simulated_Annealing_1983.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
