@@ -13,8 +13,12 @@ import os
 import subprocess
 import pdfplumber
 
+from .log import Logger
+
 RM_WIDTH = 1404
 RM_HEIGHT = 1872
+
+logger = Logger()
 
 
 class Cropper(object):
@@ -37,12 +41,16 @@ class Cropper(object):
         return self.process_file(self.center_page, padding=padding)
 
     def process_file(self, page_func, *args, **kwargs):
-        for page_idx in range(self.reader.getNumPages()):
+        n = self.reader.getNumPages()
+        for page_idx in range(n):
             status = page_func(page_idx, *args, **kwargs)
             if not status == 0:
                 return status
+            if (page_idx + 1) % 10 == 0:
+                logger.info("Processing pages ... (%i/%i)" % (page_idx + 1, n))
         with open(self.output_file, "wb") as fp:
             self.writer.write(fp)
+        logger.info("Processing pages ... (%i/%i)" % (n, n))
         return 0
 
     def center_page(self, page_idx, padding):
