@@ -55,21 +55,22 @@ def assert_file_is_pdf(filename):
         raise FileTypeError(filename, "pdf")
 
 
-def download_url(url, filename):
+def download_url(url, filename, cookiejar=None):
     """Download the content of an url and save it to a filename """
     logger.info("Downloading file at url: %s" % url)
-    content = get_page_with_retry(url)
+    content = get_page_with_retry(url, cookiejar=cookiejar)
     with open(filename, "wb") as fid:
         fid.write(content)
 
 
-def get_page_with_retry(url, tries=5):
+def get_page_with_retry(url, tries=5, cookiejar=None):
     count = 0
+    jar = {} if cookiejar is None else cookiejar
     while count < tries:
         count += 1
         error = False
         try:
-            res = requests.get(url, headers=HEADERS)
+            res = requests.get(url, headers=HEADERS, cookies=jar)
         except requests.exceptions.ConnectionError:
             error = True
         if error or not res.ok:
@@ -88,7 +89,9 @@ def follow_redirects(url):
     it = 0
     jar = {}
     while it < 100:
-        req = requests.head(url, allow_redirects=False, cookies=jar)
+        req = requests.head(
+            url, headers=HEADERS, allow_redirects=False, cookies=jar
+        )
         if req.status_code == 200:
             break
         if not "Location" in req.headers:
@@ -96,7 +99,8 @@ def follow_redirects(url):
         url = req.headers["Location"]
         jar = req.cookies
         it += 1
-    return url
+    jar = jar or req.cookies
+    return url, jar
 
 
 def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):

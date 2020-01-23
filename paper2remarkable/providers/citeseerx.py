@@ -9,10 +9,14 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import re
+import time
 
 from ._base import Provider
 from ._info import Informer
 from ..exceptions import URLResolutionError
+from ..log import Logger
+
+logger = Logger()
 
 
 class CiteSeerXInformer(Informer):
@@ -33,6 +37,21 @@ class CiteSeerX(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.informer = CiteSeerXInformer()
+        self.server_delay = 30
+
+        # NOTE: This is here because of this:
+        # https://github.com/SeerLabs/CiteSeerX/blob/8a62545ffc904f2b41b4ecd30ce91900dc7790f4/src/java/edu/psu/citeseerx/webutils/SimpleDownloadLimitFilter.java#L136
+        # The server does not allow hits to the same URL twice within a 30
+        # second window. We need to hit the URL more than once to ensure it
+        # redirects properly. Waiting is therefore needed.
+        logger.info(
+            "Waiting 30 seconds so we don't overload the CiteSeerX server."
+        )
+        time.sleep(30)
+
+        # NOTE: The delay should only be hit twice when p2r is used as a
+        # library (e.g. during testing). Otherwise the ``server_delay`` is
+        # never reached in run().
 
     def _get_doi(self, url):
         m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)

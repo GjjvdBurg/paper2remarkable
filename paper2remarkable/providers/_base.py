@@ -12,6 +12,7 @@ import abc
 import os
 import shutil
 import tempfile
+import time
 
 from ._info import Informer
 from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
@@ -41,6 +42,7 @@ class Provider(metaclass=abc.ABCMeta):
         pdfcrop_path="pdfcrop",
         pdftk_path="pdftk",
         gs_path="gs",
+        cookiejar=None,
     ):
         self.upload = upload
         self.debug = debug
@@ -50,6 +52,10 @@ class Provider(metaclass=abc.ABCMeta):
         self.pdftk_path = pdftk_path
         self.gs_path = gs_path
         self.informer = Informer()
+        self.cookiejar = cookiejar
+
+        # wait time to not hit the server too frequently
+        self.server_delay = 0
 
         # disable logging if requested
         if not verbose:
@@ -88,11 +94,17 @@ class Provider(metaclass=abc.ABCMeta):
     def retrieve_pdf(self, pdf_url, filename):
         """ Download pdf from src and save to filename """
         # This must exist so that the LocalFile provider can overwrite it
-        download_url(pdf_url, filename)
+        download_url(pdf_url, filename, cookiejar=self.cookiejar)
 
     def run(self, src, filename=None):
         # follow_redirects here is needed with library use
-        src = src if os.path.exists(src) else follow_redirects(src)
+        if os.path.exists(src):
+            src = src
+        elif self.cookiejar is None:
+            # NOTE: We assume that if the cookiejar is not None, we are
+            # properly redirected.
+            src, self.cookiejar = follow_redirects(src)
+            time.sleep(self.server_delay)
 
         # extract page and pdf file urls
         abs_url, pdf_url = self.get_abs_pdf_urls(src)
