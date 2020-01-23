@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.4.5
+
+* Add logging of long running crop/center operations
+* Keep cookies during requests
+* Add wait for CiteSeerX provider
+* Make determining the provider more robust (issue 
+  [#21](https://github.com/GjjvdBurg/paper2remarkable/issues/21))
+
 ## Version 0.4.4
 
 * Bugfix for creating a directory on the reMarkable 
