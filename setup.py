@@ -25,6 +25,7 @@ REQUIRED = [
     "unidecode>=1.1",
     "titlecase>=0.12",
     "PyPDF2>=1.26",
+    "regex>=2018.11"
 ]
 
 docs_require = []

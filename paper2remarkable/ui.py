@@ -14,7 +14,7 @@ import sys
 from . import __version__, GITHUB_URL
 
 from .providers import providers, LocalFile
-from .utils import follow_redirects
+from .utils import follow_redirects, is_url
 
 
 def parse_args():
@@ -97,16 +97,21 @@ def exception(msg):
 
 def main():
     args = parse_args()
+    cookiejar = None
 
-    if LocalFile.validate(args.input):
+    if is_url(args.input):
+        # input is a url
+        url, cookiejar = follow_redirects(args.input)
+        provider = next((p for p in providers if p.validate(url)), None)
+    elif LocalFile.validate(args.input):
         # input is a local file
         provider = LocalFile
     else:
-        # input is a url
-        url = args.input
-        # follow all redirects of the url
-        url = follow_redirects(url)
-        provider = next((p for p in providers if p.validate(url)), None)
+        # not a proper URL or non-existent file
+        exception(
+            "Couldn't figure out what source you mean. If it's a "
+            "local file, make sure it exists."
+        )
 
     if provider is None:
         exception("Input not valid, no provider can handle this source.")
@@ -122,6 +127,7 @@ def main():
         pdfcrop_path=args.pdfcrop,
         pdftk_path=args.pdftk,
         gs_path=args.gs,
+        cookiejar=cookiejar,
     )
 
     prov.run(args.input, filename=args.filename)

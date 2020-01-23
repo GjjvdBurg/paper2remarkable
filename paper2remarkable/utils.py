@@ -9,6 +9,7 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import PyPDF2
+import regex
 import requests
 import string
 import subprocess
@@ -110,8 +111,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     remarkable_dir = remarkable_dir.rstrip("/")
     if remarkable_dir:
         status = subprocess.call(
-            [rmapi_path, "mkdir", remarkable_dir],
-            stdout=subprocess.DEVNULL,
+            [rmapi_path, "mkdir", remarkable_dir], stdout=subprocess.DEVNULL,
         )
         if not status == 0:
             raise RemarkableError(
@@ -128,3 +128,11 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
             "Uploading file %s to reMarkable failed" % filepath
         )
     logger.info("Upload successful.")
+
+
+def is_url(string):
+    # pattern adapted from CleverCSV
+    pattern = "((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*\-?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:]*)?(\.[a-z]+)?"
+    string = string.strip(" ")
+    match = regex.fullmatch(pattern, string)
+    return match is not None
