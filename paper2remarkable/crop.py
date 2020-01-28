@@ -50,7 +50,8 @@ class Cropper(object):
                 logger.info("Processing pages ... (%i/%i)" % (page_idx + 1, n))
         with open(self.output_file, "wb") as fp:
             self.writer.write(fp)
-        logger.info("Processing pages ... (%i/%i)" % (n, n))
+        if n % 10 > 0:
+            logger.info("Processing pages ... (%i/%i)" % (n, n))
         return 0
 
     def center_page(self, page_idx, padding):
