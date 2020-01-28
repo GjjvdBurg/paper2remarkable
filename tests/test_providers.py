@@ -79,6 +79,22 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
+    def test_arxiv_3(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        url = "https://arxiv.org/abs/math/0309285"
+        exp_filename = "Jackson_et_al_-_An_Algorithm_for_Optimal_Partitioning_of_Data_on_an_Interval_2003.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_arxiv_4(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        url = "https://arxiv.org/pdf/physics/0605197v1.pdf"
+        exp_filename = (
+            "Knuth_-_Optimal_Data-Based_Binning_for_Histograms_2006.pdf"
+        )
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
     def test_pmc(self):
         prov = PubMed(upload=False, verbose=VERBOSE)
         url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3474301/"

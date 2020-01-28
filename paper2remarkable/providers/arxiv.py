@@ -33,8 +33,11 @@ class ArxivInformer(Informer):
 
 class Arxiv(Provider):
 
-    re_abs = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
-    re_pdf = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
+    re_abs_1 = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
+    re_pdf_1 = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
+
+    re_abs_2 = "https?://arxiv.org/abs/\w+/\d{7}(v\d+)?"
+    re_pdf_2 = "https?://arxiv.org/pdf/\w+/\d{7}(v\d+)?.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -45,10 +48,10 @@ class Arxiv(Provider):
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
-        if re.match(self.re_abs, url):
+        if re.match(self.re_abs_1, url) or re.match(self.re_abs_2, url):
             abs_url = url
             pdf_url = url.replace("abs", "pdf") + ".pdf"
-        elif re.match(self.re_pdf, url):
+        elif re.match(self.re_pdf_1, url) or re.match(self.re_pdf_2, url):
             abs_url = url[:-4].replace("pdf", "abs")
             pdf_url = url
         else:
@@ -57,7 +60,12 @@ class Arxiv(Provider):
 
     def validate(src):
         """Check if the url is to an arXiv page. """
-        return re.match(Arxiv.re_abs, src) or re.match(Arxiv.re_pdf, src)
+        return (
+            re.match(Arxiv.re_abs_1, src)
+            or re.match(Arxiv.re_pdf_1, src)
+            or re.match(Arxiv.re_abs_2, src)
+            or re.match(Arxiv.re_pdf_2, src)
+        )
 
     def dearxiv(self, input_file):
         """Remove the arXiv timestamp from a pdf"""
