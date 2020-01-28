@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.6
+
+* Add support for older arXiv URL scheme
+
 ## Version 0.4.5
 
 * Add logging of long running crop/center operations
