@@ -10,6 +10,7 @@ from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
 from .springer import Springer
+from .tandfonline import TandFOnline
 
 # NOTE: Order matters here, PdfUrl should be last
 providers = [
@@ -21,6 +22,7 @@ providers = [
     PMLR,
     PubMed,
     Springer,
+    TandFOnline,
     LocalFile,
     PdfUrl,
 ]

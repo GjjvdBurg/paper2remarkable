@@ -23,6 +23,7 @@ from paper2remarkable.providers import (
     PdfUrl,
     PubMed,
     Springer,
+    TandFOnline,
 )
 from paper2remarkable.providers.arxiv import DEARXIV_TEXT_REGEX
 
@@ -203,6 +204,20 @@ class TestProviders(unittest.TestCase):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf"
         exp = "Kirkpatrick_Gelatt_Vecchi_-_Optimization_by_Simulated_Annealing_1983.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_tandfonline_1(self):
+        prov = TandFOnline(upload=False, verbose=VERBOSE)
+        url = "https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1385466"
+        exp = "Fearnhead_Rigaill_-_Changepoint_Detection_in_the_Presence_of_Outliers_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_tandfonline_2(self):
+        prov = TandFOnline(upload=False, verbose=VERBOSE)
+        url = "https://www.tandfonline.com/doi/pdf/10.1080/03610918.2012.625790?scroll=top&needAccess=true"
+        exp = "Huskova_Marusiakova_-_M-Procedures_for_Detection_of_Changes_for_Dependent_Observations_2012.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
