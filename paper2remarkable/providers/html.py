@@ -30,10 +30,10 @@ logger = Logger()
 
 CSS = """
 @import url('https://fonts.googleapis.com/css?family=EB+Garamond|Noto+Serif&display=swap');
-@page { size: A4; margin: 1in; }
+@page { size: 702px 936px; margin: 1in; }
 a { color: black; }
 img { display: block; margin: 0 auto; text-align: center; max-width: 70%; max-height: 300px; }
-p { font-size: 11pt; font-family: 'EB Garamond'; hyphens: auto; text-align: justify; }
+p { font-size: 10pt; font-family: 'EB Garamond'; hyphens: auto; text-align: justify; }
 h1,h2,h3 { font-family: 'Noto Serif'; }
 h1 { font-size: 26px; }
 h2 { font-size: 18px; }
