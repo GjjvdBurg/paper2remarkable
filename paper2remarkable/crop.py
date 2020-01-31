@@ -139,6 +139,15 @@ class Cropper(object):
         # This is the bounding box in PIL format: (0, 0) top left
         x0, y0, x1, y1 = left, top, W - right, H - bottom
 
+        # The remarkable changes the orientation of a portrait page if the
+        # width is greater than the height. To prevent this, we pad the height
+        # with extra whitespace. This should only occur if the original 
+        # orientation of the page would be changed by cropping.
+        w, h = x1 - x0, y1 - y0
+        if H > W and w > h:
+            y1 = y0 + w + 10
+            h = y1 - y0
+
         # Get the bbox in Ghostscript format: (0, 0) bottom left
         a0, b0, a1, b1 = x0, H - y1, x1, H - y0
         return [a0, b0, a1, b1]
