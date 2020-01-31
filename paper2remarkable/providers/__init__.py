@@ -3,6 +3,7 @@
 from .acm import ACM
 from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
+from .html import HTML
 from .local import LocalFile
 from .neurips import NeurIPS
 from .openreview import OpenReview
@@ -23,4 +24,5 @@ providers = [
     Springer,
     LocalFile,
     PdfUrl,
+    HTML,
 ]

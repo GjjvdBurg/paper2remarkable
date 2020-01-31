@@ -16,6 +16,7 @@ from paper2remarkable.providers import (
     ACM,
     Arxiv,
     CiteSeerX,
+    HTML,
     LocalFile,
     NeurIPS,
     OpenReview,
@@ -203,6 +204,13 @@ class TestProviders(unittest.TestCase):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf"
         exp = "Kirkpatrick_Gelatt_Vecchi_-_Optimization_by_Simulated_Annealing_1983.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_html_1(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines"
+        exp = "Getting_Your_Team_to_Do_More_Than_Meet_Deadlines.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

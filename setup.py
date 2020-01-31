@@ -26,6 +26,10 @@ REQUIRED = [
     "titlecase>=0.12",
     "PyPDF2>=1.26",
     "regex>=2018.11"
+    "readability-lxml>=0.7.1",
+    "html2text>=2020.1.16",
+    "weasyprint>=51",
+    "markdown>=3.1.1"
 ]
 
 docs_require = []

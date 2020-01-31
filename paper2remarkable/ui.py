@@ -13,13 +13,18 @@ import sys
 
 from . import __version__, GITHUB_URL
 
-from .providers import providers, LocalFile
+from .providers import providers, LocalFile, HTML
 from .utils import follow_redirects, is_url
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Paper2reMarkable version %s" % __version__
+    )
+    parser.add_argument(
+        "--html",
+        help="URL is to a HTML article instead of a PDF",
+        action="store_true",
     )
     parser.add_argument(
         "-b",
@@ -99,7 +104,11 @@ def main():
     args = parse_args()
     cookiejar = None
 
-    if is_url(args.input):
+    if args.html and is_url(args.input):
+        # input is a url
+        url, cookiejar = follow_redirects(args.input)
+        provider = HTML
+    elif is_url(args.input):
         # input is a url
         url, cookiejar = follow_redirects(args.input)
         provider = next((p for p in providers if p.validate(url)), None)
