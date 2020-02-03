@@ -10,6 +10,12 @@ transferring an academic paper to your [reMarkable](https://remarkable.com/):
 $ p2r https://arxiv.org/abs/1811.11242
 ```
 
+There is also support for transferring an article from a website:
+
+```
+p2r --html https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
+```
+
 The script can be run through the ``p2r`` command line program or via Docker 
 (see below).
 
@@ -26,11 +32,12 @@ reMarkable from any of the following sources:
 * [SpringerLink](https://link.springer.com/)
 * A generic URL to a PDF file
 * A local PDF file
+* Any article on a website (using ``--html``)
 
 The program aims to be flexible to the exact source URL, so for many of the 
-sources you can either provide a URL to the abstract page or to the PDF file. 
-If you have an source that you would like to see added to the list, let me 
-know!
+academic sources you can either provide a URL to the abstract page or to the 
+PDF file.  If you have an source that you would like to see added to the list, 
+let me know!
 
 ``paper2remarkable`` takes the source URL and:
 
