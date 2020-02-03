@@ -61,6 +61,13 @@ def parse_args():
         "-v", "--verbose", help="be verbose", action="store_true"
     )
     parser.add_argument(
+        "-V",
+        "--version",
+        help="Show version and exit",
+        action="version",
+        version=__version__,
+    )
+    parser.add_argument(
         "--filename",
         help="Filename to use for the file on reMarkable",
         default=None,
