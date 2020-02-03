@@ -64,7 +64,7 @@ def download_url(url, filename, cookiejar=None):
         fid.write(content)
 
 
-def get_page_with_retry(url, tries=5, cookiejar=None):
+def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
     count = 0
     jar = {} if cookiejar is None else cookiejar
     while count < tries:
@@ -82,6 +82,8 @@ def get_page_with_retry(url, tries=5, cookiejar=None):
             time.sleep(5)
             continue
         logger.info("Downloaded url: %s" % url)
+        if return_text:
+            return res.text
         return res.content
 
 
