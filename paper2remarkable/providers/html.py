@@ -29,7 +29,7 @@ from ..log import Logger
 logger = Logger()
 
 CSS = """
-@import url('https://fonts.googleapis.com/css?family=EB+Garamond|Noto+Serif&display=swap');
+@import url('https://fonts.googleapis.com/css?family=EB+Garamond|Noto+Serif|Inconsolata&display=swap');
 @page { size: 702px 936px; margin: 1in; }
 a { color: black; }
 img { display: block; margin: 0 auto; text-align: center; max-width: 70%; max-height: 300px; }
@@ -39,6 +39,8 @@ h1 { font-size: 26px; }
 h2 { font-size: 18px; }
 h3 { font-size: 14px; }
 blockquote { font-style: italic; }
+pre { font-family: 'Inconsolata'; padding-left: 2.5%; background: #efefef; }
+code { font-family: 'Inconsolata'; font-size: .7rem; background: #efefef; }
 """
 
 
@@ -64,7 +66,7 @@ class HTMLInformer(Informer):
         title = titlecase.titlecase(title)
         title = title.replace(" ", "_")
         title = clean_string(title)
-        name = title + ".pdf"
+        name = title.strip("_") + ".pdf"
         name = unidecode.unidecode(name)
         logger.info("Created filename: %s" % name)
         return name
