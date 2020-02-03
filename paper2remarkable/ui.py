@@ -22,7 +22,7 @@ def parse_args():
         description="Paper2reMarkable version %s" % __version__
     )
     parser.add_argument(
-        "--html",
+        '-t', "--html",
         help="URL is to a HTML article instead of a PDF",
         action="store_true",
     )
