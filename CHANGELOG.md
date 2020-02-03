@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.5.0
+
+* Add support for articles from the web using the ``--html`` flag 
+  ([#23](https://github.com/GjjvdBurg/paper2remarkable/pull/23))
+* Add ``--version`` command to command line interface
+* Fix cropping bug that resulted in occassional rotated pages
+
 ## Version 0.4.6
 
 * Add support for older arXiv URL scheme

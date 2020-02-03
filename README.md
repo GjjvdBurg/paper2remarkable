@@ -61,18 +61,19 @@ Optionally, you can:
 Here's the full help of the script:
 
 ```text
-usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v]
+usage: p2r [-h] [-t] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v] [-V]
            [--filename FILENAME] [--gs GS] [--pdfcrop PDFCROP] [--pdftk PDFTK]
            [--rmapi RMAPI]
            input
 
-Paper2reMarkable version 0.4.0
+Paper2reMarkable version 0.5.0
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file
 
 optional arguments:
   -h, --help            show this help message and exit
+  -t, --html            URL is to a HTML article instead of a PDF
   -b, --blank           Add a blank page after every page of the PDF
   -c, --center          Center the PDF on the page, instead of left align
   -d, --debug           debug mode, doesn't upload to reMarkable
@@ -82,6 +83,7 @@ optional arguments:
                         directory on reMarkable to put the file (created if
                         missing, default: /)
   -v, --verbose         be verbose
+  -V, --version         Show version and exit
   --filename FILENAME   Filename to use for the file on reMarkable
   --gs GS               path to gs executable (default: gs)
   --pdfcrop PDFCROP     path to pdfcrop executable (default: pdfcrop)
