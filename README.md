@@ -13,7 +13,7 @@ $ p2r https://arxiv.org/abs/1811.11242
 There is also support for transferring an article from a website:
 
 ```
-p2r --html https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
+$ p2r --html https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 ```
 
 The script can be run through the ``p2r`` command line program or via Docker 
