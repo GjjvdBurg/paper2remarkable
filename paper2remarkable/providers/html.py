@@ -33,11 +33,12 @@ CSS = """
 @page { size: 702px 936px; margin: 1in; }
 a { color: black; }
 img { display: block; margin: 0 auto; text-align: center; max-width: 70%; max-height: 300px; }
-p { font-size: 10pt; font-family: 'EB Garamond'; hyphens: auto; text-align: justify; }
+p, li { font-size: 10pt; font-family: 'EB Garamond'; hyphens: auto; text-align: justify; }
 h1,h2,h3 { font-family: 'Noto Serif'; }
 h1 { font-size: 26px; }
 h2 { font-size: 18px; }
 h3 { font-size: 14px; }
+blockquote { font-style: italic; }
 """
 
 
@@ -107,6 +108,10 @@ class HTML(Provider):
         html_article = html_article.replace(
             ' src="/', ' src="{base}/'.format(base=base_url)
         )
+
+        if self.debug:
+            with open("./paper.html", "w") as fp:
+                fp.write(html_article)
 
         font_config = weasyprint.fonts.FontConfiguration()
         html = weasyprint.HTML(string=html_article, url_fetcher=my_fetcher)
