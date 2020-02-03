@@ -108,13 +108,13 @@ def main():
         # input is a url
         url, cookiejar = follow_redirects(args.input)
         provider = HTML
+    elif LocalFile.validate(args.input):
+        # input is a local file
+        provider = LocalFile
     elif is_url(args.input):
         # input is a url
         url, cookiejar = follow_redirects(args.input)
         provider = next((p for p in providers if p.validate(url)), None)
-    elif LocalFile.validate(args.input):
-        # input is a local file
-        provider = LocalFile
     else:
         # not a proper URL or non-existent file
         exception(
