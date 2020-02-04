@@ -214,6 +214,14 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    def test_html_2(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://www.nature.com/articles/d41586-020-00176-4"
+        exp = "Isaac_Asimov_Centenary_of_the_Great_Explainer.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+
 
 if __name__ == "__main__":
     unittest.main()
