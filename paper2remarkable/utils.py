@@ -87,6 +87,28 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
         return res.content
 
 
+def get_content_type_with_retry(url, tries=5, cookiejar=None):
+    count = 0
+    jar = {} if cookiejar is None else cookiejar
+    while count < tries:
+        count += 1
+        error = False
+        try:
+            res = requests.head(url, headers=HEADERS, cookies=jar, 
+                    allow_redirects=True)
+        except requests.exceptions.ConnectionError:
+            error = True
+        if error or not res.ok:
+            logger.warning(
+                "(%i/%i) Error getting headers for %s. Retrying in 5 seconds."
+                % (count, tries, url)
+            )
+            time.sleep(5)
+            continue
+        print("res.headers = %r" % res.headers)
+        return res.headers.get("Content-Type", None)
+
+
 def follow_redirects(url):
     """Follow redirects from the URL (at most 100)"""
     it = 0

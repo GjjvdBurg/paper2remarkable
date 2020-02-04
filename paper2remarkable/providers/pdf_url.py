@@ -13,6 +13,7 @@ import urllib
 from ._base import Provider
 from ._info import Informer
 from ..exceptions import FilenameMissingError
+from ..utils import get_content_type_with_retry
 
 
 class PdfUrlInformer(Informer):
@@ -30,8 +31,12 @@ class PdfUrl(Provider):
         return (None, url)
 
     def validate(src):
-        try:
-            result = urllib.parse.urlparse(src)
-            return all([result.scheme, result.netloc, result.path])
-        except:
+        # first check if it is a valid url
+        parsed = urllib.parse.urlparse(src)
+        if not all([parsed.scheme, parsed.netloc, parsed.path]):
             return False
+        # next, get the header and check the content type
+        ct = get_content_type_with_retry(src)
+        if ct is None:
+            return False
+        return ct.startswith("application/pdf")

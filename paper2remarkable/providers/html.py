@@ -23,7 +23,11 @@ import weasyprint.fonts
 from ._base import Provider
 from ._info import Informer
 
-from ..utils import clean_string, get_page_with_retry
+from ..utils import (
+    clean_string,
+    get_page_with_retry,
+    get_content_type_with_retry,
+)
 from ..log import Logger
 
 logger = Logger()
@@ -122,8 +126,12 @@ class HTML(Provider):
         html.write_pdf(filename, stylesheets=[css], font_config=font_config)
 
     def validate(src):
-        try:
-            result = urllib.parse.urlparse(src)
-            return all([result.scheme, result.netloc, result.path])
-        except:
+        # first check if it is a valid url
+        parsed = urllib.parse.urlparse(src)
+        if not all([parsed.scheme, parsed.netloc, parsed.path]):
             return False
+        # next, get the header and check the content type
+        ct = get_content_type_with_retry(src)
+        if ct is None:
+            return False
+        return ct.startswith("text/html")
