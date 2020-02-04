@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.5.1
+
+* Automatically detect when a HTML source is provided 
+  ([#24](https://github.com/GjjvdBurg/paper2remarkable/pull/24))
+
 ## Version 0.5.0
 
 * Add support for articles from the web using the ``--html`` flag 

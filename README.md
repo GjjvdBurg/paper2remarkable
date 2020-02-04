@@ -13,7 +13,7 @@ $ p2r https://arxiv.org/abs/1811.11242
 There is also support for transferring an article from a website:
 
 ```
-$ p2r --html https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
+$ p2r https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 ```
 
 The script can be run through the ``p2r`` command line program or via Docker 
@@ -32,11 +32,11 @@ reMarkable from any of the following sources:
 * [SpringerLink](https://link.springer.com/)
 * A generic URL to a PDF file
 * A local PDF file
-* Any article on a website (using ``--html``)
+* Any article on a website
 
 The program aims to be flexible to the exact source URL, so for many of the 
 academic sources you can either provide a URL to the abstract page or to the 
-PDF file.  If you have an source that you would like to see added to the list, 
+PDF file. If you have an source that you would like to see added to the list, 
 let me know!
 
 ``paper2remarkable`` takes the source URL and:
@@ -66,14 +66,13 @@ usage: p2r [-h] [-t] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v] [-V]
            [--rmapi RMAPI]
            input
 
-Paper2reMarkable version 0.5.0
+Paper2reMarkable version 0.5.1
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file
 
 optional arguments:
   -h, --help            show this help message and exit
-  -t, --html            URL is to a HTML article instead of a PDF
   -b, --blank           Add a blank page after every page of the PDF
   -c, --center          Center the PDF on the page, instead of left align
   -d, --debug           debug mode, doesn't upload to reMarkable
