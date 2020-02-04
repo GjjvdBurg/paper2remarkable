@@ -105,7 +105,6 @@ def get_content_type_with_retry(url, tries=5, cookiejar=None):
             )
             time.sleep(5)
             continue
-        print("res.headers = %r" % res.headers)
         return res.headers.get("Content-Type", None)
 
 
