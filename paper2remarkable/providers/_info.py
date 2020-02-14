@@ -76,8 +76,13 @@ class Informer:
     ## Title
 
     def get_title(self, soup):
-        target = soup.find_all("meta", {"name": self.meta_title_key})
-        return target[0]["content"]
+        meta = soup.find_all("meta", {"name": self.meta_title_key})
+        if not meta:
+            logger.warning(
+                "Couldn't determine title information, maybe provide the desired filename using '--filename'?"
+            )
+            return ""
+        return meta[0]["content"]
 
     ## Authors
 
@@ -87,10 +92,13 @@ class Informer:
         return [x.strip().split(sep)[idx].strip() for x in op(soup_authors)]
 
     def get_authors(self, soup):
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": self.meta_author_key})
-        ]
+        meta = soup.find_all("meta", {"name": self.meta_author_key})
+        if not meta:
+            logger.warning(
+                "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
+            )
+            return ""
+        authors = [x["content"] for x in meta]
         return self._format_authors(authors)
 
     ## Year
@@ -100,7 +108,8 @@ class Informer:
 
     def get_year(self, soup):
         """ Retrieve the contents of the meta_date_key field and format it """
-        date = soup.find_all("meta", {"name": self.meta_date_key})[0][
-            "content"
-        ]
+        meta = soup.find_all("meta", {"name": self.meta_date_key})
+        if not meta:
+            return ""
+        date = meta[0]["content"]
         return self._format_year(date)
