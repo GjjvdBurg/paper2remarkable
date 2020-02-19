@@ -50,6 +50,7 @@ class Informer:
             authors = self.authors[0] + "_et_al"
         else:
             authors = "_".join(self.authors)
+        authors = authors.replace(" ", "_")
         authors = clean_string(authors)
 
         # Clean the title and make it titlecase
