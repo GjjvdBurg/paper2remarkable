@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 0.5.2
+
+* Add provider for US National Bureau of Economic Research
+  ([#27](https://github.com/GjjvdBurg/paper2remarkable/pull/27)).
+* Automatically extract the filename from a pdf url where possible 
+  ([#25](https://github.com/GjjvdBurg/paper2remarkable/issues/25)).
+* Speed up centering of pdfs by removing unnecessary cropping operation.
+* Improve robustness against missing metadata, remove spaces in author names, 
+  and other minor improvements.
+
 ## Version 0.5.1
 
 * Automatically detect when a HTML source is provided 
