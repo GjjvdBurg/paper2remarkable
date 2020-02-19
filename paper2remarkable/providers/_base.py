@@ -64,7 +64,7 @@ class Provider(metaclass=abc.ABCMeta):
         # Define the operations to run on the pdf. Providers can add others.
         self.operations = [("crop", self.crop_pdf)]
         if center:
-            self.operations.append(("center", self.center_pdf))
+            self.operations = [("center", self.center_pdf)]
 
         if blank:
             self.operations.append(("blank", blank_pdf))
