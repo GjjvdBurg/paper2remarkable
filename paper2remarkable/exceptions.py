@@ -48,13 +48,17 @@ class URLResolutionError(Error):
 class FilenameMissingError(Error):
     """Exception raised for providers that need a filename to be provided"""
 
-    def __init__(self, provider):
+    def __init__(self, provider, url, reason=None):
         self.provider = provider
+        self.url = url
+        self.reason = reason
 
     def __str__(self):
-        msg = "ERROR: Filename must be given with the {provider} provider (hint: use --filename)".format(
-            provider=self.provider
+        msg = "ERROR: Couldn't determine a filename from {url} for provider {provider}".format(
+            provider=self.provider, url=self.url
         )
+        if self.reason:
+            msg += "\nReason: {reason}".format(reason=self.reason)
         msg += GH_MSG
         return msg
 

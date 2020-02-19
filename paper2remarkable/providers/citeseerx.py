@@ -49,10 +49,6 @@ class CiteSeerX(Provider):
         )
         time.sleep(30)
 
-        # NOTE: The delay should only be hit twice when p2r is used as a
-        # library (e.g. during testing). Otherwise the ``server_delay`` is
-        # never reached in run().
-
     def _get_doi(self, url):
         m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)
         if m:
