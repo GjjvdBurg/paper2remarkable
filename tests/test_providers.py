@@ -18,6 +18,7 @@ from paper2remarkable.providers import (
     CiteSeerX,
     HTML,
     LocalFile,
+    NBER,
     NeurIPS,
     OpenReview,
     PMLR,
@@ -176,6 +177,20 @@ class TestProviders(unittest.TestCase):
         prov = PMLR(upload=False, verbose=VERBOSE)
         url = "http://proceedings.mlr.press/v48/zhangf16.html"
         exp = "Zhang_Paisley_-_Markov_Latent_Feature_Models_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_nber_1(self):
+        prov = NBER(upload=False, verbose=VERBOSE)
+        url = "https://www.nber.org/papers/w26752"
+        exp = "Bhattacharya_Packalen_-_Stagnation_and_Scientific_Incentives_2020.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_nber_2(self):
+        prov = NBER(upload=False, verbose=VERBOSE)
+        url = "https://www.nber.org/papers/w19152.pdf"
+        exp = "Herbst_Schorfheide_-_Sequential_Monte_Carlo_Sampling_for_DSGE_Models_2013.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
