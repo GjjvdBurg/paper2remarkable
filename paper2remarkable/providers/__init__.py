@@ -5,6 +5,7 @@ from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
 from .html import HTML
 from .local import LocalFile
+from .nber import NBER
 from .neurips import NeurIPS
 from .openreview import OpenReview
 from .pdf_url import PdfUrl
@@ -12,11 +13,12 @@ from .pmlr import PMLR
 from .pubmed import PubMed
 from .springer import Springer
 
-# NOTE: Order matters here, PdfUrl should be last
+# NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
     ACM,
     Arxiv,
     CiteSeerX,
+    NBER,
     NeurIPS,
     OpenReview,
     PMLR,
