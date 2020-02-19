@@ -148,8 +148,8 @@ class TestProviders(unittest.TestCase):
     def test_pdfurl(self):
         prov = PdfUrl(upload=False, verbose=VERBOSE)
         url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"
-        filename = prov.run(url, filename="test.pdf")
-        self.assertEqual("test.pdf", os.path.basename(filename))
+        filename = prov.run(url)
+        self.assertEqual("14-526.pdf", os.path.basename(filename))
 
     def test_pmlr_1(self):
         prov = PMLR(upload=False, verbose=VERBOSE)
