@@ -25,6 +25,7 @@ reMarkable from any of the following sources:
 * [arXiv](https://arxiv.org/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
 * [CiteSeerX](http://citeseerx.ist.psu.edu/index)
+* [NBER](https://www.nber.org)
 * [NeurIPS](https://papers.nips.cc/)
 * [OpenReview](https://openreview.net/)
 * [PMLR](http://proceedings.mlr.press/)
@@ -131,7 +132,7 @@ This installs the ``p2r`` command line program.
 
 ## Docker
 
-You can also use our Dockerfile to avoid installing dependencies on your 
+You can also use the Dockerfile to avoid installing dependencies on your 
 machine. You will need `git` and `docker` installed.
 
 First clone this repository with `git clone` and `cd` inside of it, then build 
