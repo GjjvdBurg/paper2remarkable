@@ -133,13 +133,18 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
     # Create the reMarkable dir if it doesn't exist
     remarkable_dir = remarkable_dir.rstrip("/")
     if remarkable_dir:
-        status = subprocess.call(
-            [rmapi_path, "mkdir", remarkable_dir], stdout=subprocess.DEVNULL,
-        )
-        if not status == 0:
-            raise RemarkableError(
-                "Creating directory %s on reMarkable failed" % remarkable_dir
+        parts = remarkable_dir.split("/")
+        rmdir = ""
+        while parts:
+            rmdir += "/" + parts.pop(0)
+            status = subprocess.call(
+                [rmapi_path, "mkdir", rmdir], stdout=subprocess.DEVNULL,
             )
+            if not status == 0:
+                raise RemarkableError(
+                    "Creating directory %s on reMarkable failed"
+                    % remarkable_dir
+                )
 
     # Upload the file
     status = subprocess.call(
