@@ -94,8 +94,9 @@ def get_content_type_with_retry(url, tries=5, cookiejar=None):
         count += 1
         error = False
         try:
-            res = requests.head(url, headers=HEADERS, cookies=jar, 
-                    allow_redirects=True)
+            res = requests.head(
+                url, headers=HEADERS, cookies=jar, allow_redirects=True
+            )
         except requests.exceptions.ConnectionError:
             error = True
         if error or not res.ok:
