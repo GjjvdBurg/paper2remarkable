@@ -117,6 +117,9 @@ The script requires the following external programs to be available:
 - [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/)
 - [GhostScript](https://www.ghostscript.com/)
 - [rMAPI](https://github.com/juruen/rmapi)
+- [pdftoppm](https://linux.die.net/man/1/pdftoppm) Optional, but recommended 
+  for speed. Usually part of a [Poppler](https://poppler.freedesktop.org/) 
+  installation.
 
 If these scripts are not available on the ``PATH`` variable, you can supply 
 them with the relevant options to the script. Then, you can install 
