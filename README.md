@@ -63,12 +63,12 @@ Optionally, you can:
 Here's the full help of the script:
 
 ```text
-usage: p2r [-h] [-t] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v] [-V]
-           [--filename FILENAME] [--gs GS] [--pdfcrop PDFCROP] [--pdftk PDFTK]
-           [--rmapi RMAPI]
+usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v] [-V]
+           [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM]
+           [--pdftk PDFTK] [--rmapi RMAPI]
            input
 
-Paper2reMarkable version 0.5.1
+Paper2reMarkable version 0.5.3
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file
@@ -87,7 +87,7 @@ optional arguments:
   -V, --version         Show version and exit
   --filename FILENAME   Filename to use for the file on reMarkable
   --gs GS               path to gs executable (default: gs)
-  --pdfcrop PDFCROP     path to pdfcrop executable (default: pdfcrop)
+  --pdftoppm PDFTOPPM   path to pdftoppm executable (default: pdftoppm)
   --pdftk PDFTK         path to pdftk executable (default: pdftk)
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
 ```
