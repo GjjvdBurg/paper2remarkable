@@ -9,9 +9,10 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import PyPDF2
+import io
 import os
-import subprocess
 import pdfplumber
+import subprocess
 
 from .log import Logger
 
@@ -21,17 +22,43 @@ RM_HEIGHT = 1872
 logger = Logger()
 
 
+def find_offset_byte_line(line):
+    """Find index of first nonzero bit in a line of bytes
+
+    The given line is a string of bytes, each representing 8 pixels. This code 
+    finds the index of the first bit that is not zero. Used when find the 
+    cropbox with pdftoppm.
+    """
+    off = 0
+    for c in line:
+        if c == 0:
+            off += 8
+        else:
+            k = 0
+            while c > 0:
+                k += 1
+                c >>= 1
+            off += k
+            break
+    return off
+
+
 class Cropper(object):
     def __init__(
-        self, input_file=None, output_file=None, pdfcrop_path="pdfcrop"
+        self,
+        input_file=None,
+        output_file=None,
+        pdfcrop_path="pdfcrop",
+        pdftoppm_path="pdftoppm",
     ):
         if not input_file is None:
             self.input_file = os.path.abspath(input_file)
             self.reader = PyPDF2.PdfFileReader(self.input_file)
         if not output_file is None:
             self.output_file = os.path.abspath(output_file)
-        self.pdfcrop_path = pdfcrop_path
 
+        self.pdfcrop_path = pdfcrop_path
+        self.pdftoppm_path = pdftoppm_path
         self.writer = PyPDF2.PdfFileWriter()
 
     def crop(self, margins=1):
@@ -96,17 +123,20 @@ class Cropper(object):
         os.unlink(tmpfout)
         return 0
 
-    def get_bbox(self, filename, margins=1, resolution=72):
-        """Get the bounding box, with optional margins
+    def get_raw_bbox(self, filename, resolution=72):
+        """Get the basic bounding box of a pdf file"""
+        # We try to use pdftoppm, but if it's not available or fails, we 
+        # default to pdfplumber.
+        try:
+            bbox = self.get_raw_bbox_pdftoppm(filename, resolution=resolution)
+        except subprocess.CalledProcessError:
+            bbox = self.get_raw_bbox_pdfplumber(
+                filename, resolution=resolution
+            )
+        return bbox
 
-        if margins is integer, used for all margins, else
-        margins = [left, top, right, bottom]
-
-        We get the bounding box by finding the smallest rectangle that is 
-        completely surrounded by white pixels.
-        """
-        if isinstance(margins, int):
-            margins = [margins for _ in range(4)]
+    def get_raw_bbox_pdfplumber(self, filename, resolution=72):
+        """Get the basic bounding box with pdfplumber"""
         pdf = pdfplumber.open(filename)
         im = pdf.pages[0].to_image(resolution=resolution)
         pdf.close()
@@ -131,6 +161,74 @@ class Cropper(object):
         while right < W and sum(M[W - 1 - right]) == H * 255 * 3:
             right += 1
 
+        return left, right, top, bottom, W, H
+
+    def get_raw_bbox_pdftoppm(self, filename, resolution=72):
+        """Get the basic bounding box using pdftoppm """
+        cmd = [
+            self.pdftoppm_path,
+            "-r",
+            str(resolution),
+            "-singlefile",
+            "-mono",
+            filename,
+        ]
+
+        im = subprocess.check_output(cmd)
+        im = io.BytesIO(im)
+
+        id_ = im.readline().rstrip(b"\n")
+        if not id_ == b"P4":
+            raise ValueError("Not in P4 format")
+        wh = im.readline().rstrip(b"\n").split(b" ")
+        width, height = int(wh[0]), int(wh[1])
+        imdata = im.read()
+
+        pad = width % 8
+        padwidth = width + pad
+        stepsize = padwidth // 8
+
+        for top in range(height):
+            if sum(imdata[top * stepsize : (top + 1) * stepsize]) > 0:
+                break
+
+        for bottom in reversed(range(height)):
+            if sum(imdata[bottom * stepsize : (bottom + 1) * stepsize]) > 0:
+                break
+
+        left = width
+        right = 0
+        for i in range(top, bottom):
+            lline = imdata[i * stepsize : (i + 1) * stepsize]
+            rline = reversed(imdata[i * stepsize : (i + 1) * stepsize])
+            l = find_offset_byte_line(lline)
+            left = min(left, l)
+            r = padwidth + pad - find_offset_byte_line(rline)
+            right = max(right, r)
+
+        top += 1
+        left += 1
+        right = width - right + 2
+        bottom = height - bottom - 2
+
+        return left, right, top, bottom, width, height
+
+    def get_bbox(self, filename, margins=1, resolution=72):
+        """Get the bounding box, with optional margins
+
+        if margins is integer, used for all margins, else
+        margins = [left, top, right, bottom]
+
+        We get the bounding box by finding the smallest rectangle that is 
+        completely surrounded by white pixels.
+        """
+        if isinstance(margins, int):
+            margins = [margins for _ in range(4)]
+
+        left, right, top, bottom, W, H = self.get_raw_bbox(
+            filename, resolution=resolution
+        )
+
         left -= margins[0]
         top -= margins[1]
         right -= margins[2]
@@ -141,7 +239,7 @@ class Cropper(object):
 
         # The remarkable changes the orientation of a portrait page if the
         # width is greater than the height. To prevent this, we pad the height
-        # with extra whitespace. This should only occur if the original 
+        # with extra whitespace. This should only occur if the original
         # orientation of the page would be changed by cropping.
         w, h = x1 - x0, y1 - y0
         if H > W and w > h:

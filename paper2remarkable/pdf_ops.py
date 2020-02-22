@@ -19,13 +19,18 @@ from .log import Logger
 logger = Logger()
 
 
-def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
+def crop_pdf(filepath, pdfcrop_path="pdfcrop", pdftoppm_path="pdftoppm"):
     """Crop the pdf file using Cropper
     """
     logger.info("Cropping pdf file")
     cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
 
-    cropper = Cropper(filepath, cropped_file, pdfcrop_path=pdfcrop_path)
+    cropper = Cropper(
+        filepath,
+        cropped_file,
+        pdfcrop_path=pdfcrop_path,
+        pdftoppm_path=pdftoppm_path,
+    )
     status = cropper.crop(margins=15)
 
     if not status == 0:
@@ -39,13 +44,18 @@ def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
     return cropped_file
 
 
-def center_pdf(filepath, pdfcrop_path="pdfcrop"):
+def center_pdf(filepath, pdfcrop_path="pdfcrop", pdftoppm_path="pdftoppm"):
     """Center the pdf file on the reMarkable
     """
     logger.info("Centering pdf file")
     centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
 
-    cropper = Cropper(filepath, centered_file, pdfcrop_path=pdfcrop_path)
+    cropper = Cropper(
+        filepath,
+        centered_file,
+        pdfcrop_path=pdfcrop_path,
+        pdftoppm_path=pdftoppm_path,
+    )
     status = cropper.center()
 
     if not status == 0:

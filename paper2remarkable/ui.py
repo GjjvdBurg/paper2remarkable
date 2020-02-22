@@ -76,6 +76,11 @@ def parse_args():
         default="pdfcrop",
     )
     parser.add_argument(
+        "--pdftoppm",
+        help="path to pdftoppm executable (default: pdftoppm)",
+        default="pdftoppm",
+    )
+    parser.add_argument(
         "--pdftk",
         help="path to pdftk executable (default: pdftk)",
         default="pdftk",
@@ -134,6 +139,7 @@ def main():
         remarkable_dir=args.remarkable_dir,
         rmapi_path=args.rmapi,
         pdfcrop_path=args.pdfcrop,
+        pdftoppm_path=args.pdftoppm,
         pdftk_path=args.pdftk,
         gs_path=args.gs,
         cookiejar=cookiejar,

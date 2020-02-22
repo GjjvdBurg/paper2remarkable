@@ -40,6 +40,7 @@ class Provider(metaclass=abc.ABCMeta):
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdfcrop_path="pdfcrop",
+        pdftoppm_path="pdftoppm",
         pdftk_path="pdftk",
         gs_path="gs",
         cookiejar=None,
@@ -49,6 +50,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdfcrop_path = pdfcrop_path
+        self.pdftoppm_path = pdftoppm_path
         self.pdftk_path = pdftk_path
         self.gs_path = gs_path
         self.informer = Informer()
@@ -83,10 +85,12 @@ class Provider(metaclass=abc.ABCMeta):
 
     # Wrappers for pdf operations that have additional arguments
     def crop_pdf(self, filepath):
-        return crop_pdf(filepath, pdfcrop_path=self.pdfcrop_path)
+        return crop_pdf(filepath, pdfcrop_path=self.pdfcrop_path, 
+                pdftoppm_path=self.pdftoppm_path)
 
     def center_pdf(self, filepath):
-        return center_pdf(filepath, pdfcrop_path=self.pdfcrop_path)
+        return center_pdf(filepath, pdfcrop_path=self.pdfcrop_path, 
+                pdftoppm_path=self.pdftoppm_path)
 
     def shrink_pdf(self, filepath):
         return shrink_pdf(filepath, gs_path=self.gs_path)
