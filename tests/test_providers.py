@@ -17,6 +17,7 @@ from paper2remarkable.providers import (
     Arxiv,
     CiteSeerX,
     HTML,
+    JMLR,
     LocalFile,
     NBER,
     NeurIPS,
@@ -152,6 +153,20 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual("14-526.pdf", os.path.basename(filename))
 
+    def test_jmlr_1(self):
+        prov = JMLR(upload=False, verbose=VERBOSE)
+        url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"
+        exp = "Burg_Groenen_-_GenSVM_a_Generalized_Multiclass_Support_Vector_Machine_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_jmlr_2(self):
+        prov = JMLR(upload=False, verbose=VERBOSE)
+        url = "http://www.jmlr.org/papers/v10/xu09a.html"
+        exp = "Xu_Zhang_-_Refinement_of_Reproducing_Kernels_2009.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
     def test_pmlr_1(self):
         prov = PMLR(upload=False, verbose=VERBOSE)
         url = "http://proceedings.mlr.press/v97/behrmann19a.html"
@@ -235,7 +250,6 @@ class TestProviders(unittest.TestCase):
         exp = "Isaac_Asimov_Centenary_of_the_Great_Explainer.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
-
 
 
 if __name__ == "__main__":
