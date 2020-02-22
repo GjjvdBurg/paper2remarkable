@@ -18,7 +18,7 @@ RUN apt-get update \
         libmagickwand-dev \
         pdftk \
         ghostscript \
-        texlive-extra-utils  # contains pdfcrop
+	poppler-utils
 
 RUN pip install --no-cache-dir paper2remarkable
 
