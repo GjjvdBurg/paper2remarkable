@@ -50,7 +50,6 @@ class Cropper(object):
         self,
         input_file=None,
         output_file=None,
-        pdfcrop_path="pdfcrop",
         pdftoppm_path="pdftoppm",
     ):
         if not input_file is None:
@@ -59,7 +58,6 @@ class Cropper(object):
         if not output_file is None:
             self.output_file = os.path.abspath(output_file)
 
-        self.pdfcrop_path = pdfcrop_path
         self.pdftoppm_path = pdftoppm_path
         self.writer = PyPDF2.PdfFileWriter()
 
@@ -113,7 +111,7 @@ class Cropper(object):
 
     def get_raw_bbox(self, filename, resolution=72):
         """Get the basic bounding box of a pdf file"""
-        # We try to use pdftoppm, but if it's not available or fails, we 
+        # We try to use pdftoppm, but if it's not available or fails, we
         # default to pdfplumber.
         try:
             bbox = self.get_raw_bbox_pdftoppm(filename, resolution=resolution)

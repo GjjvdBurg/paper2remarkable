@@ -115,8 +115,6 @@ $ p2r -v https://arxiv.org/abs/1811.11242
 The script requires the following external programs to be available:
 
 - [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/)
-- [pdfcrop](https://ctan.org/pkg/pdfcrop?lang=en): usually included with a 
-  LaTeX installation.
 - [GhostScript](https://www.ghostscript.com/)
 - [rMAPI](https://github.com/juruen/rmapi)
 
