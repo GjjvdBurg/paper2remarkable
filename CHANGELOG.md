@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.5.3
+
+* Significantly speed up the program 
+  ([#26](https://github.com/GjjvdBurg/paper2remarkable/issues/26))
+* Add provider for JMLR 
+  ([#28](https://github.com/GjjvdBurg/paper2remarkable/pull/28)).
+* Bugfix for creating nested directories with ``-p`` option.
+
 ## Version 0.5.2
 
 * Add provider for US National Bureau of Economic Research
