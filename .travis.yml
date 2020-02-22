@@ -6,10 +6,9 @@ python:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install ghostscript pdftk texlive-extra-utils poppler-utils
+  - sudo apt-get install ghostscript pdftk poppler-utils
 
 install:
-  - pip install six
   - pip install -e .[dev]
 
 script:
