@@ -14,6 +14,8 @@ import os
 import pdfplumber
 import subprocess
 
+from PyPDF2.generic import RectangleObject
+
 from .log import Logger
 
 RM_WIDTH = 1404
@@ -102,25 +104,11 @@ class Cropper(object):
     def process_page(self, page_idx, bbox_func, *args, **kwargs):
         """Process a single page and add it to the writer """
         tmpfname = self.export_page(page_idx)
-        tmpfout = "./output.pdf"
         bbox = bbox_func(tmpfname, *args, **kwargs)
-        status = subprocess.call(
-            [
-                self.pdfcrop_path,
-                "--bbox",
-                " ".join(map(str, bbox)),
-                tmpfname,
-                tmpfout,
-            ],
-            stdout=subprocess.DEVNULL,
-        )
-        if not status == 0:
-            return status
-        reader = PyPDF2.PdfFileReader(tmpfout)
-        page = reader.getPage(0)
-        self.writer.addPage(page)
+        thepage = self.reader.getPage(page_idx)
+        thepage.cropBox = RectangleObject(bbox)
+        self.writer.addPage(thepage)
         os.unlink(tmpfname)
-        os.unlink(tmpfout)
         return 0
 
     def get_raw_bbox(self, filename, resolution=72):
