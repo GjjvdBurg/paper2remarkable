@@ -53,10 +53,17 @@ def parse_args():
         default="/",
     )
     parser.add_argument(
+        "-r",
+        "--right",
+        help="Right align so the menu doesn't cover it",
+        action="store_true",
+    )
+    parser.add_argument(
             '-k',
             '--no-crop',
             help="Don't crop the pdf file",
-            action="store_true")
+            action="store_true"
+            )
 
     parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
@@ -114,8 +121,14 @@ def main():
     args = parse_args()
     cookiejar = None
 
+    if args.center and args.right:
+        exception("Can't center and right align at the same time!")
+
     if args.center and args.no_crop:
         exception("Can't center and not crop at the same time!")
+
+    if args.right_align and args.no_crop:
+        exception("Can't right align and not crop at the same time!")
 
     if LocalFile.validate(args.input):
         # input is a local file
@@ -139,6 +152,7 @@ def main():
         upload=not args.no_upload,
         debug=args.debug,
         center=args.center,
+        right=args.right,
         blank=args.blank,
         no_crop=args.no_crop,
         remarkable_dir=args.remarkable_dir,

@@ -15,7 +15,7 @@ import tempfile
 import time
 
 from ._info import Informer
-from ..pdf_ops import crop_pdf, center_pdf, blank_pdf, shrink_pdf
+from ..pdf_ops import crop_pdf, center_pdf, right_pdf, blank_pdf, shrink_pdf
 from ..utils import (
     assert_file_is_pdf,
     download_url,
@@ -36,6 +36,7 @@ class Provider(metaclass=abc.ABCMeta):
         upload=True,
         debug=False,
         center=False,
+        right=False,
         blank=False,
         no_crop=False,
         remarkable_dir="/",
@@ -67,6 +68,8 @@ class Provider(metaclass=abc.ABCMeta):
             self.operations = []
         elif center:
             self.operations = [("center", self.center_pdf)]
+        elif right:
+            self.operations = [("right", self.right_pdf)]
         else:
             self.operations = [("crop", self.crop_pdf)]
 
@@ -91,6 +94,9 @@ class Provider(metaclass=abc.ABCMeta):
 
     def center_pdf(self, filepath):
         return center_pdf(filepath, pdftoppm_path=self.pdftoppm_path)
+
+    def right_pdf(self, filepath):
+        return right_pdf(filepath, pdftoppm_path=self.pdftoppm_path)
 
     def shrink_pdf(self, filepath):
         return shrink_pdf(filepath, gs_path=self.gs_path)
