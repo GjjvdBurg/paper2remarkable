@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.5.4
+
+* Add the option to not crop the file at all
+  ([#28](https://github.com/GjjvdBurg/paper2remarkable/pull/30)).
+* Add the option to right-align the file so the menu doesn't overlap
+  ([#28](https://github.com/GjjvdBurg/paper2remarkable/pull/31)).
+* Bugfix for validation for the JMLR provider
+
 ## Version 0.5.3
 
 * Significantly speed up the program 

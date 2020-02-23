@@ -63,12 +63,12 @@ Optionally, you can:
 Here's the full help of the script:
 
 ```text
-usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-v] [-V]
+usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
            [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM]
            [--pdftk PDFTK] [--rmapi RMAPI]
            input
 
-Paper2reMarkable version 0.5.3
+Paper2reMarkable version 0.5.4
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file
@@ -83,6 +83,8 @@ optional arguments:
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
                         directory on reMarkable to put the file (created if
                         missing, default: /)
+  -r, --right           Right align so the menu doesn't cover it
+  -k, --no-crop         Don't crop the pdf file
   -v, --verbose         be verbose
   -V, --version         Show version and exit
   --filename FILENAME   Filename to use for the file on reMarkable
