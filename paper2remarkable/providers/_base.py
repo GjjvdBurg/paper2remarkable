@@ -37,6 +37,7 @@ class Provider(metaclass=abc.ABCMeta):
         debug=False,
         center=False,
         blank=False,
+        no_crop=False,
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdftoppm_path="pdftoppm",
@@ -62,9 +63,12 @@ class Provider(metaclass=abc.ABCMeta):
             logger.disable()
 
         # Define the operations to run on the pdf. Providers can add others.
-        self.operations = [("crop", self.crop_pdf)]
-        if center:
+        if no_crop:
+            self.operations = []
+        elif center:
             self.operations = [("center", self.center_pdf)]
+        else:
+            self.operations = [("crop", self.crop_pdf)]
 
         if blank:
             self.operations.append(("blank", blank_pdf))

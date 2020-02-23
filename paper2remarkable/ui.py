@@ -53,6 +53,12 @@ def parse_args():
         default="/",
     )
     parser.add_argument(
+            '-k',
+            '--no-crop',
+            help="Don't crop the pdf file",
+            action="store_true")
+
+    parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )
     parser.add_argument(
@@ -108,6 +114,9 @@ def main():
     args = parse_args()
     cookiejar = None
 
+    if args.center and args.no_crop:
+        exception("Can't center and not crop at the same time!")
+
     if LocalFile.validate(args.input):
         # input is a local file
         provider = LocalFile
@@ -131,6 +140,7 @@ def main():
         debug=args.debug,
         center=args.center,
         blank=args.blank,
+        no_crop=args.no_crop,
         remarkable_dir=args.remarkable_dir,
         rmapi_path=args.rmapi,
         pdftoppm_path=args.pdftoppm,
