@@ -67,4 +67,9 @@ class JMLR(Provider):
         return abs_url, pdf_url
 
     def validate(src):
-        return re.match(JMLR.re_abs, src) or re.match(JMLR.re_pdf, src)
+        return (
+            re.match(JMLR.re_abs_1, src)
+            or re.match(JMLR.re_abs_2, src)
+            or re.match(JMLR.re_pdf_1, src)
+            or re.match(JMLR.re_pdf_2, src)
+        )
