@@ -19,64 +19,24 @@ from .log import Logger
 logger = Logger()
 
 
-def crop_pdf(filepath, pdftoppm_path="pdftoppm"):
-    """Crop the pdf file using Cropper
-    """
-    logger.info("Cropping pdf file")
-    cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
-
-    cropper = Cropper(filepath, cropped_file, pdftoppm_path=pdftoppm_path,)
-    status = cropper.crop(margins=15)
-
-    if not status == 0:
-        logger.warning("Failed to crop the pdf file at: %s" % filepath)
+def prepare_pdf(filepath, operation, pdftoppm_path="pdftoppm"):
+    """Prepare pdf by cropping, centering, or right-aligning the flie"""
+    logger.info("Preparing PDF using %s operation" % operation)
+    prepared_file = os.path.splitext(filepath)[0] + "-prep.pdf"
+    cropper = Cropper(filepath, prepared_file, pdftoppm_path=pdftoppm_path)
+    if operation == "crop":
+        status = cropper.crop(margins=15)
+    elif operation == "center":
+        status = cropper.center()
+    elif operation == "right":
+        status = cropper.right()
+    else:
+        logger.warning("Unknown operation: %s" % operation)
         return filepath
-    if not os.path.exists(cropped_file):
-        logger.warning(
-            "Can't find cropped file '%s' where expected." % cropped_file
-        )
+    if not status == 0 or not os.path.exists(prepared_file):
+        logger.warning("PDF prepare operation failed")
         return filepath
-    return cropped_file
-
-
-def center_pdf(filepath, pdftoppm_path="pdftoppm"):
-    """Center the pdf file on the reMarkable
-    """
-    logger.info("Centering pdf file")
-    centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
-
-    cropper = Cropper(filepath, centered_file, pdftoppm_path=pdftoppm_path,)
-    status = cropper.center()
-
-    if not status == 0:
-        logger.warning("Failed to center the pdf file at: %s" % filepath)
-        return filepath
-    if not os.path.exists(centered_file):
-        logger.warning(
-            "Can't find centered file '%s' where expected." % centered_file
-        )
-        return filepath
-    return centered_file
-
-
-def right_pdf(filepath, pdftoppm_path="pdftoppm"):
-    """Right-align the pdf file on the reMarkable
-    """
-    logger.info("Right-aligning pdf file")
-    righted_file = os.path.splitext(filepath)[0] + "-right.pdf"
-
-    cropper = Cropper(filepath, righted_file, pdftoppm_path=pdftoppm_path)
-    status = cropper.right()
-
-    if not status == 0:
-        logger.warning("Failed to right-align the pdf file at: %s" % filepath)
-        return filepath
-    if not os.path.exists(righted_file):
-        logger.warning(
-            "Can't find right-aligned file '%s' where expected" % righted_file
-        )
-        return filepath
-    return righted_file
+    return prepared_file
 
 
 def blank_pdf(filepath):
