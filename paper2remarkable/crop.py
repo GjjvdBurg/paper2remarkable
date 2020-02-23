@@ -47,10 +47,7 @@ def find_offset_byte_line(line):
 
 class Cropper(object):
     def __init__(
-        self,
-        input_file=None,
-        output_file=None,
-        pdftoppm_path="pdftoppm",
+        self, input_file=None, output_file=None, pdftoppm_path="pdftoppm",
     ):
         if not input_file is None:
             self.input_file = os.path.abspath(input_file)
@@ -67,6 +64,9 @@ class Cropper(object):
     def center(self, padding=15):
         return self.process_file(self.center_page, padding=padding)
 
+    def right(self, padding=15):
+        return self.process_file(self.right_page, padding=padding)
+
     def process_file(self, page_func, *args, **kwargs):
         n = self.reader.getNumPages()
         for page_idx in range(n):
@@ -81,13 +81,18 @@ class Cropper(object):
             logger.info("Processing pages ... (%i/%i)" % (n, n))
         return 0
 
+    def crop_page(self, page_idx, margins):
+        return self.process_page(page_idx, self.get_bbox, margins=margins)
+
     def center_page(self, page_idx, padding):
         return self.process_page(
             page_idx, self.get_center_bbox, padding=padding
         )
 
-    def crop_page(self, page_idx, margins):
-        return self.process_page(page_idx, self.get_bbox, margins=margins)
+    def right_page(self, page_idx, padding):
+        return self.process_page(
+            page_idx, self.get_right_bbox, padding=padding
+        )
 
     def export_page(self, page_idx):
         """Helper function that exports a single page given by index """
@@ -216,7 +221,9 @@ class Cropper(object):
         )
 
         left -= margins[0]
+        left = max(left, 0)
         top -= margins[1]
+        top = max(top, 0)
         right -= margins[2]
         bottom -= margins[3]
 
@@ -252,11 +259,48 @@ class Cropper(object):
 
         # if the document is wider than the remarkable, we add top-padding to
         # center it, otherwise we add left-padding
-        x, y = 0, 0
+        x = y = 0
         if h_prime / w_prime < RM_HEIGHT / RM_WIDTH:
             y = ((RM_HEIGHT / RM_WIDTH) * w_prime - h_prime) / 2
         else:
             x = ((RM_WIDTH / RM_HEIGHT) * h_prime - w_prime) / 2
 
         margins = [padding + x, padding + y, padding, padding]
+        return self.get_bbox(filename, margins=margins)
+
+    def get_right_bbox(self, filename, padding=15):
+        """Get the bounding box that ensures the menu doesn't hide the text
+        """
+
+        bbox = self.get_bbox(filename, margins=0)
+
+        h = bbox[3] - bbox[1]
+        w = bbox[2] - bbox[0]
+
+        # Note, the menu width is about 12mm and the entire screen is about
+        # 156mm. This informs the width of the left padding we'll add.
+        menu_width = 12 / 156 * RM_WIDTH
+
+        H = RM_HEIGHT
+        W = RM_WIDTH
+
+        # TODO: This math is approximate. The goal is to get the page centered
+        # in the remaining space after taking the menu width into account,
+        # while also providing equal padding at the top and bottom. This seems
+        # to give too much padding on the left for some pages, but I'm not sure
+        # why. Pull requests welcome!
+        rho_rm = H / (W - menu_width)
+        rho_page = (h + 2 * padding) / (w + 2 * padding)
+        x = y = 0
+        if rho_rm < rho_page:
+            x = -w - 2 * padding + (h + 2 * padding) * (W - menu_width) / H
+        elif rho_rm > rho_page:
+            y = -h - 2 * padding + H * (w + 2 * padding) / (W - menu_width)
+
+        margins = [
+            menu_width + x + padding,
+            padding + y,
+            padding,
+            padding,
+        ]
         return self.get_bbox(filename, margins=margins)

@@ -53,6 +53,12 @@ def parse_args():
         default="/",
     )
     parser.add_argument(
+        "-r",
+        "--right",
+        help="Right align so the menu doesn't cover it",
+        action="store_true",
+    )
+    parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )
     parser.add_argument(
@@ -108,6 +114,9 @@ def main():
     args = parse_args()
     cookiejar = None
 
+    if args.center and args.right:
+        exception("Can't center and right align at the same time!")
+
     if LocalFile.validate(args.input):
         # input is a local file
         provider = LocalFile
@@ -130,6 +139,7 @@ def main():
         upload=not args.no_upload,
         debug=args.debug,
         center=args.center,
+        right=args.right,
         blank=args.blank,
         remarkable_dir=args.remarkable_dir,
         rmapi_path=args.rmapi,
