@@ -127,7 +127,7 @@ def main():
     if args.center and args.no_crop:
         exception("Can't center and not crop at the same time!")
 
-    if args.right_align and args.no_crop:
+    if args.right and args.no_crop:
         exception("Can't right align and not crop at the same time!")
 
     if LocalFile.validate(args.input):
