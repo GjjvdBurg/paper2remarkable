@@ -16,8 +16,9 @@ There is also support for transferring an article from a website:
 $ p2r https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 ```
 
-The script can be run through the ``p2r`` command line program or via Docker 
-(see below).
+The script can be run through the ``p2r`` command line program or via Docker
+(see below). If you're using MacOS, you might be interested in the [Alfred
+workflow](#alfred).
 
 ``paper2remarkable`` makes it as easy as possible to get a PDF on your 
 reMarkable from any of the following sources:
@@ -133,6 +134,21 @@ pip install paper2remarkable
 ```
 
 This installs the ``p2r`` command line program.
+
+## Alfred
+
+Install the [Alfred workflow][workflow], which is [a launcher for
+MacOS](https://www.alfredapp.com/).
+
+Once installed, you can use `rm` command and `rmb` (for the `--blank` pages to
+insert blank pages between pages for notes) with a URL passed. The global
+shortcut `Alt-P` will send the current selection to `p2r`. Note that by default
+`--right` is passed and `p2r` is executed in your `bash` environment. You can
+edit the Workflow in Alfred if this doesn't work for your setup.
+
+![Alfred Screenshot](https://raw.githubusercontent.com/GjjvdBurg/paper2remarkable/master/.github/alfred.png)
+
+[workflow]: https://github.com/GjjvdBurg/paper2remarkable/blob/master/Remarkable.alfredworkflow?raw=true 
 
 ## Docker
 
