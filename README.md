@@ -57,7 +57,8 @@ Optionally, you can:
 - Download a paper but not upload to the reMarkable using the ``-n`` switch.
 - Insert a blank page after each page using the ``-b`` switch (useful for note 
   taking!)
-- Center the pdf on the reMarkable (default is left-aligned)
+- Center (``-c``) or right-align (``-r``) the pdf on the reMarkable (default 
+  is left-aligned), or disable cropping altogether (``-k``).
 - Provide an explicit filename using the ``--filename`` parameter
 - Specify the location on the reMarkable to place the file (default ``/``)
 
@@ -118,12 +119,18 @@ $ p2r -v https://arxiv.org/abs/1811.11242
 
 The script requires the following external programs to be available:
 
-- [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/)
+- [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), or 
+  ``pdftk-java``, whichever your package manager provides.
 - [GhostScript](https://www.ghostscript.com/)
-- [rMAPI](https://github.com/juruen/rmapi)
 - [pdftoppm](https://linux.die.net/man/1/pdftoppm) Optional, but recommended 
   for speed. Usually part of a [Poppler](https://poppler.freedesktop.org/) 
   installation.
+- [rMAPI](https://github.com/juruen/rmapi)
+
+On Arch, use ``pacman -S pdftk ghostscript poppler``, on Ubuntu try ``apt-get 
+install pdftk ghostscript poppler-utils``, and on Mac: ``brew install 
+pdftk-java poppler``. For [rMAPI](https://github.com/juruen/rmapi), use ``go 
+get -u github.com/juruen/rmapi``.
 
 If these scripts are not available on the ``PATH`` variable, you can supply 
 them with the relevant options to the script. Then, you can install 
