@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.5.5
+
+* Fix bug for when the shrink operation returns bigger files 
+  ([#33](https://github.com/GjjvdBurg/paper2remarkable/issues/33)).
+
 ## Version 0.5.4
 
 * Add the option to not crop the file at all
