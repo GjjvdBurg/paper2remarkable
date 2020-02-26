@@ -134,7 +134,7 @@ class Provider(metaclass=abc.ABCMeta):
             intermediate_fname = tmp_filename
             for opname, op in self.operations:
                 intermediate_fname = op(intermediate_fname)
-            shutil.move(intermediate_fname, clean_filename)
+            shutil.copy(intermediate_fname, clean_filename)
 
             if self.debug:
                 print("Paused in debug mode in dir: %s" % working_dir)
