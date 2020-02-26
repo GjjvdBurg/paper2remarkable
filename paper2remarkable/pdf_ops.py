@@ -58,7 +58,8 @@ def blank_pdf(filepath):
 def shrink_pdf(filepath, gs_path="gs"):
     """Shrink the PDF file size using Ghostscript
     """
-    logger.info("Shrinking pdf file")
+    logger.info("Shrinking pdf file ...")
+    size_before = os.path.getsize(filepath)
     output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
     status = subprocess.call(
         [
@@ -77,5 +78,9 @@ def shrink_pdf(filepath, gs_path="gs"):
     )
     if not status == 0:
         logger.warning("Failed to shrink the pdf file")
+        return filepath
+    size_after = os.path.getsize(output_file)
+    if size_after > size_before:
+        logger.info("Shrinking has no effect for this file, using original.")
         return filepath
     return output_file
