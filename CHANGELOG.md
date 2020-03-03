@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.6
+
+* Be more robust against missing pdftoppm executable.
+
 ## Version 0.5.5
 
 * Fix bug for when the shrink operation returns bigger files 
