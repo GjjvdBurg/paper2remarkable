@@ -129,8 +129,9 @@ The script requires the following external programs to be available:
 
 On Arch, use ``pacman -S pdftk ghostscript poppler``, on Ubuntu try ``apt-get 
 install pdftk ghostscript poppler-utils``, and on Mac: ``brew install 
-pdftk-java poppler``. For [rMAPI](https://github.com/juruen/rmapi), use ``go 
-get -u github.com/juruen/rmapi``.
+pdftk-java ghostscript poppler``. For 
+[rMAPI](https://github.com/juruen/rmapi), use ``go get -u 
+github.com/juruen/rmapi``.
 
 If these scripts are not available on the ``PATH`` variable, you can supply 
 them with the relevant options to the script. Then, you can install 
