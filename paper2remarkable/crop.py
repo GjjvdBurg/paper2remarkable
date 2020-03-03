@@ -45,6 +45,17 @@ def find_offset_byte_line(line):
     return off
 
 
+def check_pdftoppm(pth):
+    """Check that we can run the provided pdftoppm executable
+    """
+    try:
+        subprocess.check_output([pth, "-v"], stderr=subprocess.DEVNULL)
+    except (subprocess.CalledProcessError, FileNotFoundError, PermissionError):
+        logger.info("pdftoppm not found, using pdfplumber instead (slower)")
+        return False
+    return True
+
+
 class Cropper(object):
     def __init__(
         self, input_file=None, output_file=None, pdftoppm_path="pdftoppm",
@@ -54,6 +65,9 @@ class Cropper(object):
             self.reader = PyPDF2.PdfFileReader(self.input_file)
         if not output_file is None:
             self.output_file = os.path.abspath(output_file)
+
+        if pdftoppm_path and not check_pdftoppm(pdftoppm_path):
+            pdftoppm_path = None
 
         self.pdftoppm_path = pdftoppm_path
         self.writer = PyPDF2.PdfFileWriter()
@@ -116,15 +130,11 @@ class Cropper(object):
 
     def get_raw_bbox(self, filename, resolution=72):
         """Get the basic bounding box of a pdf file"""
-        # We try to use pdftoppm, but if it's not available or fails, we
-        # default to pdfplumber.
-        try:
-            bbox = self.get_raw_bbox_pdftoppm(filename, resolution=resolution)
-        except subprocess.CalledProcessError:
-            bbox = self.get_raw_bbox_pdfplumber(
-                filename, resolution=resolution
-            )
-        return bbox
+        if self.pdftoppm_path is None:
+            box = self.get_raw_bbox_pdfplumber(filename, resolution=resolution)
+        else:
+            box = self.get_raw_bbox_pdftoppm(filename, resolution=resolution)
+        return box
 
     def get_raw_bbox_pdfplumber(self, filename, resolution=72):
         """Get the basic bounding box with pdfplumber"""
