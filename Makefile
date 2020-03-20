@@ -7,7 +7,7 @@ PACKAGE=paper2remarkable
 DOC_DIR='./docs/'
 VENV_DIR=/tmp/p2r_venv/
 
-.PHONY: help cover dist venv
+.PHONY: help dist venv
 
 .DEFAULT_GOAL := help
 
