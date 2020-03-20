@@ -198,6 +198,9 @@ docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 
 # equivalent to above usage
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
+
+# to transfer a local file in the current directory
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:r" p2r -v localfile.pdf
 ```
 
 You can also create an [alias](http://tldp.org/LDP/abs/html/aliases.html) in 
