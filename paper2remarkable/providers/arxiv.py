@@ -75,16 +75,15 @@ class Arxiv(Provider):
 
         status = subprocess.call(
             [
-                self.pdftk_path,
+                self.qpdf_path,
+                "--stream-data=uncompress",
                 input_file,
-                "output",
                 uncompress_file,
-                "uncompress",
             ]
         )
         if not status == 0:
             raise CalledProcessError(
-                "pdftk failed to uncompress the PDF file."
+                "qpdf failed to uncompress the PDF file."
             )
 
         with open(uncompress_file, "rb") as fid:
@@ -104,9 +103,9 @@ class Arxiv(Provider):
 
         output_file = basename + "_dearxiv.pdf"
         status = subprocess.call(
-            [self.pdftk_path, removed_file, "output", output_file, "compress"]
+            [self.qpdf_path, "--stream-data=compress", removed_file, output_file]
         )
         if not status == 0:
-            raise CalledProcessError("pdftk failed to compress the PDF file.")
+            raise CalledProcessError("qpdf failed to compress the PDF file.")
 
         return output_file

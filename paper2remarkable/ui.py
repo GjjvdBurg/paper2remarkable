@@ -89,9 +89,9 @@ def parse_args():
         default="pdftoppm",
     )
     parser.add_argument(
-        "--pdftk",
-        help="path to pdftk executable (default: pdftk)",
-        default="pdftk",
+        "--qpdf",
+        help="path to qpdf executable (default: qpdf)",
+        default="qpdf",
     )
     parser.add_argument(
         "--rmapi",
@@ -158,7 +158,7 @@ def main():
         remarkable_dir=args.remarkable_dir,
         rmapi_path=args.rmapi,
         pdftoppm_path=args.pdftoppm,
-        pdftk_path=args.pdftk,
+        qpdf_path=args.qpdf,
         gs_path=args.gs,
         cookiejar=cookiejar,
     )

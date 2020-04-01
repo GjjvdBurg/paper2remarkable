@@ -42,7 +42,7 @@ class Provider(metaclass=abc.ABCMeta):
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdftoppm_path="pdftoppm",
-        pdftk_path="pdftk",
+        qpdf_path="qpdf",
         gs_path="gs",
         cookiejar=None,
     ):
@@ -51,7 +51,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdftoppm_path = pdftoppm_path
-        self.pdftk_path = pdftk_path
+        self.qpdf_path = qpdf_path
         self.gs_path = gs_path
         self.informer = Informer()
         self.cookiejar = cookiejar
