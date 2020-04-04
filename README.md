@@ -137,11 +137,13 @@ Specifically:
    ```
    $ go get -u github.com/juruen/rmapi
    ```
+
 2. Then install system dependencies:
    - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
    - **Ubuntu:** ``apt-get install pdftk ghostscript poppler-utils``. Replace 
      ``pdftk`` with ``qpdf`` if your distribution doesn't package ``pdftk``.
    - **MacOs:** ``brew install pdftk-java ghostscript poppler`` (using [HomeBrew](https://brew.sh/)).
+
 3. Finally, install ``paper2remarkable``:
    ```
    $ pip install paper2remarkable
