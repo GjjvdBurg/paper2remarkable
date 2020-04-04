@@ -122,19 +122,14 @@ class Provider(metaclass=abc.ABCMeta):
                 [self.pdftk_path, in_pdf, "output", out_pdf, "compress"]
             )
         elif self.pdftool == "qpdf":
-            # TODO: the --no-warn option is only needed because when we remove
+            # TODO: the status == 3 is only needed because when we remove
             # the arXiv stamp we don't fix the length of the pdf object. This
-            # causes qpdf to raise a warning and give a nonzero exit status
-            # (3). Fixing the pdf object is the right approach, but this does 
-            # work as qpdf fixes the file.
+            # causes qpdf to raise a warning and give a nonzero exit status.
+            # Fixing the pdf object is the right approach, but this does
+            # work as it is since qpdf fixes the file for us.
             status = subprocess.call(
-                [
-                    self.qpdf_path,
-                    "--no-warn",
-                    "--stream-data=compress",
-                    in_pdf,
-                    out_pdf,
-                ]
+                [self.qpdf_path, "--stream-data=compress", in_pdf, out_pdf,],
+                stderr=subprocess.DEVNULL,
             )
         if not (status == 0 or status == 3):
             raise _CalledProcessError(
