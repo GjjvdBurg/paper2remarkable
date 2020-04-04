@@ -169,8 +169,21 @@ def choose_provider(cli_input):
     return provider, new_input, cookiejar
 
 
+def set_excepthook(debug):
+    sys_hook = sys.excepthook
+
+    def exception_handler(exception_type, value, traceback):
+        if debug:
+            sys_hook(exception_type, value, traceback)
+        else:
+            print(value, file=sys.stderr)
+
+    sys.excepthook = exception_handler
+
+
 def main():
     args = parse_args()
+    set_excepthook(args.debug)
 
     if args.center and args.right:
         exception("Can't center and right align at the same time!")
