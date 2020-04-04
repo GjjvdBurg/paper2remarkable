@@ -6,7 +6,7 @@ python:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install ghostscript pdftk poppler-utils
+  - sudo apt-get install ghostscript pdftk poppler-utils qpdf
 
 install:
   - pip install -e .[dev]

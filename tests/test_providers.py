@@ -69,7 +69,8 @@ class TestProviders(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_arxiv_1(self):
-        prov = Arxiv(upload=False, verbose=VERBOSE)
+        # check with qpdf
+        prov = Arxiv(upload=False, verbose=VERBOSE, pdftk_path=None)
         url = "https://arxiv.org/abs/1811.11242v1"
         exp_filename = "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf"
         filename = prov.run(url)
