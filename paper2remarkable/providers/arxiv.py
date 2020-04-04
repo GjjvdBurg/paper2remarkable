@@ -10,14 +10,10 @@ Copyright: 2019, G.J.J. van den Burg
 
 import os
 import re
-import subprocess
 
 from ._info import Informer
 from ._base import Provider
-from ..exceptions import (
-    URLResolutionError,
-    _CalledProcessError as CalledProcessError,
-)
+from ..exceptions import URLResolutionError
 from ..log import Logger
 
 logger = Logger()
@@ -71,21 +67,9 @@ class Arxiv(Provider):
         """Remove the arXiv timestamp from a pdf"""
         logger.info("Removing arXiv timestamp")
         basename = os.path.splitext(input_file)[0]
-        uncompress_file = basename + "_uncompress.pdf"
 
-        status = subprocess.call(
-            [
-                self.pdftk_path,
-                input_file,
-                "output",
-                uncompress_file,
-                "uncompress",
-            ]
-        )
-        if not status == 0:
-            raise CalledProcessError(
-                "pdftk failed to uncompress the PDF file."
-            )
+        uncompress_file = basename + "_uncompress.pdf"
+        self.uncompress_pdf(input_file, uncompress_file)
 
         with open(uncompress_file, "rb") as fid:
             data = fid.read()
@@ -103,10 +87,6 @@ class Arxiv(Provider):
             oid.write(data)
 
         output_file = basename + "_dearxiv.pdf"
-        status = subprocess.call(
-            [self.pdftk_path, removed_file, "output", output_file, "compress"]
-        )
-        if not status == 0:
-            raise CalledProcessError("pdftk failed to compress the PDF file.")
+        self.compress_pdf(removed_file, output_file)
 
         return output_file
