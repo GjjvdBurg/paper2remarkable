@@ -59,12 +59,8 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-            '-k',
-            '--no-crop',
-            help="Don't crop the pdf file",
-            action="store_true"
-            )
-
+        "-k", "--no-crop", help="Don't crop the pdf file", action="store_true"
+    )
     parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )

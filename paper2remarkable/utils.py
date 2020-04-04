@@ -148,7 +148,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
                 )
 
     # Upload the file
-    logger.info("%s put %s %s/"%(rmapi_path,filepath,remarkable_dir))
+    logger.info("%s put %s %s/" % (rmapi_path, filepath, remarkable_dir))
     status = subprocess.call(
         [rmapi_path, "put", filepath, remarkable_dir + "/"],
         stdout=subprocess.DEVNULL,

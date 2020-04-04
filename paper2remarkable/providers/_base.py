@@ -16,16 +16,16 @@ import tempfile
 import time
 
 from ..exceptions import _CalledProcessError
-from ._info import Informer
+from ..log import Logger
 from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
 from ..utils import (
     assert_file_is_pdf,
     check_pdftool,
     download_url,
-    upload_to_remarkable,
     follow_redirects,
+    upload_to_remarkable,
 )
-from ..log import Logger
+from ._info import Informer
 
 logger = Logger()
 
