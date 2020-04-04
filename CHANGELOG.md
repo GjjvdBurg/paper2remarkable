@@ -1,5 +1,24 @@
 # Changelog
 
+## Version 0.6.0
+
+* The Dockerfile has been updated to use a more recent version of Cairo
+  ([#35](https://github.com/GjjvdBurg/paper2remarkable/issues/35)). Thanks to 
+  @ClaytonJY.
+* We've added support for optionally using qpdf instead of pdftk
+  ([#36](https://github.com/GjjvdBurg/paper2remarkable/pull/36)). Thanks to 
+  @delaere.
+* Resolving redirects has been improved, which solves an issue for the 
+  Springer provider 
+  ([#38](https://github.com/GjjvdBurg/paper2remarkable/pull/38)) and an issue 
+  with some arXiv urls 
+  ([#39](https://github.com/GjjvdBurg/paper2remarkable/pull/39)).
+* Unit tests were added for the provider selection.
+* The code that removes the arXiv stamp has been improved 
+  ([#40](https://github.com/GjjvdBurg/paper2remarkable/pull/40)).
+* Tracebacks have been disabled outside of debug mode, showing clearer errors 
+  ([#41](https://github.com/GjjvdBurg/paper2remarkable/pull/41)).
+
 ## Version 0.5.6
 
 * Be more robust against missing pdftoppm executable.
