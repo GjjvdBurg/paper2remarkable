@@ -7,7 +7,6 @@ __author__ = "G.J.J. van den Burg"
 
 import hashlib
 import os
-import re
 import shutil
 import tempfile
 import unittest
@@ -27,7 +26,6 @@ from paper2remarkable.providers import (
     PubMed,
     Springer,
 )
-from paper2remarkable.providers.arxiv import DEARXIV_TEXT_REGEX
 
 VERBOSE = False
 
@@ -41,18 +39,6 @@ def md5sum(filename):
             hasher.update(buf)
             buf = fid.read(blocksize)
     return hasher.hexdigest()
-
-
-class TestArxiv(unittest.TestCase):
-    def test_text_regex_1(self):
-        key = b"arXiv:1908.03213v1 [astro.HE] 8 Aug 2019"
-        m = re.fullmatch(DEARXIV_TEXT_REGEX, key)
-        self.assertIsNotNone(m)
-
-    def test_text_regex_2(self):
-        key = b"arXiv:1908.03213v1 [astro-ph.HE] 8 Aug 2019"
-        m = re.fullmatch(DEARXIV_TEXT_REGEX, key)
-        self.assertIsNotNone(m)
 
 
 class TestProviders(unittest.TestCase):
