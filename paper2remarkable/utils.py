@@ -173,8 +173,8 @@ def is_url(string):
 def check_pdftool(pdftk_path, qpdf_path):
     """Check whether we have pdftk or qpdf available"""
     # set defaults in case either is set to None or something
-    pdftk_path = pdftk_path or 'false'
-    qpdf_path = qpdf_path or 'false'
+    pdftk_path = pdftk_path or "false"
+    qpdf_path = qpdf_path or "false"
 
     status = subprocess.call(
         [pdftk_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
@@ -182,8 +182,9 @@ def check_pdftool(pdftk_path, qpdf_path):
     if status == 0:
         return "pdftk"
     status = subprocess.call(
-        [qpdf_path, '--help'], stdout=subprocess.DEVNULL, 
-        stderr=subprocess.DEVNULL
+        [qpdf_path, "--help"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     if status == 0:
         return "qpdf"
