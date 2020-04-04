@@ -160,15 +160,15 @@ class TestUI(unittest.TestCase):
                 "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
             ),
             (
-                    HTML,
-        "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines",
-        "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines"
-        ),
+                HTML,
+                "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines",
+                "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines",
+            ),
             (
-                    HTML,
-        "https://www.nature.com/articles/d41586-020-00176-4",
-        "https://www.nature.com/articles/d41586-020-00176-4"
-        ),
+                HTML,
+                "https://www.nature.com/articles/d41586-020-00176-4",
+                "https://www.nature.com/articles/d41586-020-00176-4",
+            ),
         ]
         for exp_prov, url, exp_url in tests:
             prov, new_url, jar = choose_provider(url)
