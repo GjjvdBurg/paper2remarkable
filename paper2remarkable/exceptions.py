@@ -90,16 +90,13 @@ class RemarkableError(Error):
         return msg
 
 
-class _CalledProcessError(CalledProcessError):
-    """Exception raised when subprocesses fail.
+class _CalledProcessError(Error):
+    """Exception raised when subprocesses fail.  """
 
-    We subclass the CalledProcessError so we can add our custom error message.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, message):
+        self.message = message
 
     def __str__(self):
-        parent = super().__str__()
-        msg = parent + GH_MSG
+        msg = "ERROR: {message}".format(message=self.message)
+        msg += GH_MSG
         return msg
