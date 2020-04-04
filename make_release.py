@@ -96,6 +96,12 @@ class UpdateChangelog(Step):
         self.print_run("vi CHANGELOG.md")
 
 
+class UpdateReadme(Step):
+    def action(self, context):
+        self.instruct(f"Update readme if necessary")
+        self.print_run("vi README.md")
+
+
 class RunTests(Step):
     def action(self, context):
         self.instruct("Run the unit tests")
@@ -159,7 +165,7 @@ class TestPackage(Step):
         self.instruct(
             f"Ensure that the following command gives version {context['version']}"
         )
-        self.print_run(f"p2r -h")
+        self.print_run(f"p2r -V")
 
 
 class DeactivateVenv(Step):
@@ -218,6 +224,7 @@ def main():
         PushToGitHub(),
         BumpVersionPackage(),
         UpdateChangelog(),
+        UpdateReadme(),
         MakeClean(),
         RunTests(),
         MakeDist(),
