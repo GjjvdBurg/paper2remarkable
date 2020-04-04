@@ -122,8 +122,10 @@ def follow_redirects(url):
         if not "Location" in req.headers:
             break
         url = req.headers["Location"]
-        jar = req.cookies
+        jar.update(req.cookies)
         it += 1
+    if it == 100:
+        logger.warning("Max redirects reached. There may be a problem.")
     jar = jar or req.cookies
     return url, jar
 
