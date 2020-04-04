@@ -13,6 +13,7 @@ import sys
 
 from . import __version__, GITHUB_URL
 
+from .exceptions import UnidentifiedSourceError, InvalidURLError
 from .providers import providers, LocalFile
 from .utils import follow_redirects, is_url
 
@@ -118,9 +119,58 @@ def exception(msg):
     raise SystemExit(1)
 
 
+def choose_provider(cli_input):
+    """Choose the provider to use for the given source
+
+    This function first tries to check if the input is a local file, by 
+    checking if the path exists. Next, it checks if the input is a "valid" url 
+    using a regex test. If it is, the registered provider classes are checked 
+    to see which provider can handle this url.
+
+    Returns
+    -------
+    provider : class
+        The class of the provider than can handle the source. A subclass of the 
+        Provider abc.
+
+    new_input : str
+        The updated input to the provider. This only has an effect for the url 
+        providers, where this will be the url after following all redirects.
+
+    cookiejar : dict or requests.RequestsCookieJar
+        Cookies picked up when following redirects. These are needed for some 
+        providers to ensure later requests have the right cookie settings.
+
+    Raises
+    ------
+    UnidentifiedSourceError
+        Raised when the input is neither an existing local file nor a valid url
+
+    InvalidURLError
+        Raised when the input *is* a valid url, but no provider can handle it.
+
+    """
+    provider = cookiejar = None
+    if LocalFile.validate(cli_input):
+        # input is a local file
+        new_input = cli_input
+        provider = LocalFile
+    elif is_url(cli_input):
+        # input is a url
+        new_input, cookiejar = follow_redirects(cli_input)
+        provider = next((p for p in providers if p.validate(new_input)), None)
+    else:
+        # not a proper URL or non-existent file
+        raise UnidentifiedSourceError
+
+    if provider is None:
+        raise InvalidURLError
+
+    return provider, new_input, cookiejar
+
+
 def main():
     args = parse_args()
-    cookiejar = None
 
     if args.center and args.right:
         exception("Can't center and right align at the same time!")
@@ -131,22 +181,7 @@ def main():
     if args.right and args.no_crop:
         exception("Can't right align and not crop at the same time!")
 
-    if LocalFile.validate(args.input):
-        # input is a local file
-        provider = LocalFile
-    elif is_url(args.input):
-        # input is a url
-        url, cookiejar = follow_redirects(args.input)
-        provider = next((p for p in providers if p.validate(url)), None)
-    else:
-        # not a proper URL or non-existent file
-        exception(
-            "Couldn't figure out what source you mean. If it's a "
-            "local file, make sure it exists."
-        )
-
-    if provider is None:
-        exception("Input not valid, no provider can handle this source.")
+    provider, new_input, cookiejar = choose_provider(args.input)
 
     prov = provider(
         verbose=args.verbose,
@@ -165,4 +200,4 @@ def main():
         cookiejar=cookiejar,
     )
 
-    prov.run(args.input, filename=args.filename)
+    prov.run(new_input, filename=args.filename)
