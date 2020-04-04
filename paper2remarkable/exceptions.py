@@ -100,3 +100,19 @@ class _CalledProcessError(Error):
         msg = "ERROR: {message}".format(message=self.message)
         msg += GH_MSG
         return msg
+
+
+class NoPDFToolError(Error):
+    """Exception raised when neither pdftk or qpdf is found."""
+
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        msg = (
+            "ERROR: Neither pdftk or qpdf could be found. Install "
+            "either of these or ensure that they can be found using "
+            "the --pdftk or --qpdf options."
+        )
+        msg += GH_MSG
+        return msg

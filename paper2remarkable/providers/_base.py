@@ -11,13 +11,16 @@ Copyright: 2019, G.J.J. van den Burg
 import abc
 import os
 import shutil
+import subprocess
 import tempfile
 import time
 
+from ..exceptions import _CalledProcessError
 from ._info import Informer
 from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
 from ..utils import (
     assert_file_is_pdf,
+    check_pdftool,
     download_url,
     upload_to_remarkable,
     follow_redirects,
@@ -57,6 +60,8 @@ class Provider(metaclass=abc.ABCMeta):
         self.gs_path = gs_path
         self.informer = Informer()
         self.cookiejar = cookiejar
+
+        self.pdftool = check_pdftool(self.pdftk_path, self.qpdf_path)
 
         # wait time to not hit the server too frequently
         self.server_delay = 0
@@ -109,6 +114,47 @@ class Provider(metaclass=abc.ABCMeta):
         """ Download pdf from src and save to filename """
         # This must exist so that the LocalFile provider can overwrite it
         download_url(pdf_url, filename, cookiejar=self.cookiejar)
+
+    def compress_pdf(self, in_pdf, out_pdf):
+        """ Compress a pdf file, returns subprocess status """
+        if self.pdftool == "pdftk":
+            status = subprocess.call(
+                [self.pdftk_path, in_pdf, "output", out_pdf, "compress"]
+            )
+        elif self.pdftool == "qpdf":
+            # TODO: the --no-warn option is only needed because when we remove
+            # the arXiv stamp we don't fix the length of the pdf object. This
+            # causes qpdf to raise a warning and give a nonzero exit status
+            # (3). Fixing the pdf object is the right approach, but this does 
+            # work as qpdf fixes the file.
+            status = subprocess.call(
+                [
+                    self.qpdf_path,
+                    "--no-warn",
+                    "--stream-data=compress",
+                    in_pdf,
+                    out_pdf,
+                ]
+            )
+        if not (status == 0 or status == 3):
+            raise _CalledProcessError(
+                "%s failed to compress the PDF file." % self.pdftool
+            )
+
+    def uncompress_pdf(self, in_pdf, out_pdf):
+        """ Uncompress a pdf file """
+        if self.pdftool == "pdftk":
+            status = subprocess.call(
+                [self.pdftk_path, in_pdf, "output", out_pdf, "uncompress",]
+            )
+        elif self.pdftool == "qpdf":
+            status = subprocess.call(
+                [self.qpdf_path, "--stream-data=uncompress", in_pdf, out_pdf,]
+            )
+        if not status == 0:
+            raise _CalledProcessError(
+                "%s failed to uncompress the PDF file." % self.pdftool
+            )
 
     def run(self, src, filename=None):
         # follow_redirects here is needed with library use
