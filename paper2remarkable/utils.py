@@ -17,7 +17,7 @@ import time
 import unidecode
 
 from .log import Logger
-from .exceptions import FileTypeError, RemarkableError
+from .exceptions import FileTypeError, RemarkableError, NoPDFToolError
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -148,6 +148,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
                 )
 
     # Upload the file
+    logger.info("%s put %s %s/" % (rmapi_path, filepath, remarkable_dir))
     status = subprocess.call(
         [rmapi_path, "put", filepath, remarkable_dir + "/"],
         stdout=subprocess.DEVNULL,
@@ -165,3 +166,23 @@ def is_url(string):
     string = string.strip(" ")
     match = regex.fullmatch(pattern, string)
     return match is not None
+
+
+def check_pdftool(pdftk_path, qpdf_path):
+    """Check whether we have pdftk or qpdf available"""
+    # set defaults in case either is set to None or something
+    pdftk_path = pdftk_path or 'false'
+    qpdf_path = qpdf_path or 'false'
+
+    status = subprocess.call(
+        [pdftk_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    if status == 0:
+        return "pdftk"
+    status = subprocess.call(
+        [qpdf_path, '--help'], stdout=subprocess.DEVNULL, 
+        stderr=subprocess.DEVNULL
+    )
+    if status == 0:
+        return "qpdf"
+    raise NoPDFToolError

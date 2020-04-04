@@ -59,12 +59,8 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-            '-k',
-            '--no-crop',
-            help="Don't crop the pdf file",
-            action="store_true"
-            )
-
+        "-k", "--no-crop", help="Don't crop the pdf file", action="store_true"
+    )
     parser.add_argument(
         "-v", "--verbose", help="be verbose", action="store_true"
     )
@@ -92,6 +88,11 @@ def parse_args():
         "--pdftk",
         help="path to pdftk executable (default: pdftk)",
         default="pdftk",
+    )
+    parser.add_argument(
+        "--qpdf",
+        help="path to qpdf executable (default: qpdf)",
+        default="qpdf",
     )
     parser.add_argument(
         "--rmapi",
@@ -159,6 +160,7 @@ def main():
         rmapi_path=args.rmapi,
         pdftoppm_path=args.pdftoppm,
         pdftk_path=args.pdftk,
+        qpdf_path=args.qpdf,
         gs_path=args.gs,
         cookiejar=cookiejar,
     )
