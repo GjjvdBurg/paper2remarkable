@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.6.1
+
+* Bugfix that makes removing the arXiv stamp more robust.
+
 ## Version 0.6.0
 
 * The Dockerfile has been updated to use a more recent version of Cairo

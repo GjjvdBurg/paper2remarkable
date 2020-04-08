@@ -216,6 +216,10 @@ docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.or
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:r" p2r -v localfile.pdf
 ```
 
+For transferring local files using the Docker image, you may find [this helper 
+function](https://github.com/GjjvdBurg/paper2remarkable/issues/34#issuecomment-610852258) 
+useful.
+
 You can also create an [alias](http://tldp.org/LDP/abs/html/aliases.html) in 
 your ``~/.bashrc`` file to abstract away the Docker commands:
 
