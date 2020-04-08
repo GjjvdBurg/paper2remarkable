@@ -191,4 +191,5 @@ class Provider(metaclass=abc.ABCMeta):
                 base = os.path.splitext(target_path)[0]
                 target_path = base + "_.pdf"
             shutil.move(clean_filename, target_path)
-            return target_path
+        os.chdir(self.initial_dir)
+        return target_path
