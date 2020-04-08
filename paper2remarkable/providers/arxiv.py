@@ -84,13 +84,13 @@ class Arxiv(Provider):
                     skip_n -= 1
                     continue
 
-                if line.endswith(b" obj\n"):
+                if line.endswith(b" obj\n") or line.endswith(b" obj \n"):
                     # Start a new object. Add it to the current object and
                     # record its position for the xref table.
                     current_obj.append(line)
                     objid = int(line.split(b" ")[0])
                     xref[objid] = char_count
-                elif current_obj and line == b"endobj\n":
+                elif current_obj and line.startswith(b'endobj'):
                     # End the current object. If needed, replace the arXiv
                     # stamp in the block (done only once). Reset current
                     # object.
@@ -119,7 +119,7 @@ class Arxiv(Provider):
                 elif current_obj:
                     # If we're recording an object, simply add the line to it
                     current_obj.append(line)
-                elif line == b"xref\n":
+                elif line in [b"xref\n", b"endobj xref\n"]:
                     # We found the xref table, record its position and write it
                     # out using our updated indices.
                     startxref = sum(map(len, new_data))
@@ -159,7 +159,7 @@ def fix_stream_length(block):
     do_count = False
 
     for line in block:
-        if line in [b"stream", b"endstream"]:
+        if line.strip(b" ") in [b"stream", b"endstream"]:
             do_count = not do_count
             continue
 
