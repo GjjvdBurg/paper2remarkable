@@ -38,19 +38,27 @@ class Logger(metaclass=Singleton):
     def disable(self):
         self.enabled = False
 
-    def _log(self, msg, mode):
+    def _log(self, msg, mode, end='\n', add_prefix=True):
         if not self.enabled:
             return
         if not mode in ("info", "warn"):
             raise ValueError("Unknown logging mode: %s" % mode)
         file = sys.stdout if mode == "info" else sys.stderr
-        now = datetime.datetime.now()
-        nowstr = now.strftime("%Y-%m-%d %H:%M:%S")
-        print("%s - %s - %s" % (nowstr, mode.upper(), msg), file=file)
+        if add_prefix:
+            now = datetime.datetime.now()
+            nowstr = now.strftime("%Y-%m-%d %H:%M:%S")
+            prefix = "%s - %s - " % (nowstr, mode.upper())
+        else:
+            prefix = ""
+        print("%s%s" % (prefix, msg), end=end, file=file)
         file.flush()
 
-    def info(self, msg):
-        self._log(msg, "info")
+    def info(self, msg, end='\n'):
+        self._log(msg, "info", end=end)
 
-    def warning(self, msg):
-        self._log(msg, "warn")
+    def warning(self, msg, end='\n'):
+        self._log(msg, "warn", end=end)
+
+    def append(self, msg, mode, end='\n'):
+        self._log(msg, mode, end=end, add_prefix=False)
+

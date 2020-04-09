@@ -65,7 +65,7 @@ class Arxiv(Provider):
 
     def dearxiv(self, input_file):
         """Remove the arXiv timestamp from a pdf"""
-        logger.info("Removing arXiv timestamp")
+        logger.info("Removing arXiv timestamp ... ", end="")
         basename = os.path.splitext(input_file)[0]
 
         uncompress_file = basename + "_uncompress.pdf"
@@ -90,13 +90,13 @@ class Arxiv(Provider):
                     current_obj.append(line)
                     objid = int(line.split(b" ")[0])
                     xref[objid] = char_count
-                elif current_obj and line.startswith(b'endobj'):
+                elif current_obj and line.startswith(b"endobj"):
                     # End the current object. If needed, replace the arXiv
                     # stamp in the block (done only once). Reset current
                     # object.
                     current_obj.append(line)
                     block = b"".join(current_obj)
-                    if not replaced_arXiv:
+                    if not replaced_arXiv and b"arXivStAmP" in block:
                         # remove the text
                         block, n_subs1 = re.subn(
                             b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj",
@@ -147,6 +147,8 @@ class Arxiv(Provider):
 
         output_file = basename + "_dearxiv.pdf"
         self.compress_pdf(removed_file, output_file)
+
+        logger.append("success" if replaced_arXiv else "failed", "info")
 
         return output_file
 
