@@ -175,16 +175,22 @@ def check_pdftool(pdftk_path, qpdf_path):
     pdftk_path = pdftk_path or "false"
     qpdf_path = qpdf_path or "false"
 
-    status = subprocess.call(
-        [pdftk_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    try:
+        status = subprocess.call(
+            [pdftk_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+    except FileNotFoundError:
+        status = 1
     if status == 0:
         return "pdftk"
-    status = subprocess.call(
+    try:
+        status = subprocess.call(
         [qpdf_path, "--help"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+    except FileNotFoundError:
+        status = 1
     if status == 0:
         return "qpdf"
     raise NoPDFToolError
