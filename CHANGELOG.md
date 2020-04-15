@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.6.2
+
+* Print to log whether removing arXiv stamp was successful.
+* Fix bug that failed to correctly detect the pdf tool 
+  ([#42](https://github.com/GjjvdBurg/paper2remarkable/issues/42)).
+
 ## Version 0.6.1
 
 * Bugfix that makes removing the arXiv stamp more robust.
