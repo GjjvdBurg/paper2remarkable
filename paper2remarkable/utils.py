@@ -163,7 +163,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
 
 def is_url(string):
     # pattern adapted from CleverCSV
-    pattern = "((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*\-?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:]*)?(\.[a-z]+)?"
+    pattern = "((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*\-?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:+]*)?(\.[a-z]+)?"
     string = string.strip(" ")
     match = regex.fullmatch(pattern, string)
     return match is not None
