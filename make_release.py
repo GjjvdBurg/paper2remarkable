@@ -14,6 +14,7 @@ Date: 2019-07-23
 
 import colorama
 import os
+import sys
 
 
 def colored(msg, color=None, style=None):
@@ -50,6 +51,12 @@ def get_package_name():
             (l.strip() for l in fp if l.startswith("NAME = ")), None
         )
         return nameline.split("=")[-1].strip().strip('"')
+
+def get_package_version():
+    ctx = {}
+    with open(f"{pkgname.lower()}/__version__.py", "r") as fp:
+        exec(fp.read(), ctx)
+    return ctx['__version__']
 
 
 class Step:
@@ -119,10 +126,7 @@ class BumpVersionPackage(Step):
 
     def _get_version(self, context):
         # Get the version from the version file
-        about = {}
-        with open(f"{context['pkgname'].lower()}/__version__.py", "r") as fp:
-            exec(fp.read(), about)
-        return about["__version__"]
+        return get_package_version(context['pkgname'])
 
 
 class MakeClean(Step):
@@ -219,30 +223,36 @@ class WaitForRTD(Step):
 def main():
     colorama.init()
     procedure = [
-        GitToMaster(),
-        GitAdd(),
-        PushToGitHub(),
-        BumpVersionPackage(),
-        UpdateChangelog(),
-        UpdateReadme(),
-        MakeClean(),
-        RunTests(),
-        MakeDist(),
-        PushToTestPyPI(),
-        InstallFromTestPyPI(),
-        TestPackage(),
-        DeactivateVenv(),
-        GitAdd(),
-        PushToPyPI(),
-        GitTagVersion(),
-        PushToGitHub(),
+        ("gittomaster", GitToMaster()),
+        ("gitadd1", GitAdd()),
+        ("push1", PushToGitHub()),
+        ("bumpversion", BumpVersionPackage()),
+        ("changelog", UpdateChangelog()),
+        ("readme", UpdateReadme()),
+        ("clean", MakeClean()),
+        ("tests", RunTests()),
+        ("dist", MakeDist()),
+        ("testpypi", PushToTestPyPI()),
+        ("install", InstallFromTestPyPI()),
+        ("testpkg", TestPackage()),
+        ("deactivate", DeactivateVenv()),
+        ("gitadd2", GitAdd()),
+        ("pypi", PushToPyPI()),
+        ("tag", GitTagVersion()),
+        ("push2", PushToGitHub()),
     ]
     context = {}
     context["pkgname"] = get_package_name()
-    for step in procedure:
+    context["version"] = get_package_version(context["pkgname"])
+    skip = True if target else False
+    for name, step in procedure:
+        if not name == target and skip:
+            continue
+        skip = False
         step.run(context)
     cprint("\nDone!", color="yellow", style="bright")
 
 
 if __name__ == "__main__":
-    main()
+    target = sys.argv[1] if len(sys.argv) > 1 else None
+    main(target=target)
