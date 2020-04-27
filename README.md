@@ -18,8 +18,8 @@ $ p2r https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 
 The script can be run through the ``p2r`` command line program or via Docker
 (see below). If you're using MacOS, you might be interested in the [Alfred
-workflow](#alfred). On Linux, a background terminal such as 
-[Guake](http://guake-project.org/) can be very handy.
+workflow](#alfred) or [Printing to p2r](#printing). On Linux, a background
+terminal such as [Guake](http://guake-project.org/) can be very handy.
 
 ``paper2remarkable`` makes it as easy as possible to get a PDF on your 
 reMarkable from any of the following sources:
@@ -169,6 +169,23 @@ You can edit the Workflow in Alfred if this doesn't work for your setup.
 ![Alfred Screenshot](https://raw.githubusercontent.com/GjjvdBurg/paper2remarkable/master/.github/alfred.png)
 
 [workflow]: https://github.com/GjjvdBurg/paper2remarkable/blob/master/Remarkable.alfredworkflow?raw=true 
+
+## Printing
+
+Printing to `p2r` allows printing prompts to save directly to your reMarkable
+tablet, passing through `p2r` for processing.
+
+For MacOS, you can follow [the guide][print-guide] for printing with `rmapi`,
+but for the bash script, instead use this script:
+
+```
+for f in "$@"
+do
+	bash -c -l "p2r --right '$f'" 
+done
+```
+
+[print-guide]: https://github.com/juruen/rmapi/blob/master/docs/tutorial-print-macosx.md
 
 ## Docker
 
