@@ -52,7 +52,7 @@ def get_package_name():
         )
         return nameline.split("=")[-1].strip().strip('"')
 
-def get_package_version():
+def get_package_version(pkgname):
     ctx = {}
     with open(f"{pkgname.lower()}/__version__.py", "r") as fp:
         exec(fp.read(), ctx)
@@ -220,7 +220,7 @@ class WaitForRTD(Step):
         )
 
 
-def main():
+def main(target=None):
     colorama.init()
     procedure = [
         ("gittomaster", GitToMaster()),
