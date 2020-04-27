@@ -7,6 +7,7 @@ __author__ = "G.J.J. van den Burg"
 
 import hashlib
 import os
+import pdfplumber
 import shutil
 import tempfile
 import unittest
@@ -237,6 +238,15 @@ class TestProviders(unittest.TestCase):
         exp = "Isaac_Asimov_Centenary_of_the_Great_Explainer.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
+
+    def test_html_3(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://conclave-team.github.io/conclave-site/"
+        exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+        # this is a proxy test to check that all images are included
+        self.assertEqual(32, len(pdfplumber.open(filename).pages))
 
 
 if __name__ == "__main__":
