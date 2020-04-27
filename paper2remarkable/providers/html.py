@@ -56,6 +56,26 @@ def my_fetcher(url):
     return weasyprint.default_url_fetcher(url)
 
 
+class ImgProcessor(markdown.treeprocessors.Treeprocessor):
+    def __init__(self, base_url, *args, **kwargs):
+        self._base_url = base_url
+        super().__init__(*args, **kwargs)
+
+    def _find_img(self, node):
+        """ Find img nodes recursively """
+        for img in node.findall("img"):
+            yield img
+        for child in node:
+            yield from self._find_img(child)
+
+    def run(self, root):
+        """ Ensure all img src urls are absolute """
+        for img in self._find_img(root):
+            img.attrib["src"] = urllib.parse.urljoin(
+                self._base_url, img.attrib["src"]
+            )
+
+
 class HTMLInformer(Informer):
     def __init__(self):
         super().__init__()
@@ -105,15 +125,10 @@ class HTML(Provider):
         # Add the title back to the document
         article = "# {title}\n\n{text}".format(title=title, text=text)
 
-        # fix relative urls
-        base_url = "{0.scheme}://{0.netloc}".format(
-            urllib.parse.urlsplit(pdf_url)
-        )
-        html_article = markdown.markdown(article)
-        html_article = html_article.replace(' src="//', ' src="https://')
-        html_article = html_article.replace(
-            ' src="/', ' src="{base}/'.format(base=base_url)
-        )
+        # Convert to html, fixing relative image urls.
+        md = markdown.Markdown()
+        md.treeprocessors.register(ImgProcessor(pdf_url), "img", 10)
+        html_article = md.convert(article)
 
         if self.debug:
             with open("./paper.html", "w") as fp:
