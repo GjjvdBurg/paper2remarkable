@@ -61,16 +61,9 @@ class ImgProcessor(markdown.treeprocessors.Treeprocessor):
         self._base_url = base_url
         super().__init__(*args, **kwargs)
 
-    def _find_img(self, node):
-        """ Find img nodes recursively """
-        for img in node.findall("img"):
-            yield img
-        for child in node:
-            yield from self._find_img(child)
-
     def run(self, root):
         """ Ensure all img src urls are absolute """
-        for img in self._find_img(root):
+        for img in root.iter("img"):
             img.attrib["src"] = urllib.parse.urljoin(
                 self._base_url, img.attrib["src"]
             )
