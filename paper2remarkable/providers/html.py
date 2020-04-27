@@ -48,7 +48,7 @@ code { font-family: 'Inconsolata'; font-size: .7rem; background: #efefef; }
 """
 
 
-def my_fetcher(url):
+def url_fetcher(url):
     if url.startswith("//"):
         url = "https:" + url
     elif url.startswith("file:///"):
@@ -120,7 +120,7 @@ class HTML(Provider):
                 fp.write(html_article)
 
         font_config = weasyprint.fonts.FontConfiguration()
-        html = weasyprint.HTML(string=html_article, url_fetcher=my_fetcher)
+        html = weasyprint.HTML(string=html_article, url_fetcher=url_fetcher)
         css = weasyprint.CSS(string=CSS, font_config=font_config)
 
         html.write_pdf(filename, stylesheets=[css], font_config=font_config)
