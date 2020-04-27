@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.6.3
+
+* Properly resolve image urls in HTML sources 
+  ([#45](https://github.com/GjjvdBurg/paper2remarkable/issues/45)). Thanks to 
+  @sirupsen.
+* Allow ``+`` in urls
+
 ## Version 0.6.2
 
 * Print to log whether removing arXiv stamp was successful.
