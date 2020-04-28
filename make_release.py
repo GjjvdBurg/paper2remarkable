@@ -15,6 +15,7 @@ Date: 2019-07-23
 import colorama
 import os
 import sys
+import tempfile
 
 
 def colored(msg, color=None, style=None):
@@ -52,11 +53,12 @@ def get_package_name():
         )
         return nameline.split("=")[-1].strip().strip('"')
 
+
 def get_package_version(pkgname):
     ctx = {}
     with open(f"{pkgname.lower()}/__version__.py", "r") as fp:
         exec(fp.read(), ctx)
-    return ctx['__version__']
+    return ctx["__version__"]
 
 
 class Step:
@@ -118,7 +120,7 @@ class RunTests(Step):
 class BumpVersionPackage(Step):
     def action(self, context):
         self.instruct(f"Update __version__.py with new version")
-        self.print_run(f"vi {context['pkgname']}/__version__.py")
+        self.do_cmd(f"vi {context['pkgname']}/__version__.py")
 
     def post(self, context):
         wait_for_enter()
@@ -126,7 +128,7 @@ class BumpVersionPackage(Step):
 
     def _get_version(self, context):
         # Get the version from the version file
-        return get_package_version(context['pkgname'])
+        return get_package_version(context["pkgname"])
 
 
 class MakeClean(Step):
@@ -153,15 +155,14 @@ class PushToTestPyPI(Step):
 
 class InstallFromTestPyPI(Step):
     def action(self, context):
-        self.print_run("cd /tmp/")
-        self.print_cmd("rm -rf ./venv")
-        self.print_cmd("virtualenv ./venv")
-        self.print_cmd("cd ./venv")
-        self.print_cmd("source bin/activate")
-        self.print_cmd(
+        tmpvenv = tempfile.mkdtemp(prefix="p2r_venv_")
+        self.do_cmd(
+            f"virtualenv {tmpvenv} && source {tmpvenv}/bin/activate && "
             "pip install --index-url https://test.pypi.org/simple/ "
-            + f"--extra-index-url https://pypi.org/simple {context['pkgname']}=={context['version']}"
+            "--extra-index-url https://pypi.org/simple "
+            f"{context['pkgname']}=={context['version']}"
         )
+        context["tmpvenv"] = tmpvenv
 
 
 class TestPackage(Step):
@@ -169,13 +170,12 @@ class TestPackage(Step):
         self.instruct(
             f"Ensure that the following command gives version {context['version']}"
         )
-        self.print_run(f"p2r -V")
+        self.do_cmd(f"source {context['tmpvenv']}/bin/activate && p2r -V")
 
 
-class DeactivateVenv(Step):
+class RemoveVenv(Step):
     def action(self, context):
-        self.print_run("deactivate")
-        self.instruct("Go back to the project directory")
+        self.do_cmd(f"rm -rf {context['tmpvenv']}")
 
 
 class GitTagVersion(Step):
@@ -235,7 +235,7 @@ def main(target=None):
         ("testpypi", PushToTestPyPI()),
         ("install", InstallFromTestPyPI()),
         ("testpkg", TestPackage()),
-        ("deactivate", DeactivateVenv()),
+        ("remove_venv", RemoveVenv()),
         ("gitadd2", GitAdd()),
         ("pypi", PushToPyPI()),
         ("tag", GitTagVersion()),
