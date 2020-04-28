@@ -248,6 +248,14 @@ class TestProviders(unittest.TestCase):
         # this is a proxy test to check that all images are included
         self.assertEqual(32, len(pdfplumber.open(filename).pages))
 
+    def test_html_4(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://sirupsen.com/2019/"
+        filename = prov.run(url)
+        # this is a proxy test to check that all images are included
+        self.assertEqual(4, len(pdfplumber.open(filename).pages))
+
+
 
 if __name__ == "__main__":
     unittest.main()

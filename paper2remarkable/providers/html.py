@@ -67,6 +67,7 @@ class ImgProcessor(markdown.treeprocessors.Treeprocessor):
             img.attrib["src"] = urllib.parse.urljoin(
                 self._base_url, img.attrib["src"]
             )
+            img.attrib["src"] = img.attrib['src'].rstrip('/')
 
 
 class HTMLInformer(Informer):
