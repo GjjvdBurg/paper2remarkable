@@ -19,7 +19,9 @@ $ p2r https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 The script can be run through the ``p2r`` command line program or via Docker
 (see below). If you're using MacOS, you might be interested in the [Alfred
 workflow](#alfred) or [Printing to p2r](#printing). On Linux, a background
-terminal such as [Guake](http://guake-project.org/) can be very handy.
+terminal such as [Guake](http://guake-project.org/) can be very handy. Note 
+that even without a reMarkable, this program can make downloading papers 
+easier (just use the `-n` flag).
 
 ``paper2remarkable`` makes it as easy as possible to get a PDF on your 
 reMarkable from any of the following sources:
