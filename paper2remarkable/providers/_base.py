@@ -131,8 +131,29 @@ class Provider(metaclass=abc.ABCMeta):
                 "%s failed to compress the PDF file." % self.pdftool
             )
 
+    def rewrite_pdf(self, in_pdf, out_pdf):
+        """ Re-write the pdf using Ghostscript
+
+        This helps avoid issues in dearxiv due to nested pdfs.
+        """
+        status = subprocess.call(
+            [
+                self.gs_path,
+                "-sDEVICE=pdfwrite",
+                "-dQUIET",
+                "-o",
+                out_pdf,
+                in_pdf,
+            ]
+        )
+        if not status == 0:
+            raise _CalledProcessError(
+                "Failed to rewrite the pdf with GhostScript"
+            )
+
     def uncompress_pdf(self, in_pdf, out_pdf):
         """ Uncompress a pdf file """
+
         if self.pdftool == "pdftk":
             status = subprocess.call(
                 [self.pdftk_path, in_pdf, "output", out_pdf, "uncompress",]
