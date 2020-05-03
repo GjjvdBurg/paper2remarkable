@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.6.4
+
+* Further fixes for images in HTML sources 
+  ([#45](https://github.com/GjjvdBurg/paper2remarkable/issues/45)). Thanks to 
+  @sirupsen.
+
 ## Version 0.6.3
 
 * Properly resolve image urls in HTML sources 
