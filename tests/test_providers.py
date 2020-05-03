@@ -86,6 +86,13 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
+    def test_arxiv_5(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE, qpdf_path=None)
+        url = "https://arxiv.org/abs/2002.11523"
+        exp_filename = "Ponomarev_Oseledets_Cichocki_-_Using_Reinforcement_Learning_in_the_Algorithmic_Trading_Problem_2020.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
     def test_pmc(self):
         prov = PubMed(upload=False, verbose=VERBOSE)
         url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3474301/"
@@ -254,7 +261,6 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
-
 
 
 if __name__ == "__main__":

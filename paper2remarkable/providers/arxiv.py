@@ -18,8 +18,9 @@ from ..log import Logger
 
 logger = Logger()
 
-DEARXIV_TEXT_REGEX = (
-    b"arXiv:\d{4}\.\d{4,5}v\d+\s+\[[\w\-]+\.\w+\]\s+\d{1,2}\s\w{3}\s\d{4}"
+DEARXIV_TEXT_REGEX = b"ar(x|X)iv:(\d{4}\.|[\w\-]+\/)\d+v\d+(\s+\[[\w\-]+\.[\w\-]+\])?\s+\d{1,2}\s\w{3}\s\d{4}"
+DEARXIV_URI_REGEX = (
+    b"https?://ar(x|X)iv\.org\/abs\/([\w\-]+\/\d+|\d{4}\.\d{4,5})v\d+"
 )
 
 
@@ -32,8 +33,8 @@ class Arxiv(Provider):
     re_abs_1 = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
     re_pdf_1 = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
 
-    re_abs_2 = "https?://arxiv.org/abs/\w+/\d{7}(v\d+)?"
-    re_pdf_2 = "https?://arxiv.org/pdf/\w+/\d{7}(v\d+)?.pdf"
+    re_abs_2 = "https?://arxiv.org/abs/[\w\-]+/\d{7}(v\d+)?"
+    re_pdf_2 = "https?://arxiv.org/pdf/[\w\-]+/\d{7}(v\d+)?.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,8 +69,11 @@ class Arxiv(Provider):
         logger.info("Removing arXiv timestamp ... ", end="")
         basename = os.path.splitext(input_file)[0]
 
+        recoded_file = basename + "_rewrite.pdf"
+        self.rewrite_pdf(input_file, recoded_file)
+
         uncompress_file = basename + "_uncompress.pdf"
-        self.uncompress_pdf(input_file, uncompress_file)
+        self.uncompress_pdf(recoded_file, uncompress_file)
 
         new_data = []
         current_obj = []
@@ -90,36 +94,42 @@ class Arxiv(Provider):
                     current_obj.append(line)
                     objid = int(line.split(b" ")[0])
                     xref[objid] = char_count
-                elif current_obj and line.startswith(b"endobj"):
+                elif current_obj and (
+                    line.startswith(b"endobj")
+                    and not line.startswith(b"endobj xref")
+                ):
                     # End the current object. If needed, replace the arXiv
                     # stamp in the block (done only once). Reset current
                     # object.
                     current_obj.append(line)
                     block = b"".join(current_obj)
-                    if not replaced_arXiv and b"arXivStAmP" in block:
-                        # remove the text
-                        block, n_subs1 = re.subn(
-                            b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj",
-                            b"()Tj",
-                            block,
-                        )
-                        # remove the url
-                        block, n_subs2 = re.subn(
-                            b"<<\\n\/URI \(http://arxiv\.org/abs/\d{4}\.\d{4,5}v\d+\)\\n\/S /URI\\n>>\\n",
-                            b"",
-                            block,
-                        )
-                        if n_subs1 or n_subs2:
-                            # fix the length of the object stream
-                            block = fix_stream_length(block)
-                            replaced_arXiv = True
+                    # remove the text
+                    block, n_subs1 = re.subn(
+                        b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj", b"()Tj", block,
+                    )
+                    # remove the url
+                    block, n_subs2 = re.subn(
+                        b"<<\n\/URI \("
+                        + DEARXIV_URI_REGEX
+                        + b"\)\n\/S /URI\n>>\n",
+                        b"",
+                        block,
+                    )
+                    if n_subs1 or n_subs2:
+                        # fix the length of the object stream
+                        block = fix_stream_length(block)
+                        replaced_arXiv = True
                     new_data.append(block)
                     char_count += len(block)
                     current_obj = []
-                elif current_obj:
-                    # If we're recording an object, simply add the line to it
-                    current_obj.append(line)
                 elif line in [b"xref\n", b"endobj xref\n"]:
+                    if b"endobj" in line and current_obj:
+                        current_obj.append(b"endobj\n")
+                        block = b"".join(current_obj)
+                        new_data.append(block)
+                        char_count += len(block)
+                        current_obj = []
+                        line = b"xref\n"
                     # We found the xref table, record its position and write it
                     # out using our updated indices.
                     startxref = sum(map(len, new_data))
@@ -131,6 +141,9 @@ class Arxiv(Provider):
 
                     # skip the appropriate number of lines
                     skip_n = len(xref) + 2
+                elif current_obj:
+                    # If we're recording an object, simply add the line to it
+                    current_obj.append(line)
                 elif line == b"startxref\n":
                     # Write out our recorded startxref position, skip the old
                     # position.
@@ -148,7 +161,7 @@ class Arxiv(Provider):
         output_file = basename + "_dearxiv.pdf"
         self.compress_pdf(removed_file, output_file)
 
-        logger.append("success" if replaced_arXiv else "failed", "info")
+        logger.append("success" if replaced_arXiv else "none found", "info")
 
         return output_file
 
