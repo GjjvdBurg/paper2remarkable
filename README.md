@@ -73,7 +73,7 @@ usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
            [--pdftk PDFTK] [--qpdf QPDF] [--rmapi RMAPI]
            input
 
-Paper2reMarkable version 0.6.4
+Paper2reMarkable version 0.6.5
 
 positional arguments:
   input                 URL to a paper or the path of a local PDF file

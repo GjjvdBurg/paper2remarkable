@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.6.5
+
+* Corrections to code that removes the arXiv stamp 
+  ([#49](https://github.com/GjjvdBurg/paper2remarkable/issues/49)). Thanks to 
+  @mr-ubik.
+
 ## Version 0.6.4
 
 * Further fixes for images in HTML sources 
