@@ -158,7 +158,8 @@ class InstallFromTestPyPI(Step):
         tmpvenv = tempfile.mkdtemp(prefix="p2r_venv_")
         self.do_cmd(
             f"virtualenv {tmpvenv} && source {tmpvenv}/bin/activate && "
-            "pip install --index-url https://test.pypi.org/simple/ "
+            "pip install --no-cache-dir --index-url "
+            "https://test.pypi.org/simple/ "
             "--extra-index-url https://pypi.org/simple "
             f"{context['pkgname']}=={context['version']}"
         )
