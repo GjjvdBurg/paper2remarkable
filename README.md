@@ -1,7 +1,8 @@
 # paper2remarkable
 
-[![PyPI 
-version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
+[![PyPI version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
+[![Build Status](https://travis-ci.org/GjjvdBurg/paper2remarkable.svg?branch=master)](https://travis-ci.org/GjjvdBurg/paper2remarkable)
+[![Downloads](https://pepy.tech/badge/paper2remarkable/month)](https://pepy.tech/project/paper2remarkable/month)
 
 ``paper2remarkable`` is a command line program for quickly and easily 
 transferring an academic paper to your [reMarkable](https://remarkable.com/):
