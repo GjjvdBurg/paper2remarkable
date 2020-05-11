@@ -100,6 +100,11 @@ class TestUI(unittest.TestCase):
                 "https://gertjanvandenburg.com/papers/VandenBurg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2019.pdf",
             ),
             (
+                PdfUrl,
+                "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
+                "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
+                ),
+            (
                 JMLR,
                 "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
                 "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
