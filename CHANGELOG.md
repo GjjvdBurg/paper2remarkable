@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.6.6
+
+* Bugfix to url validation: allow underscore in subdomains.
+
 ## Version 0.6.5
 
 * Corrections to code that removes the arXiv stamp 
