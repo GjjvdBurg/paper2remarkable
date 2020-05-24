@@ -43,7 +43,7 @@ reMarkable from any of the following sources:
 
 The program aims to be flexible to the exact source URL, so for many of the 
 academic sources you can either provide a URL to the abstract page or to the 
-PDF file. If you have an source that you would like to see added to the list, 
+PDF file. If you have a source that you would like to see added to the list, 
 let me know!
 
 ``paper2remarkable`` takes the source URL and:
