@@ -142,11 +142,17 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(local_filename)
         self.assertEqual("test_.pdf", os.path.basename(filename))
 
-    def test_pdfurl(self):
+    def test_pdfurl_1(self):
         prov = PdfUrl(upload=False, verbose=VERBOSE)
         url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"
         filename = prov.run(url)
         self.assertEqual("14-526.pdf", os.path.basename(filename))
+
+    def test_pdfurl_2(self):
+        prov = PdfUrl(upload=False, verbose=VERBOSE)
+        url = "https://www.manuelrigger.at/preprints/NoREC.pdf"
+        filename = prov.run(url)
+        self.assertEqual("NoREC.pdf", os.path.basename(filename))
 
     def test_jmlr_1(self):
         prov = JMLR(upload=False, verbose=VERBOSE)
