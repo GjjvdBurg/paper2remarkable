@@ -71,14 +71,13 @@ class Provider(metaclass=abc.ABCMeta):
             logger.disable()
 
         # Define the operations to run on the pdf. Providers can add others.
-        if no_crop:
-            self.operations = []
-        elif center:
-            self.operations = [("center", self.center_pdf)]
+        self.operations = [("rewrite", self.rewrite_pdf)]
+        if center:
+            self.operations.append(("center", self.center_pdf))
         elif right:
-            self.operations = [("right", self.right_pdf)]
+            self.operations.append(("right", self.right_pdf))
         else:
-            self.operations = [("crop", self.crop_pdf)]
+            self.operations.append(("crop", self.crop_pdf))
 
         if blank:
             self.operations.append(("blank", blank_pdf))
@@ -131,11 +130,14 @@ class Provider(metaclass=abc.ABCMeta):
                 "%s failed to compress the PDF file." % self.pdftool
             )
 
-    def rewrite_pdf(self, in_pdf, out_pdf):
+    def rewrite_pdf(self, in_pdf, out_pdf=None):
         """ Re-write the pdf using Ghostscript
 
         This helps avoid issues in dearxiv due to nested pdfs.
         """
+        if out_pdf is None:
+            out_pdf = os.path.splitext(in_pdf)[0] + "-rewrite.pdf"
+
         status = subprocess.call(
             [
                 self.gs_path,
@@ -150,6 +152,7 @@ class Provider(metaclass=abc.ABCMeta):
             raise _CalledProcessError(
                 "Failed to rewrite the pdf with GhostScript"
             )
+        return out_pdf
 
     def uncompress_pdf(self, in_pdf, out_pdf):
         """ Uncompress a pdf file """
