@@ -107,7 +107,7 @@ class Arxiv(Provider):
                     block, n_subs1 = re.subn(
                         b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj", b"()Tj", block,
                     )
-                    # remove the url
+                    # remove the url (type 1)
                     block, n_subs2 = re.subn(
                         b"<<\n\/URI \("
                         + DEARXIV_URI_REGEX
@@ -115,6 +115,16 @@ class Arxiv(Provider):
                         b"",
                         block,
                     )
+                    # remove the url (type 2, i.e. Jackson arXiv 0309285v2)
+                    block, n_subs3 = re.subn(
+                        b"<<\n\/S \/URI\n" +
+                        b"/URI \("
+                        + DEARXIV_URI_REGEX
+                        + b"\)\n>>\n",
+                        b"",
+                        block,
+                    )
+
                     if n_subs1 or n_subs2:
                         # fix the length of the object stream
                         block = fix_stream_length(block)
