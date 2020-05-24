@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.6.7
+
+* Increase robustness to PDF issues by passing through GhostScript (fixes 
+  [#51](https://github.com/GjjvdBurg/paper2remarkable/issues/51)). Thanks to 
+  @sirupsen.
+* Bugfix for code that removes arXiv stamp.
+
 ## Version 0.6.6
 
 * Bugfix to url validation: allow underscore in subdomains.
