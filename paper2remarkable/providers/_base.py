@@ -76,7 +76,7 @@ class Provider(metaclass=abc.ABCMeta):
             self.operations.append(("center", self.center_pdf))
         elif right:
             self.operations.append(("right", self.right_pdf))
-        else:
+        elif not no_crop:
             self.operations.append(("crop", self.crop_pdf))
 
         if blank:
