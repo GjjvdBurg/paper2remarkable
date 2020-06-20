@@ -67,7 +67,7 @@ class ImgProcessor(markdown.treeprocessors.Treeprocessor):
             img.attrib["src"] = urllib.parse.urljoin(
                 self._base_url, img.attrib["src"]
             )
-            img.attrib["src"] = img.attrib['src'].rstrip('/')
+            img.attrib["src"] = img.attrib["src"].rstrip("/")
 
 
 class HTMLInformer(Informer):
@@ -98,6 +98,32 @@ class HTML(Provider):
     def get_abs_pdf_urls(self, url):
         return url, url
 
+    def make_readable(self, request_html):
+        have_readabilipy = False
+        try:
+            from readabilipy import simple_json_from_html_string
+
+            have_readabilipy = True
+        except ImportError:
+            pass
+
+        logger.info(
+            "Converting HTML using %s"
+            % ("ReadabiliPy" if have_readabilipy else "readability")
+        )
+
+        if have_readabilipy:
+            article = simple_json_from_html_string(
+                request_html, use_readability=True
+            )
+            title = article["title"]
+            raw_html = article["content"]
+        else:
+            doc = readability.Document(request_html)
+            title = doc.title()
+            raw_html = doc.summary(html_partial=True)
+        return title, raw_html
+
     def retrieve_pdf(self, pdf_url, filename):
         """Turn the HTML article in a clean pdf file"""
         # Steps
@@ -107,10 +133,9 @@ class HTML(Provider):
         # 4. Convert the markdown back to HTML (this is done to sanitize HTML)
         # 4. Convert the HTML to PDF, pulling in images where needed
         # 5. Save the PDF to the specified filename.
-        request_text = get_page_with_retry(pdf_url, return_text=True)
-        doc = readability.Document(request_text)
-        title = doc.title()
-        raw_html = doc.summary(html_partial=True)
+
+        request_html = get_page_with_retry(pdf_url, return_text=True)
+        title, raw_html = self.make_readable(request_html)
 
         h2t = html2text.HTML2Text()
         h2t.wrap_links = False

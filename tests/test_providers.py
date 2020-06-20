@@ -268,6 +268,13 @@ class TestProviders(unittest.TestCase):
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
 
+    def test_html_5(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://www.spiegel.de/panorama/london-tausende-rechtsextreme-demonstranten-wollen-statuen-schuetzen-a-2a1ed9b9-708a-40dc-a5ff-f312e97a60ca#"
+        filename = prov.run(url)
+        # this is a proxy test to check that all images are included
+        self.assertEqual(4, len(pdfplumber.open(filename).pages))
+
 
 if __name__ == "__main__":
     unittest.main()
