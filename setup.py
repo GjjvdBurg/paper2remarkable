@@ -29,18 +29,23 @@ REQUIRED = [
     "readability-lxml>=0.7.1",
     "html2text>=2020.1.16",
     "weasyprint>=51",
-    "markdown>=3.1.1"
+    "markdown>=3.1.1",
 ]
 
+full_require = [
+    # TEMPORARY: Until ReadabiliPy is available on PyPI
+    "readabilipy @ git+https://git@github.com/GjjvdBurg/ReadabiliPy@packaging#egg=readabilipy",
+]
 docs_require = []
 test_require = []
 dev_require = ["green"]
 
 # What packages are optional?
 EXTRAS = {
+    "full": full_require,
     "docs": docs_require,
     "tests": test_require,
-    "dev": docs_require + test_require + dev_require,
+    "dev": docs_require + test_require + dev_require + full_require,
 }
 
 # The rest you shouldn't have to touch too much :)
