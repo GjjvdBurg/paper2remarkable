@@ -13,6 +13,7 @@ from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
 from .springer import Springer
+from .semantic_scholar import SemanticScholar
 
 # NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
@@ -26,6 +27,7 @@ providers = [
     PMLR,
     PubMed,
     Springer,
+    SemanticScholar,
     LocalFile,
     PdfUrl,
     HTML,

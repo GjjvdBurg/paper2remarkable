@@ -26,6 +26,7 @@ from paper2remarkable.providers import (
     PdfUrl,
     PubMed,
     Springer,
+    SemanticScholar
 )
 
 VERBOSE = False
@@ -267,6 +268,20 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
+
+    def test_semantic_scholar_1(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://pdfs.semanticscholar.org/1b01/dea77e9cbf049b4ee8b68dc4d43529d06299.pdf"
+        exp = "Dong_et_al_-_TableSense_Spreadsheet_Table_Detection_With_Convolutional_Neural_Networks_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_semantic_scholar_2(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://www.semanticscholar.org/paper/Fast-Meta-Learning-for-Adaptive-Hierarchical-Design-Burg-Hero/90759dc4ab0ce8d3564044ef92a91080a4f3e55f"
+        exp = "Burg_Hero_-_Fast_Meta-Learning_for_Adaptive_Hierarchical_Classifier_Design_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
 
 
 if __name__ == "__main__":
