@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.6.9
+
+* Improve robustness of Springer provider
+
 ## Version 0.6.8
 
 * Add provider for SemanticScholar papers
