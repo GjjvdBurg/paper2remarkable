@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.0
+
+* Add provider for SagePub
+
 ## Version 0.6.9
 
 * Improve robustness of Springer provider
