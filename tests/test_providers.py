@@ -25,8 +25,9 @@ from paper2remarkable.providers import (
     PMLR,
     PdfUrl,
     PubMed,
+    SagePub,
     Springer,
-    SemanticScholar
+    SemanticScholar,
 )
 
 VERBOSE = False
@@ -287,6 +288,20 @@ class TestProviders(unittest.TestCase):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
         url = "https://www.semanticscholar.org/paper/Fast-Meta-Learning-for-Adaptive-Hierarchical-Design-Burg-Hero/90759dc4ab0ce8d3564044ef92a91080a4f3e55f"
         exp = "Burg_Hero_-_Fast_Meta-Learning_for_Adaptive_Hierarchical_Classifier_Design_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_sagepub_1(self):
+        prov = SagePub(upload=False, verbose=VERBOSE)
+        url = "https://journals.sagepub.com/doi/full/10.1177/0306312714535679"
+        exp = "Rekdal_-_Academic_Urban_Legends_2014.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_sagepub_2(self):
+        prov = SagePub(upload=False, verbose=VERBOSE)
+        url = "https://journals.sagepub.com/doi/pdf/10.1177/1352458517694432"
+        exp = "Kobelt_et_al_-_New_Insights_Into_the_Burden_and_Costs_of_Multiple_Sclerosis_in_Europe_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

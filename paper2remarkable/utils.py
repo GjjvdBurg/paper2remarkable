@@ -38,6 +38,7 @@ def clean_string(s):
     cleaned = "".join(c if c in allowed else "_" for c in normalized)
     while "__" in cleaned:
         cleaned = cleaned.replace("__", "_")
+    cleaned = cleaned.strip('_')
     return cleaned
 
 
