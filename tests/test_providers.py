@@ -126,10 +126,17 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
-    def test_springer(self):
+    def test_springer_1(self):
         prov = Springer(upload=False, verbose=VERBOSE)
         url = "https://link.springer.com/article/10.1007/s10618-019-00631-5"
         exp_filename = "Mauw_Ramirez-Cruz_Trujillo-Rasua_-_Robust_Active_Attacks_on_Social_Graphs_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_springer_2(self):
+        prov = Springer(upload=False, verbose=VERBOSE)
+        url = "https://link.springer.com/content/pdf/10.1007%2F11681878_14.pdf"
+        exp_filename = "Dwork_et_al_-_Calibrating_Noise_to_Sensitivity_in_Private_Data_Analysis_2006.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
