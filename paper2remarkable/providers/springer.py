@@ -26,16 +26,12 @@ class SpringerInformer(Informer):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
     def get_year(self, soup):
-        meta = soup.find_all('meta', {'name': 'citation_online_date'})
-        if meta:
-            date = meta[0]['content']
-            return self._format_year(date)
-        meta = soup.find_all('meta', {'name': 'citation_publication_date'})
-        if meta:
-            date = meta[0]['content']
-            return self._format_year(date)
-        return ''
-
+        for key in ["citation_online_date", "citation_publication_date"]:
+            meta = soup.find_all("meta", {"name": key})
+            if not meta:
+                continue
+            return self._format_year(meta[0]["content"])
+        return ""
 
 
 class Springer(Provider):
