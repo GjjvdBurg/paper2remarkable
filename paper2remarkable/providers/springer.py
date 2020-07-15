@@ -20,10 +20,22 @@ from ..utils import HEADERS
 
 class SpringerInformer(Informer):
 
-    meta_date_key = "citation_online_date"
+    meta_date_key = None
 
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
+
+    def get_year(self, soup):
+        meta = soup.find_all('meta', {'name': 'citation_online_date'})
+        if meta:
+            date = meta[0]['content']
+            return self._format_year(date)
+        meta = soup.find_all('meta', {'name': 'citation_publication_date'})
+        if meta:
+            date = meta[0]['content']
+            return self._format_year(date)
+        return ''
+
 
 
 class Springer(Provider):
