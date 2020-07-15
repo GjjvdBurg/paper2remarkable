@@ -12,6 +12,7 @@ from .openreview import OpenReview
 from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
+from .sagepub import SagePub
 from .springer import Springer
 from .semantic_scholar import SemanticScholar
 
@@ -26,6 +27,7 @@ providers = [
     OpenReview,
     PMLR,
     PubMed,
+    SagePub,
     Springer,
     SemanticScholar,
     LocalFile,
