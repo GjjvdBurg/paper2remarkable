@@ -101,13 +101,13 @@ class TestUI(unittest.TestCase):
                 ),
             (
                 JMLR,
-                "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
-                "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
+                "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
+                "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
             ),
             (
                 JMLR,
-                "http://www.jmlr.org/papers/v10/xu09a.html",
-                "http://www.jmlr.org/papers/v10/xu09a.html",
+                "https://www.jmlr.org/papers/v10/xu09a.html",
+                "https://www.jmlr.org/papers/v10/xu09a.html",
             ),
             (
                 PMLR,
