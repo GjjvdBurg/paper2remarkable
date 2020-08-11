@@ -70,7 +70,7 @@ Optionally, you can:
 
 Here's the full help of the script:
 
-```text
+```
 usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
            [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM]
            [--pdftk PDFTK] [--qpdf QPDF] [--rmapi RMAPI]
