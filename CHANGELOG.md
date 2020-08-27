@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.1
+
+* Fix OpenReview provider after site change
+
 ## Version 0.7.0
 
 * Add provider for SagePub
