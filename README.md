@@ -147,7 +147,14 @@ Specifically:
    - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
    - **Ubuntu:** ``apt-get install pdftk ghostscript poppler-utils``. Replace 
      ``pdftk`` with ``qpdf`` if your distribution doesn't package ``pdftk``.
-   - **MacOs:** ``brew install pdftk-java ghostscript poppler`` (using [HomeBrew](https://brew.sh/)).
+   - **MacOS:** ``brew install pdftk-java ghostscript poppler`` (using [HomeBrew](https://brew.sh/)).
+   - **Windows:** Installers or executables are available for 
+     [qpdf](https://github.com/qpdf/qpdf/releases) (for instance the mingw 
+     binary executables) and 
+     [GhostScript](https://www.ghostscript.com/download/gsdnld.html). 
+     Importantly, Windows support is untested and these are generic 
+     instructions, so we welcome clarifications where needed. The Docker 
+     instructions below may be more convenient on Windows.
 
 3. Finally, install ``paper2remarkable``:
    ```
