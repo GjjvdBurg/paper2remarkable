@@ -7,9 +7,11 @@ python:
 before_install:
   - sudo apt-get update
   - sudo apt-get install ghostscript pdftk poppler-utils qpdf
+  - nvm install v12.18.1
+  - nvm use v12.18.1
 
 install:
-  - pip install -e .[dev]
+  - pip install -e .[test]
 
 script:
   - green -vv -a ./tests

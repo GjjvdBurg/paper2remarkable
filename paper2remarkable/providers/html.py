@@ -56,6 +56,37 @@ def url_fetcher(url):
     return weasyprint.default_url_fetcher(url)
 
 
+def make_readable(request_html):
+    """Use an extraction method to get the main article html
+
+    This function checks if ReadabiliPy is installed with NodeJS support, as
+    that generally yields better results. If that is not available, it falls
+    back on readability.
+    """
+
+    have_readabilipy_js = False
+    try:
+        import readabilipy
+
+        have_readabilipy_js = readabilipy.simple_json.have_node()
+    except ImportError:
+        pass
+
+    if have_readabilipy_js:
+        logger.info("Converting HTML using Readability.js")
+        article = readabilipy.simple_json_from_html_string(
+            request_html, use_readability=True
+        )
+        title = article["title"]
+        raw_html = article["content"]
+    else:
+        logger.info("Converting HTML using readability")
+        doc = readability.Document(request_html)
+        title = doc.title()
+        raw_html = doc.summary(html_partial=True)
+    return title, raw_html
+
+
 class ImgProcessor(markdown.treeprocessors.Treeprocessor):
     def __init__(self, base_url, *args, **kwargs):
         self._base_url = base_url
@@ -67,17 +98,21 @@ class ImgProcessor(markdown.treeprocessors.Treeprocessor):
             img.attrib["src"] = urllib.parse.urljoin(
                 self._base_url, img.attrib["src"]
             )
-            img.attrib["src"] = img.attrib['src'].rstrip('/')
+            img.attrib["src"] = img.attrib["src"].rstrip("/")
 
 
 class HTMLInformer(Informer):
     def __init__(self):
         super().__init__()
+        self._cached_title = None
+        self._cached_article = None
 
     def get_filename(self, abs_url):
-        request_text = get_page_with_retry(abs_url, return_text=True)
-        doc = readability.Document(request_text)
-        title = doc.title()
+        request_html = get_page_with_retry(abs_url, return_text=True)
+        title, article = make_readable(request_html)
+
+        self._cached_title = title
+        self._cached_article = article
 
         # Clean the title and make it titlecase
         title = clean_string(title)
@@ -99,22 +134,27 @@ class HTML(Provider):
         return url, url
 
     def retrieve_pdf(self, pdf_url, filename):
-        """Turn the HTML article in a clean pdf file"""
-        # Steps
-        # 1. Pull the HTML page using requests
-        # 2. Extract the article part of the page using readability
-        # 3. Convert the article HTML to markdown using html2text
-        # 4. Convert the markdown back to HTML (this is done to sanitize HTML)
-        # 4. Convert the HTML to PDF, pulling in images where needed
-        # 5. Save the PDF to the specified filename.
-        request_text = get_page_with_retry(pdf_url, return_text=True)
-        doc = readability.Document(request_text)
-        title = doc.title()
-        raw_html = doc.summary(html_partial=True)
+        """Turn the HTML article in a clean pdf file
+
+        This function takes the following steps:
+
+        1. Pull the HTML page using requests, if not done in Informer
+        2. Extract the article part of the page using readability/readabiliPy
+        3. Convert the article HTML to markdown using html2text
+        4. Convert the markdown back to HTML (done to sanitize the HTML)
+        4. Convert the HTML to PDF, pulling in images where needed
+        5. Save the PDF to the specified filename.
+        """
+        if self.informer._cached_title and self.informer._cached_article:
+            title = self.informer._cached_title
+            article = self.informer._cached_article
+        else:
+            request_html = get_page_with_retry(pdf_url, return_text=True)
+            title, article = make_readable(request_html)
 
         h2t = html2text.HTML2Text()
         h2t.wrap_links = False
-        text = h2t.handle(raw_html)
+        text = h2t.handle(article)
 
         # Add the title back to the document
         article = "# {title}\n\n{text}".format(title=title, text=text)

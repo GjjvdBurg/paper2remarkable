@@ -278,7 +278,10 @@ class TestProviders(unittest.TestCase):
     def test_html_3(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://conclave-team.github.io/conclave-site/"
-        exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        #exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        # NOTE: Title differs between Readability.JS and readability-lxml, we 
+        # assume that testing is done with Readability.JS
+        exp = "Conclave.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
         # this is a proxy test to check that all images are included
@@ -287,6 +290,13 @@ class TestProviders(unittest.TestCase):
     def test_html_4(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://sirupsen.com/2019/"
+        filename = prov.run(url)
+        # this is a proxy test to check that all images are included
+        self.assertEqual(4, len(pdfplumber.open(filename).pages))
+
+    def test_html_5(self):
+        prov = HTML(upload=False, verbose=VERBOSE)
+        url = "https://www.spiegel.de/panorama/london-tausende-rechtsextreme-demonstranten-wollen-statuen-schuetzen-a-2a1ed9b9-708a-40dc-a5ff-f312e97a60ca#"
         filename = prov.run(url)
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
@@ -318,6 +328,7 @@ class TestProviders(unittest.TestCase):
         exp = "Kobelt_et_al_-_New_Insights_Into_the_Burden_and_Costs_of_Multiple_Sclerosis_in_Europe_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
+
 
 
 if __name__ == "__main__":

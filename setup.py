@@ -29,18 +29,20 @@ REQUIRED = [
     "readability-lxml>=0.7.1",
     "html2text>=2020.1.16",
     "weasyprint>=51",
-    "markdown>=3.1.1"
+    "markdown>=3.1.1",
 ]
 
+full_require = ["readabilipy"]
 docs_require = []
-test_require = []
-dev_require = ["green"]
+test_require = ["green"]
+dev_require = []
 
 # What packages are optional?
 EXTRAS = {
+    "full": full_require,
     "docs": docs_require,
-    "tests": test_require,
-    "dev": docs_require + test_require + dev_require,
+    "test": test_require + full_require,
+    "dev": docs_require + test_require + dev_require + full_require,
 }
 
 # The rest you shouldn't have to touch too much :)
