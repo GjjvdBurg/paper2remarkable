@@ -11,7 +11,7 @@ before_install:
   - nvm use v12.18.1
 
 install:
-  - pip install -e .[full]
+  - pip install -e .[test]
 
 script:
   - green -vv -a ./tests

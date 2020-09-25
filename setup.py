@@ -41,7 +41,7 @@ dev_require = ["green"]
 EXTRAS = {
     "full": full_require,
     "docs": docs_require,
-    "tests": test_require,
+    "test": test_require + full_require,
     "dev": docs_require + test_require + dev_require + full_require,
 }
 
