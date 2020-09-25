@@ -255,7 +255,10 @@ class TestProviders(unittest.TestCase):
     def test_html_3(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://conclave-team.github.io/conclave-site/"
-        exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        #exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        # NOTE: Title differs between Readability.JS and readability-lxml, we 
+        # assume that testing is done with Readability.JS
+        exp = "Conclave.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
         # this is a proxy test to check that all images are included
