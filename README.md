@@ -19,10 +19,12 @@ $ p2r https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines
 
 The script can be run through the ``p2r`` command line program or via Docker
 (see below). If you're using MacOS, you might be interested in the [Alfred
-workflow](#alfred) or [Printing to p2r](#printing). On Linux, a background
-terminal such as [Guake](http://guake-project.org/) can be very handy. Note 
-that even without a reMarkable, this program can make downloading papers 
-easier (just use the `-n` flag).
+workflow](#alfred-workflow) or [Printing to p2r](#printing). On Linux, a 
+background terminal such as [Guake](http://guake-project.org/) can be very 
+handy. Note that even without a reMarkable, this program can make downloading 
+papers easier (just use the `-n` flag).
+
+## Introduction
 
 ``paper2remarkable`` makes it as easy as possible to get a PDF on your 
 reMarkable from any of the following sources:
@@ -68,7 +70,83 @@ Optionally, you can:
 - Provide an explicit filename using the ``--filename`` parameter
 - Specify the location on the reMarkable to place the file (default ``/``)
 
-Here's the full help of the script:
+Here's an example with verbose mode enabled that shows everything the script 
+does by default:
+
+```
+$ p2r -v https://arxiv.org/abs/1811.11242
+2019-05-30 00:38:27 - INFO - Starting ArxivProvider
+2019-05-30 00:38:27 - INFO - Getting paper info from arXiv
+2019-05-30 00:38:27 - INFO - Downloading url: https://arxiv.org/abs/1811.11242
+2019-05-30 00:38:27 - INFO - Generating output filename
+2019-05-30 00:38:27 - INFO - Created filename: Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf
+2019-05-30 00:38:27 - INFO - Downloading file at url: https://arxiv.org/pdf/1811.11242.pdf
+2019-05-30 00:38:32 - INFO - Downloading url: https://arxiv.org/pdf/1811.11242.pdf
+2019-05-30 00:38:32 - INFO - Removing arXiv timestamp
+2019-05-30 00:38:34 - INFO - Cropping pdf file
+2019-05-30 00:38:37 - INFO - Shrinking pdf file
+2019-05-30 00:38:38 - INFO - Starting upload to reMarkable
+2019-05-30 00:38:42 - INFO - Upload successful.
+```
+
+## Installation
+
+The script requires the following external programs to be available:
+
+- [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), 
+  [qpdf](http://qpdf.sourceforge.net/), or 
+  [pdftk-java](https://gitlab.com/pdftk-java/pdftk), whichever your package 
+  manager provides.
+- [GhostScript](https://www.ghostscript.com/)
+- [rMAPI](https://github.com/juruen/rmapi)
+
+Specifically:
+
+1. First install [rMAPI](https://github.com/juruen/rmapi), using
+   ```
+   $ go get -u github.com/juruen/rmapi
+   ```
+
+2. Then install system dependencies:
+   - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
+   - **Ubuntu:** ``apt-get install pdftk ghostscript poppler-utils``. Replace 
+     ``pdftk`` with ``qpdf`` if your distribution doesn't package ``pdftk``.
+   - **MacOS:** ``brew install pdftk-java ghostscript poppler`` (using [HomeBrew](https://brew.sh/)).
+   - **Windows:** Installers or executables are available for 
+     [qpdf](https://github.com/qpdf/qpdf/releases) (for instance the mingw 
+     binary executables) and 
+     [GhostScript](https://www.ghostscript.com/download/gsdnld.html). 
+     Importantly, Windows support is untested and these are generic 
+     instructions, so we welcome clarifications where needed. The Docker 
+     instructions below may be more convenient on Windows.
+
+3. Finally, install ``paper2remarkable``:
+   ```
+   $ pip install paper2remarkable
+   ```
+   this installs the ``p2r`` command line program.
+
+**Optionally**, you can install:
+
+- [pdftoppm](https://linux.die.net/man/1/pdftoppm) (recommended for speed). 
+  Usually part of a [Poppler](https://poppler.freedesktop.org/) installation.
+
+- the [ReadabiliPy](https://github.com/alan-turing-institute/ReadabiliPy) 
+  package with Node.js support, to allow using 
+  [Readability.js](https://github.com/mozilla/readability) for HTML articles. 
+  This is known to improve the output of certain web articles.
+
+If any of the dependencies (such as rmapi or ghostscript) are not available on 
+the ``PATH`` variable, you can supply them with the relevant options to the 
+script (for instance ``p2r --rmapi /path/to/rmapi``). If you run into trouble 
+with the installation, please let me know by opening an issue [on 
+Github][github-url].
+
+## Usage
+
+The full help of the script is as follows. Hopefully the various command line 
+flags are self-explanatory, but if you'd like more information, please open an 
+issue [on GitHub][github-url].
 
 ```
 usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
@@ -103,71 +181,7 @@ optional arguments:
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
 ```
 
-And here's an example with verbose mode enabled that shows everything the 
-script does by default:
-
-```
-$ p2r -v https://arxiv.org/abs/1811.11242
-2019-05-30 00:38:27 - INFO - Starting ArxivProvider
-2019-05-30 00:38:27 - INFO - Getting paper info from arXiv
-2019-05-30 00:38:27 - INFO - Downloading url: https://arxiv.org/abs/1811.11242
-2019-05-30 00:38:27 - INFO - Generating output filename
-2019-05-30 00:38:27 - INFO - Created filename: Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf
-2019-05-30 00:38:27 - INFO - Downloading file at url: https://arxiv.org/pdf/1811.11242.pdf
-2019-05-30 00:38:32 - INFO - Downloading url: https://arxiv.org/pdf/1811.11242.pdf
-2019-05-30 00:38:32 - INFO - Removing arXiv timestamp
-2019-05-30 00:38:34 - INFO - Cropping pdf file
-2019-05-30 00:38:37 - INFO - Shrinking pdf file
-2019-05-30 00:38:38 - INFO - Starting upload to reMarkable
-2019-05-30 00:38:42 - INFO - Upload successful.
-```
-
-## Installation
-
-The script requires the following external programs to be available:
-
-- [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), 
-  [qpdf](http://qpdf.sourceforge.net/), or 
-  [pdftk-java](https://gitlab.com/pdftk-java/pdftk), whichever your package 
-  manager provides.
-- [GhostScript](https://www.ghostscript.com/)
-- [rMAPI](https://github.com/juruen/rmapi)
-- Optional: [pdftoppm](https://linux.die.net/man/1/pdftoppm) (recommended for 
-  speed). Usually part of a [Poppler](https://poppler.freedesktop.org/) 
-  installation.
-
-Specifically:
-
-1. First install [rMAPI](https://github.com/juruen/rmapi), using
-   ```
-   $ go get -u github.com/juruen/rmapi
-   ```
-
-2. Then install system dependencies:
-   - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
-   - **Ubuntu:** ``apt-get install pdftk ghostscript poppler-utils``. Replace 
-     ``pdftk`` with ``qpdf`` if your distribution doesn't package ``pdftk``.
-   - **MacOS:** ``brew install pdftk-java ghostscript poppler`` (using [HomeBrew](https://brew.sh/)).
-   - **Windows:** Installers or executables are available for 
-     [qpdf](https://github.com/qpdf/qpdf/releases) (for instance the mingw 
-     binary executables) and 
-     [GhostScript](https://www.ghostscript.com/download/gsdnld.html). 
-     Importantly, Windows support is untested and these are generic 
-     instructions, so we welcome clarifications where needed. The Docker 
-     instructions below may be more convenient on Windows.
-
-3. Finally, install ``paper2remarkable``:
-   ```
-   $ pip install paper2remarkable
-   ```
-   this installs the ``p2r`` command line program.
-
-If any of the dependencies are not available on the ``PATH`` variable, you can 
-supply them with the relevant options to the script (for instance ``p2r 
---rmapi /path/to/rmapi``). If you run into trouble with the installation, 
-please let me know!
-
-## Alfred
+## Alfred Workflow
 
 On MacOS, you can optionally install [this Alfred workflow][workflow]. Alfred 
 is [a launcher for MacOS](https://www.alfredapp.com/).
@@ -264,5 +278,7 @@ Then you can use ``paper2remarkable`` from the command line as ``p2r``!
 
 License: MIT
 
-If you find a problem or want to suggest a feature, please let us know! You're 
-helping to make this project better!
+If you find a problem or want to suggest a feature, please open an issue [on 
+Github][github-url]. You're helping to make this project better for everyone!
+
+[github-url]: https://github.com/GjjvdBurg/paper2remarkable
