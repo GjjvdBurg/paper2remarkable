@@ -134,14 +134,17 @@ class HTML(Provider):
         return url, url
 
     def retrieve_pdf(self, pdf_url, filename):
-        """Turn the HTML article in a clean pdf file"""
-        # Steps
-        # 1. Pull the HTML page using requests
-        # 2. Extract the article part of the page using readability
-        # 3. Convert the article HTML to markdown using html2text
-        # 4. Convert the markdown back to HTML (this is done to sanitize HTML)
-        # 4. Convert the HTML to PDF, pulling in images where needed
-        # 5. Save the PDF to the specified filename.
+        """Turn the HTML article in a clean pdf file
+
+        This function takes the following steps:
+
+        1. Pull the HTML page using requests, if not done in Informer
+        2. Extract the article part of the page using readability/readabiliPy
+        3. Convert the article HTML to markdown using html2text
+        4. Convert the markdown back to HTML (done to sanitize the HTML)
+        4. Convert the HTML to PDF, pulling in images where needed
+        5. Save the PDF to the specified filename.
+        """
         if self.informer._cached_title and self.informer._cached_article:
             title = self.informer._cached_title
             article = self.informer._cached_article
