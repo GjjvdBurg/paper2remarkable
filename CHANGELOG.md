@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 0.7.1
+
+* Fix OpenReview provider after site change
+
+## Version 0.7.0
+
+* Add provider for SagePub
+
+## Version 0.6.9
+
+* Improve robustness of Springer provider
+
+## Version 0.6.8
+
+* Add provider for SemanticScholar papers
+* Fix bug that made ``no_crop`` option no longer work
+
 ## Version 0.6.7
 
 * Increase robustness to PDF issues by passing through GhostScript (fixes 

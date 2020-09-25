@@ -25,7 +25,9 @@ from paper2remarkable.providers import (
     PMLR,
     PdfUrl,
     PubMed,
+    SagePub,
     Springer,
+    SemanticScholar,
 )
 
 VERBOSE = False
@@ -125,10 +127,17 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
-    def test_springer(self):
+    def test_springer_1(self):
         prov = Springer(upload=False, verbose=VERBOSE)
         url = "https://link.springer.com/article/10.1007/s10618-019-00631-5"
         exp_filename = "Mauw_Ramirez-Cruz_Trujillo-Rasua_-_Robust_Active_Attacks_on_Social_Graphs_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_springer_2(self):
+        prov = Springer(upload=False, verbose=VERBOSE)
+        url = "https://link.springer.com/content/pdf/10.1007%2F11681878_14.pdf"
+        exp_filename = "Dwork_et_al_-_Calibrating_Noise_to_Sensitivity_in_Private_Data_Analysis_2006.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
@@ -224,6 +233,20 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    def test_neurips_3(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "http://papers.neurips.cc/paper/5433-combinatorial-pure-exploration-of-multi-armed-bandits"
+        exp = "Chen_et_al_-_Combinatorial_Pure_Exploration_of_Multi-Armed_Bandits_2014.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_neurips_4(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf"
+        exp = "Yin_Shen_-_On_the_Dimensionality_of_Word_Embedding_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
     def test_citeseerx_1(self):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548"
@@ -277,6 +300,35 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
+
+    def test_semantic_scholar_1(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://pdfs.semanticscholar.org/1b01/dea77e9cbf049b4ee8b68dc4d43529d06299.pdf"
+        exp = "Dong_et_al_-_TableSense_Spreadsheet_Table_Detection_With_Convolutional_Neural_Networks_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_semantic_scholar_2(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://www.semanticscholar.org/paper/Fast-Meta-Learning-for-Adaptive-Hierarchical-Design-Burg-Hero/90759dc4ab0ce8d3564044ef92a91080a4f3e55f"
+        exp = "Burg_Hero_-_Fast_Meta-Learning_for_Adaptive_Hierarchical_Classifier_Design_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_sagepub_1(self):
+        prov = SagePub(upload=False, verbose=VERBOSE)
+        url = "https://journals.sagepub.com/doi/full/10.1177/0306312714535679"
+        exp = "Rekdal_-_Academic_Urban_Legends_2014.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_sagepub_2(self):
+        prov = SagePub(upload=False, verbose=VERBOSE)
+        url = "https://journals.sagepub.com/doi/pdf/10.1177/1352458517694432"
+        exp = "Kobelt_et_al_-_New_Insights_Into_the_Burden_and_Costs_of_Multiple_Sclerosis_in_Europe_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
 
 
 if __name__ == "__main__":

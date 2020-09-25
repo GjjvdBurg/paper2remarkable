@@ -12,7 +12,9 @@ from .openreview import OpenReview
 from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
+from .sagepub import SagePub
 from .springer import Springer
+from .semantic_scholar import SemanticScholar
 
 # NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
@@ -25,7 +27,9 @@ providers = [
     OpenReview,
     PMLR,
     PubMed,
+    SagePub,
     Springer,
+    SemanticScholar,
     LocalFile,
     PdfUrl,
     HTML,
