@@ -32,10 +32,7 @@ REQUIRED = [
     "markdown>=3.1.1",
 ]
 
-full_require = [
-    # TEMPORARY: Until ReadabiliPy is available on PyPI
-    "readabilipy @ git+https://git@github.com/GjjvdBurg/ReadabiliPy@packaging#egg=readabilipy",
-]
+full_require = ["readabilipy"]
 docs_require = []
 test_require = []
 dev_require = ["green"]
