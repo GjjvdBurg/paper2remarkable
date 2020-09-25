@@ -34,8 +34,8 @@ REQUIRED = [
 
 full_require = ["readabilipy"]
 docs_require = []
-test_require = []
-dev_require = ["green"]
+test_require = ["green"]
+dev_require = []
 
 # What packages are optional?
 EXTRAS = {
