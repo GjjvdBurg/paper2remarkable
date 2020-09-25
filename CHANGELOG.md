@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.7.2
+
+* Add support to optionally use 
+  [ReadabiliPy](https://github.com/alan-turing-institute/ReadabiliPy), a 
+  wrapper around Mozilla's 
+  [Readability.js](https://github.com/mozilla/readability), to improve text 
+  extraction of web articles. This closes 
+  [#53](https://github.com/GjjvdBurg/paper2remarkable/issues/53), thanks to 
+  @sirupsen for reporting the problem.
+* Improve NeurIPS provider to add support for papers.neurips.cc
+
 ## Version 0.7.1
 
 * Fix OpenReview provider after site change
