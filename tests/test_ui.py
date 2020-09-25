@@ -98,7 +98,7 @@ class TestUI(unittest.TestCase):
                 PdfUrl,
                 "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
                 "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
-                ),
+            ),
             (
                 JMLR,
                 "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
@@ -148,6 +148,11 @@ class TestUI(unittest.TestCase):
                 NeurIPS,
                 "https://papers.nips.cc/paper/7796-middle-out-decoding",
                 "https://papers.nips.cc/paper/7796-middle-out-decoding",
+            ),
+            (
+                NeurIPS,
+                "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
+                "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
             ),
             (
                 CiteSeerX,

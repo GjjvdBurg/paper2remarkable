@@ -233,6 +233,20 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    def test_neurips_3(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "http://papers.neurips.cc/paper/5433-combinatorial-pure-exploration-of-multi-armed-bandits"
+        exp = "Chen_et_al_-_Combinatorial_Pure_Exploration_of_Multi-Armed_Bandits_2014.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_neurips_4(self):
+        prov = NeurIPS(upload=False, verbose=VERBOSE)
+        url = "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf"
+        exp = "Yin_Shen_-_On_the_Dimensionality_of_Word_Embedding_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
     def test_citeseerx_1(self):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548"
