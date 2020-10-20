@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument(
         "--filename",
         help="Filename to use for the file on reMarkable",
-        default=None,
+        action="append",
     )
     parser.add_argument(
         "--gs", help="path to gs executable (default: gs)", default="gs"
@@ -101,7 +101,9 @@ def parse_args():
         default="rmapi",
     )
     parser.add_argument(
-        "input", help="URL to a paper or the path of a local PDF file"
+        "input",
+        help="One or more URLs to a paper or paths to local PDF files",
+        nargs="+",
     )
     return parser.parse_args()
 
@@ -122,23 +124,23 @@ def exception(msg):
 def choose_provider(cli_input):
     """Choose the provider to use for the given source
 
-    This function first tries to check if the input is a local file, by 
-    checking if the path exists. Next, it checks if the input is a "valid" url 
-    using a regex test. If it is, the registered provider classes are checked 
+    This function first tries to check if the input is a local file, by
+    checking if the path exists. Next, it checks if the input is a "valid" url
+    using a regex test. If it is, the registered provider classes are checked
     to see which provider can handle this url.
 
     Returns
     -------
     provider : class
-        The class of the provider than can handle the source. A subclass of the 
+        The class of the provider than can handle the source. A subclass of the
         Provider abc.
 
     new_input : str
-        The updated input to the provider. This only has an effect for the url 
+        The updated input to the provider. This only has an effect for the url
         providers, where this will be the url after following all redirects.
 
     cookiejar : dict or requests.RequestsCookieJar
-        Cookies picked up when following redirects. These are needed for some 
+        Cookies picked up when following redirects. These are needed for some
         providers to ensure later requests have the right cookie settings.
 
     Raises
@@ -194,23 +196,31 @@ def main():
     if args.right and args.no_crop:
         exception("Can't right align and not crop at the same time!")
 
-    provider, new_input, cookiejar = choose_provider(args.input)
+    if args.filename and not len(args.filename) == len(args.input):
+        exception(
+            "When providing --filename and multiple inputs, their number must match."
+        )
 
-    prov = provider(
-        verbose=args.verbose,
-        upload=not args.no_upload,
-        debug=args.debug,
-        center=args.center,
-        right=args.right,
-        blank=args.blank,
-        no_crop=args.no_crop,
-        remarkable_dir=args.remarkable_dir,
-        rmapi_path=args.rmapi,
-        pdftoppm_path=args.pdftoppm,
-        pdftk_path=args.pdftk,
-        qpdf_path=args.qpdf,
-        gs_path=args.gs,
-        cookiejar=cookiejar,
+    filenames = (
+        [None] * len(args.input) if not args.filename else args.filename
     )
 
-    prov.run(new_input, filename=args.filename)
+    for cli_input, filename in zip(args.input, filenames):
+        provider, new_input, cookiejar = choose_provider(cli_input)
+        prov = provider(
+            verbose=args.verbose,
+            upload=not args.no_upload,
+            debug=args.debug,
+            center=args.center,
+            right=args.right,
+            blank=args.blank,
+            no_crop=args.no_crop,
+            remarkable_dir=args.remarkable_dir,
+            rmapi_path=args.rmapi,
+            pdftoppm_path=args.pdftoppm,
+            pdftk_path=args.pdftk,
+            qpdf_path=args.qpdf,
+            gs_path=args.gs,
+            cookiejar=cookiejar,
+        )
+        prov.run(new_input, filename=filename)
