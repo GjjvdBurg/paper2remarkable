@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.7.3
+
+* Increase robustness for arXiv sources
+* Fix NBER provider after site update
+* Add support for multiple command line inputs
+
 ## Version 0.7.2
 
 * Add support to optionally use 

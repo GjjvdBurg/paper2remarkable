@@ -150,25 +150,25 @@ issue [on GitHub][github-url].
 
 ```
 usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
-           [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM]
-           [--pdftk PDFTK] [--qpdf QPDF] [--rmapi RMAPI]
-           input
+           [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
+           [--qpdf QPDF] [--rmapi RMAPI]
+           input [input ...]
 
-Paper2reMarkable version 0.7.2
+Paper2reMarkable version 0.7.3
 
 positional arguments:
-  input                 URL to a paper or the path of a local PDF file
+  input                 One or more URLs to a paper or paths to local PDF files
 
 optional arguments:
   -h, --help            show this help message and exit
   -b, --blank           Add a blank page after every page of the PDF
   -c, --center          Center the PDF on the page, instead of left align
   -d, --debug           debug mode, doesn't upload to reMarkable
-  -n, --no-upload       don't upload to the reMarkable, save the output in
-                        current working dir
+  -n, --no-upload       don't upload to the reMarkable, save the output in current working
+                        dir
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
-                        directory on reMarkable to put the file (created if
-                        missing, default: /)
+                        directory on reMarkable to put the file (created if missing, default:
+                        /)
   -r, --right           Right align so the menu doesn't cover it
   -k, --no-crop         Don't crop the pdf file
   -v, --verbose         be verbose
