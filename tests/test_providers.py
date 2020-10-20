@@ -98,7 +98,7 @@ class TestProviders(unittest.TestCase):
     def test_arxiv_6(self):
         prov = Arxiv(upload=False, verbose=VERBOSE)
         url = "https://arxiv.org/pdf/1701.05517.pdf?source=post_page---------------------------"
-        exp_filename = "Salimans_et_al_-_PixelCNN_Improving_the_PixelCNN_with_Discretized_Logistic_Mixture_Likelihood_and_Other_Modifications_2017.pdf"
+        exp_filename = "Salimans_et_al_-_PixelCNN_Improving_the_PixelCNN_With_Discretized_Logistic_Mixture_Likelihood_and_Other_Modifications_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
