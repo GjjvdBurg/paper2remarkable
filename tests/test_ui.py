@@ -137,7 +137,7 @@ class TestUI(unittest.TestCase):
             (
                 NBER,
                 "https://www.nber.org/papers/w19152.pdf",
-                "https://www.nber.org/papers/w19152.pdf",
+                "https://www.nber.org/system/files/working_papers/w19152/w19152.pdf",
             ),
             (
                 NeurIPS,
