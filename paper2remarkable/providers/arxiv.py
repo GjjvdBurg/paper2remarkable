@@ -45,6 +45,8 @@ class Arxiv(Provider):
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
+        if '?' in url:
+            url = url[:url.index('?')]
         if re.match(self.re_abs_1, url) or re.match(self.re_abs_2, url):
             abs_url = url
             pdf_url = url.replace("abs", "pdf") + ".pdf"
