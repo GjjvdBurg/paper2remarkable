@@ -60,4 +60,8 @@ class NBER(Provider):
         return abs_url, pdf_url
 
     def validate(src):
-        return re.match(NBER.re_abs, src) or re.match(NBER.re_pdf, src) or re.match(NBER.re_pdf_2, src)
+        return (
+            re.match(NBER.re_abs, src)
+            or re.match(NBER.re_pdf, src)
+            or re.match(NBER.re_pdf_2, src)
+        )
