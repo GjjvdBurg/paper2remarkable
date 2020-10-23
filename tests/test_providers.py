@@ -16,6 +16,7 @@ from paper2remarkable.providers import (
     ACM,
     Arxiv,
     CiteSeerX,
+    CVF,
     HTML,
     JMLR,
     LocalFile,
@@ -333,6 +334,24 @@ class TestProviders(unittest.TestCase):
         prov = SagePub(upload=False, verbose=VERBOSE)
         url = "https://journals.sagepub.com/doi/pdf/10.1177/1352458517694432"
         exp = "Kobelt_et_al_-_New_Insights_Into_the_Burden_and_Costs_of_Multiple_Sclerosis_in_Europe_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_cvf_1(self):
+        prov = CVF(upload=False, verbose=VERBOSE)
+        url = "https://openaccess.thecvf.com/content_ICCV_2019/html/Muhammad_Goal-Driven_Sequential_Data_Abstraction_ICCV_2019_paper.html"
+        exp = (
+            "Muhammad_et_al_-_Goal-Driven_Sequential_Data_Abstraction_2019.pdf"
+        )
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_cvf_2(self):
+        prov = CVF(upload=False, verbose=VERBOSE)
+        url = "https://openaccess.thecvf.com/content_CVPR_2020/papers/Park_Seeing_the_World_in_a_Bag_of_Chips_CVPR_2020_paper.pdf"
+        exp = (
+            "Park_Holynski_Seitz_-_Seeing_the_World_in_a_Bag_of_Chips_2020.pdf"
+        )
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

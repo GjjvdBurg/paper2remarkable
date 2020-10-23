@@ -20,6 +20,7 @@ from paper2remarkable.providers import (
     ACM,
     Arxiv,
     CiteSeerX,
+    CVF,
     HTML,
     JMLR,
     LocalFile,
@@ -173,6 +174,11 @@ class TestUI(unittest.TestCase):
                 HTML,
                 "https://www.nature.com/articles/d41586-020-00176-4",
                 "https://www.nature.com/articles/d41586-020-00176-4",
+            ),
+            (
+                CVF,
+                "https://openaccess.thecvf.com/content_cvpr_2018/html/Cheng_Dual_Skipping_Networks_CVPR_2018_paper.html",
+                "https://openaccess.thecvf.com/content_cvpr_2018/html/Cheng_Dual_Skipping_Networks_CVPR_2018_paper.html",
             ),
         ]
         for exp_prov, url, exp_url in tests:

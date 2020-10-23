@@ -3,6 +3,7 @@
 from .acm import ACM
 from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
+from .cvf import CVF
 from .html import HTML
 from .jmlr import JMLR
 from .local import LocalFile
@@ -21,6 +22,7 @@ providers = [
     ACM,
     Arxiv,
     CiteSeerX,
+    CVF,
     JMLR,
     NBER,
     NeurIPS,
