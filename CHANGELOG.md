@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.4
+
+* Add provider for CVF
+
 ## Version 0.7.3
 
 * Increase robustness for arXiv sources
