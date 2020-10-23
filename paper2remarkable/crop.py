@@ -28,7 +28,7 @@ def find_offset_byte_line(line):
     """Find index of first nonzero bit in a line of bytes
 
     The given line is a string of bytes, each representing 8 pixels. This code
-    finds the index of the first bit that is not zero. Used when find the
+    finds the index of the first bit that is not zero. Used when finding the
     cropbox with pdftoppm.
     """
     off = 0
