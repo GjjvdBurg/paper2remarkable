@@ -285,8 +285,8 @@ class TestProviders(unittest.TestCase):
     def test_html_3(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://conclave-team.github.io/conclave-site/"
-        #exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
-        # NOTE: Title differs between Readability.JS and readability-lxml, we 
+        # exp = "Conclave_Case_Study_-_A_Private_and_Secure_Real-Time_Collaborative_Text_Editor.pdf"
+        # NOTE: Title differs between Readability.JS and readability-lxml, we
         # assume that testing is done with Readability.JS
         exp = "Conclave.pdf"
         filename = prov.run(url)
@@ -335,7 +335,6 @@ class TestProviders(unittest.TestCase):
         exp = "Kobelt_et_al_-_New_Insights_Into_the_Burden_and_Costs_of_Multiple_Sclerosis_in_Europe_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
-
 
 
 if __name__ == "__main__":

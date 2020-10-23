@@ -38,7 +38,7 @@ def clean_string(s):
     cleaned = "".join(c if c in allowed else "_" for c in normalized)
     while "__" in cleaned:
         cleaned = cleaned.replace("__", "_")
-    cleaned = cleaned.strip('_')
+    cleaned = cleaned.strip("_")
     return cleaned
 
 
@@ -186,10 +186,10 @@ def check_pdftool(pdftk_path, qpdf_path):
         return "pdftk"
     try:
         status = subprocess.call(
-        [qpdf_path, "--help"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+            [qpdf_path, "--help"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
     except FileNotFoundError:
         status = 1
     if status == 0:
