@@ -122,7 +122,12 @@ class Provider(metaclass=abc.ABCMeta):
             )
         elif self.pdftool == "qpdf":
             status = subprocess.call(
-                [self.qpdf_path, "--stream-data=compress", in_pdf, out_pdf,],
+                [
+                    self.qpdf_path,
+                    "--stream-data=compress",
+                    in_pdf,
+                    out_pdf,
+                ],
                 stderr=subprocess.DEVNULL,
             )
         if not status == 0:
@@ -131,7 +136,7 @@ class Provider(metaclass=abc.ABCMeta):
             )
 
     def rewrite_pdf(self, in_pdf, out_pdf=None):
-        """ Re-write the pdf using Ghostscript
+        """Re-write the pdf using Ghostscript
 
         This helps avoid issues in dearxiv due to nested pdfs.
         """
@@ -159,11 +164,22 @@ class Provider(metaclass=abc.ABCMeta):
 
         if self.pdftool == "pdftk":
             status = subprocess.call(
-                [self.pdftk_path, in_pdf, "output", out_pdf, "uncompress",]
+                [
+                    self.pdftk_path,
+                    in_pdf,
+                    "output",
+                    out_pdf,
+                    "uncompress",
+                ]
             )
         elif self.pdftool == "qpdf":
             status = subprocess.call(
-                [self.qpdf_path, "--stream-data=uncompress", in_pdf, out_pdf,]
+                [
+                    self.qpdf_path,
+                    "--stream-data=uncompress",
+                    in_pdf,
+                    out_pdf,
+                ]
             )
         if not status == 0:
             raise _CalledProcessError(

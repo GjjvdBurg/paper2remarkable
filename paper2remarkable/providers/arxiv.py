@@ -107,7 +107,9 @@ class Arxiv(Provider):
                     block = b"".join(current_obj)
                     # remove the text
                     block, n_subs1 = re.subn(
-                        b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj", b"()Tj", block,
+                        b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj",
+                        b"()Tj",
+                        block,
                     )
                     # remove the url (type 1)
                     block, n_subs2 = re.subn(

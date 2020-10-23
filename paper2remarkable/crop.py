@@ -27,8 +27,8 @@ logger = Logger()
 def find_offset_byte_line(line):
     """Find index of first nonzero bit in a line of bytes
 
-    The given line is a string of bytes, each representing 8 pixels. This code 
-    finds the index of the first bit that is not zero. Used when find the 
+    The given line is a string of bytes, each representing 8 pixels. This code
+    finds the index of the first bit that is not zero. Used when find the
     cropbox with pdftoppm.
     """
     off = 0
@@ -46,8 +46,7 @@ def find_offset_byte_line(line):
 
 
 def check_pdftoppm(pth):
-    """Check that we can run the provided pdftoppm executable
-    """
+    """Check that we can run the provided pdftoppm executable"""
     try:
         subprocess.check_output([pth, "-v"], stderr=subprocess.DEVNULL)
     except (subprocess.CalledProcessError, FileNotFoundError, PermissionError):
@@ -58,7 +57,10 @@ def check_pdftoppm(pth):
 
 class Cropper(object):
     def __init__(
-        self, input_file=None, output_file=None, pdftoppm_path="pdftoppm",
+        self,
+        input_file=None,
+        output_file=None,
+        pdftoppm_path="pdftoppm",
     ):
         if not input_file is None:
             self.input_file = os.path.abspath(input_file)
@@ -220,7 +222,7 @@ class Cropper(object):
         if margins is integer, used for all margins, else
         margins = [left, top, right, bottom]
 
-        We get the bounding box by finding the smallest rectangle that is 
+        We get the bounding box by finding the smallest rectangle that is
         completely surrounded by white pixels.
         """
         if isinstance(margins, int):
@@ -254,7 +256,7 @@ class Cropper(object):
         return [a0, b0, a1, b1]
 
     def get_center_bbox(self, filename, padding=15):
-        """Compute a bounding box that will center the page file on the 
+        """Compute a bounding box that will center the page file on the
         reMarkable
         """
         bbox = self.get_bbox(filename, margins=0)
@@ -279,8 +281,7 @@ class Cropper(object):
         return self.get_bbox(filename, margins=margins)
 
     def get_right_bbox(self, filename, padding=15):
-        """Get the bounding box that ensures the menu doesn't hide the text
-        """
+        """Get the bounding box that ensures the menu doesn't hide the text"""
 
         bbox = self.get_bbox(filename, margins=0)
 
