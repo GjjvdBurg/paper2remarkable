@@ -32,6 +32,7 @@ reMarkable from any of the following sources:
 * [arXiv](https://arxiv.org/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
 * [CiteSeerX](http://citeseerx.ist.psu.edu/index)
+* [CVF](https://openaccess.thecvf.com/menu)
 * [JMLR](http://jmlr.org)
 * [NBER](https://www.nber.org)
 * [NeurIPS](https://papers.nips.cc/)
