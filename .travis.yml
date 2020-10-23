@@ -11,7 +11,9 @@ before_install:
   - nvm use v12.18.1
 
 install:
+  - pip install pre-commit
   - pip install -e .[test]
 
 script:
+  - pre-commit run --all-files --show-diff-on-failure
   - green -vv -a ./tests
