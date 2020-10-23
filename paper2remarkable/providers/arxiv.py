@@ -45,8 +45,8 @@ class Arxiv(Provider):
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url """
-        if '?' in url:
-            url = url[:url.index('?')]
+        if "?" in url:
+            url = url[: url.index("?")]
         if re.match(self.re_abs_1, url) or re.match(self.re_abs_2, url):
             abs_url = url
             pdf_url = url.replace("abs", "pdf") + ".pdf"
@@ -107,7 +107,9 @@ class Arxiv(Provider):
                     block = b"".join(current_obj)
                     # remove the text
                     block, n_subs1 = re.subn(
-                        b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj", b"()Tj", block,
+                        b"\(" + DEARXIV_TEXT_REGEX + b"\)Tj",
+                        b"()Tj",
+                        block,
                     )
                     # remove the url (type 1)
                     block, n_subs2 = re.subn(
@@ -119,8 +121,8 @@ class Arxiv(Provider):
                     )
                     # remove the url (type 2, i.e. Jackson arXiv 0309285v2)
                     block, n_subs3 = re.subn(
-                        b"<<\n\/S \/URI\n" +
-                        b"/URI \("
+                        b"<<\n\/S \/URI\n"
+                        + b"/URI \("
                         + DEARXIV_URI_REGEX
                         + b"\)\n>>\n",
                         b"",

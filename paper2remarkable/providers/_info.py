@@ -16,12 +16,12 @@ logger = Logger()
 class Informer:
     """Base class for the informers.
 
-    The "informer" class is used to retrieve the title, authors, and year of 
+    The "informer" class is used to retrieve the title, authors, and year of
     publication of the provided paper.
 
-    This base class provides the main functionality, but because various 
-    outlets use different conventions to embed author, title, and publication 
-    year information, we expect that individual providers will subclass this 
+    This base class provides the main functionality, but because various
+    outlets use different conventions to embed author, title, and publication
+    year information, we expect that individual providers will subclass this
     class and overwrite some of the methods.
     """
 
@@ -35,9 +35,9 @@ class Informer:
         self.year = year
 
     def get_filename(self, abs_url):
-        """ Generate nice filename using the paper information
+        """Generate nice filename using the paper information
 
-        The provided url must be to a HTMl page where this information can be 
+        The provided url must be to a HTMl page where this information can be
         found, not to the PDF file itself.
         """
         logger.info("Generating output filename")

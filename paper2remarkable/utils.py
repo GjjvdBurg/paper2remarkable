@@ -30,15 +30,15 @@ logger = Logger()
 
 
 def clean_string(s):
-    """ Clean a string by replacing accented characters with equivalents and 
-    keeping only the allowed characters (ascii letters, digits, underscore, 
+    """Clean a string by replacing accented characters with equivalents and
+    keeping only the allowed characters (ascii letters, digits, underscore,
     space, dash, and period)"""
     normalized = unidecode.unidecode(s)
     allowed = string.ascii_letters + string.digits + "_ .-"
     cleaned = "".join(c if c in allowed else "_" for c in normalized)
     while "__" in cleaned:
         cleaned = cleaned.replace("__", "_")
-    cleaned = cleaned.strip('_')
+    cleaned = cleaned.strip("_")
     return cleaned
 
 
@@ -142,7 +142,8 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
         while parts:
             rmdir += "/" + parts.pop(0)
             status = subprocess.call(
-                [rmapi_path, "mkdir", rmdir], stdout=subprocess.DEVNULL,
+                [rmapi_path, "mkdir", rmdir],
+                stdout=subprocess.DEVNULL,
             )
             if not status == 0:
                 raise RemarkableError(
@@ -186,10 +187,10 @@ def check_pdftool(pdftk_path, qpdf_path):
         return "pdftk"
     try:
         status = subprocess.call(
-        [qpdf_path, "--help"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+            [qpdf_path, "--help"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
     except FileNotFoundError:
         status = 1
     if status == 0:

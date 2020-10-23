@@ -28,7 +28,9 @@ class PdfUrlInformer(Informer):
         path_parts = parsed.path.split("/")
         if not path_parts:
             raise FilenameMissingError(
-                provider="PdfUrl", url=abs_url, reason="No URL parts",
+                provider="PdfUrl",
+                url=abs_url,
+                reason="No URL parts",
             )
 
         filename = path_parts[-1]

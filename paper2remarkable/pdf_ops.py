@@ -40,8 +40,7 @@ def prepare_pdf(filepath, operation, pdftoppm_path="pdftoppm"):
 
 
 def blank_pdf(filepath):
-    """Add blank pages to PDF
-    """
+    """Add blank pages to PDF"""
     logger.info("Adding blank pages")
     input_pdf = PyPDF2.PdfFileReader(filepath)
     output_pdf = PyPDF2.PdfFileWriter()
@@ -56,8 +55,7 @@ def blank_pdf(filepath):
 
 
 def shrink_pdf(filepath, gs_path="gs"):
-    """Shrink the PDF file size using Ghostscript
-    """
+    """Shrink the PDF file size using Ghostscript"""
     logger.info("Shrinking pdf file ...")
     size_before = os.path.getsize(filepath)
     output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"

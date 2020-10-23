@@ -38,7 +38,7 @@ class Logger(metaclass=Singleton):
     def disable(self):
         self.enabled = False
 
-    def _log(self, msg, mode, end='\n', add_prefix=True):
+    def _log(self, msg, mode, end="\n", add_prefix=True):
         if not self.enabled:
             return
         if not mode in ("info", "warn"):
@@ -53,12 +53,11 @@ class Logger(metaclass=Singleton):
         print("%s%s" % (prefix, msg), end=end, file=file)
         file.flush()
 
-    def info(self, msg, end='\n'):
+    def info(self, msg, end="\n"):
         self._log(msg, "info", end=end)
 
-    def warning(self, msg, end='\n'):
+    def warning(self, msg, end="\n"):
         self._log(msg, "warn", end=end)
 
-    def append(self, msg, mode, end='\n'):
+    def append(self, msg, mode, end="\n"):
         self._log(msg, mode, end=end, add_prefix=False)
-
