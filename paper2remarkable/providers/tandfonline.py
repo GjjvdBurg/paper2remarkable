@@ -65,7 +65,6 @@ class TandFOnline(Provider):
             )
         else:
             raise URLResolutionError("TandFOnline", url)
-        print("abs:", abs_url, "pdf:", pdf_url)
         return abs_url, pdf_url
 
     def validate(src):
