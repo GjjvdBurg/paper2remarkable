@@ -16,12 +16,12 @@ logger = Logger()
 class Informer:
     """Base class for the informers.
 
-    The "informer" class is used to retrieve the title, authors, and year of 
+    The "informer" class is used to retrieve the title, authors, and year of
     publication of the provided paper.
 
-    This base class provides the main functionality, but because various 
-    outlets use different conventions to embed author, title, and publication 
-    year information, we expect that individual providers will subclass this 
+    This base class provides the main functionality, but because various
+    outlets use different conventions to embed author, title, and publication
+    year information, we expect that individual providers will subclass this
     class and overwrite some of the methods.
     """
 
@@ -35,9 +35,9 @@ class Informer:
         self.year = year
 
     def get_filename(self, abs_url):
-        """ Generate nice filename using the paper information
+        """Generate nice filename using the paper information
 
-        The provided url must be to a HTMl page where this information can be 
+        The provided url must be to a HTMl page where this information can be
         found, not to the PDF file itself.
         """
         logger.info("Generating output filename")
@@ -50,6 +50,7 @@ class Informer:
             authors = self.authors[0] + "_et_al"
         else:
             authors = "_".join(self.authors)
+        authors = authors.replace(" ", "_")
         authors = clean_string(authors)
 
         # Clean the title and make it titlecase
@@ -76,8 +77,13 @@ class Informer:
     ## Title
 
     def get_title(self, soup):
-        target = soup.find_all("meta", {"name": self.meta_title_key})
-        return target[0]["content"]
+        meta = soup.find_all("meta", {"name": self.meta_title_key})
+        if not meta:
+            logger.warning(
+                "Couldn't determine title information, maybe provide the desired filename using '--filename'?"
+            )
+            return ""
+        return meta[0]["content"]
 
     ## Authors
 
@@ -87,10 +93,13 @@ class Informer:
         return [x.strip().split(sep)[idx].strip() for x in op(soup_authors)]
 
     def get_authors(self, soup):
-        authors = [
-            x["content"]
-            for x in soup.find_all("meta", {"name": self.meta_author_key})
-        ]
+        meta = soup.find_all("meta", {"name": self.meta_author_key})
+        if not meta:
+            logger.warning(
+                "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
+            )
+            return ""
+        authors = [x["content"] for x in meta]
         return self._format_authors(authors)
 
     ## Year
@@ -100,7 +109,8 @@ class Informer:
 
     def get_year(self, soup):
         """ Retrieve the contents of the meta_date_key field and format it """
-        date = soup.find_all("meta", {"name": self.meta_date_key})[0][
-            "content"
-        ]
+        meta = soup.find_all("meta", {"name": self.meta_date_key})
+        if not meta:
+            return ""
+        date = meta[0]["content"]
         return self._format_year(date)

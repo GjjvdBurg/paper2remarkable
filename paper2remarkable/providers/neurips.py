@@ -25,8 +25,8 @@ class NeurIPSInformer(Informer):
 
 class NeurIPS(Provider):
 
-    re_abs = "^https?://papers.nips.cc/paper/[\d\w\-]+$"
-    re_pdf = "^https?://papers.nips.cc/paper/[\d\w\-]+.pdf$"
+    re_abs = "^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+$"
+    re_pdf = "^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+.pdf$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -6,10 +6,9 @@
 
 from . import GITHUB_URL
 
-from subprocess import CalledProcessError
-
-GH_MSG = "\n\nIf you think this might be a bug, please raise an issue on GitHub at: {url}".format(
-    url=GITHUB_URL
+GH_MSG = (
+    "\n\nIf you think this might be a bug, please raise an issue on "
+    "GitHub at:\n{url}\n".format(url=GITHUB_URL)
 )
 
 
@@ -48,13 +47,17 @@ class URLResolutionError(Error):
 class FilenameMissingError(Error):
     """Exception raised for providers that need a filename to be provided"""
 
-    def __init__(self, provider):
+    def __init__(self, provider, url, reason=None):
         self.provider = provider
+        self.url = url
+        self.reason = reason
 
     def __str__(self):
-        msg = "ERROR: Filename must be given with the {provider} provider (hint: use --filename)".format(
-            provider=self.provider
+        msg = "ERROR: Couldn't determine a filename from {url} for provider {provider}".format(
+            provider=self.provider, url=self.url
         )
+        if self.reason:
+            msg += "\nReason: {reason}".format(reason=self.reason)
         msg += GH_MSG
         return msg
 
@@ -86,16 +89,53 @@ class RemarkableError(Error):
         return msg
 
 
-class _CalledProcessError(CalledProcessError):
-    """Exception raised when subprocesses fail.
+class _CalledProcessError(Error):
+    """Exception raised when subprocesses fail.  """
 
-    We subclass the CalledProcessError so we can add our custom error message.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, message):
+        self.message = message
 
     def __str__(self):
-        parent = super().__str__()
-        msg = parent + GH_MSG
+        msg = "ERROR: {message}".format(message=self.message)
+        msg += GH_MSG
+        return msg
+
+
+class NoPDFToolError(Error):
+    """Exception raised when neither pdftk or qpdf is found."""
+
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        msg = (
+            "ERROR: Neither pdftk or qpdf could be found. Install "
+            "either of these or ensure that they can be found using "
+            "the --pdftk or --qpdf options."
+        )
+        msg += GH_MSG
+        return msg
+
+
+class UnidentifiedSourceError(Error):
+    """Exception raised when the input is neither a local file nor a url """
+
+    def __str__(self):
+        msg = (
+            "ERROR: Couldn't figure out what source you mean. If it's a "
+            "local file, please make sure it exists."
+        )
+        msg += GH_MSG
+        return msg
+
+
+class InvalidURLError(Error):
+    """Exception raised when no provider can handle a url source """
+
+    def __str__(self):
+        msg = (
+            "ERROR: Input URL is not valid, no provider can handle "
+            "this source."
+        )
+        msg += GH_MSG
         return msg

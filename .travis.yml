@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 
 language: python
 python:
@@ -6,11 +6,14 @@ python:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install ghostscript pdftk texlive-extra-utils poppler-utils
+  - sudo apt-get install ghostscript pdftk poppler-utils qpdf
+  - nvm install v12.18.1
+  - nvm use v12.18.1
 
 install:
-  - pip install six
-  - pip install -e .[dev]
+  - pip install pre-commit
+  - pip install -e .[test]
 
 script:
+  - pre-commit run --all-files --show-diff-on-failure
   - green -vv -a ./tests
