@@ -24,6 +24,7 @@ from paper2remarkable.providers import (
     HTML,
     JMLR,
     LocalFile,
+    Nature,
     NBER,
     NeurIPS,
     OpenReview,
@@ -179,6 +180,11 @@ class TestUI(unittest.TestCase):
                 CVF,
                 "https://openaccess.thecvf.com/content_cvpr_2018/html/Cheng_Dual_Skipping_Networks_CVPR_2018_paper.html",
                 "https://openaccess.thecvf.com/content_cvpr_2018/html/Cheng_Dual_Skipping_Networks_CVPR_2018_paper.html",
+            ),
+            (
+                Nature,
+                "https://www.nature.com/articles/s41599-019-0349-z",
+                "https://www.nature.com/articles/s41599-019-0349-z",
             ),
         ]
         for exp_prov, url, exp_url in tests:

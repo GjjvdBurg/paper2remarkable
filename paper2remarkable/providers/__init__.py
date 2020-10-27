@@ -7,6 +7,7 @@ from .cvf import CVF
 from .html import HTML
 from .jmlr import JMLR
 from .local import LocalFile
+from .nature import Nature
 from .nber import NBER
 from .neurips import NeurIPS
 from .openreview import OpenReview
@@ -24,6 +25,7 @@ providers = [
     CiteSeerX,
     CVF,
     JMLR,
+    Nature,
     NBER,
     NeurIPS,
     OpenReview,
