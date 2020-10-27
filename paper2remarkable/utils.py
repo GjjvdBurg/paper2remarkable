@@ -90,7 +90,10 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
 
 def get_content_type_with_retry(url, tries=5, cookiejar=None):
     count = 0
-    jar = {} if cookiejar is None else cookiejar
+    if cookiejar is None:
+        jar = requests.cookies.RequestsCookieJar()
+    else:
+        jar = cookiejar
     while count < tries:
         count += 1
         error = False
@@ -135,7 +138,7 @@ def get_content_type_with_retry(url, tries=5, cookiejar=None):
 def follow_redirects(url):
     """Follow redirects from the URL (at most 100)"""
     it = 0
-    jar = {}
+    jar = requests.cookies.RequestsCookieJar()
     while it < 100:
         req = requests.head(
             url, headers=HEADERS, allow_redirects=False, cookies=jar
