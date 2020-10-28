@@ -34,6 +34,7 @@ reMarkable from any of the following sources:
 * [CiteSeerX](http://citeseerx.ist.psu.edu/index)
 * [CVF](https://openaccess.thecvf.com/menu)
 * [JMLR](http://jmlr.org)
+* [Nature](https://www.nature.com)
 * [NBER](https://www.nber.org)
 * [NeurIPS](https://papers.nips.cc/)
 * [OpenReview](https://openreview.net/)
@@ -42,6 +43,7 @@ reMarkable from any of the following sources:
 * [SagePub](https://journals.sagepub.com/)
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
+* [Taylor & Francis](https://www.tandfonline.com/)
 * A generic URL to a PDF file
 * A local PDF file
 * Any article on a website
