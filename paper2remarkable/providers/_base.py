@@ -206,7 +206,9 @@ class Provider(metaclass=abc.ABCMeta):
         self.initial_dir = os.getcwd()
         with tempfile.TemporaryDirectory(prefix="p2r_") as working_dir:
             os.chdir(working_dir)
+            print("working_dir:", working_dir)
             self.retrieve_pdf(pdf_url, tmp_filename)
+
             assert_file_is_pdf(tmp_filename)
 
             intermediate_fname = tmp_filename
