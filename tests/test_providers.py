@@ -20,6 +20,7 @@ from paper2remarkable.providers import (
     HTML,
     JMLR,
     LocalFile,
+    Nature,
     NBER,
     NeurIPS,
     OpenReview,
@@ -365,6 +366,20 @@ class TestProviders(unittest.TestCase):
         exp = (
             "Park_Holynski_Seitz_-_Seeing_the_World_in_a_Bag_of_Chips_2020.pdf"
         )
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_nature_1(self):
+        prov = Nature(upload=False, verbose=VERBOSE)
+        url = "https://www.nature.com/articles/s41598-020-75456-0"
+        exp = "Golozar_et_al_-_Direct_Observation_of_Lithium_Metal_Dendrites_With_Ceramic_Solid_Electrolyte_2020.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_nature_2(self):
+        prov = Nature(upload=False, verbose=VERBOSE)
+        url = "https://www.nature.com/articles/s41599-019-0371-1.pdf"
+        exp = "Leroi_et_al_-_On_Revolutions_2020.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
