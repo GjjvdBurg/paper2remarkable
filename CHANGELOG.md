@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.0
+
+* Add provider for Nature
+* Add provider for Taylor & Francis
+* Minor bugfixes
+
 ## Version 0.7.4
 
 * Add provider for CVF
