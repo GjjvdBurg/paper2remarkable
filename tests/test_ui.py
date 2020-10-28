@@ -102,6 +102,11 @@ class TestUI(unittest.TestCase):
                 "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
             ),
             (
+                PdfUrl,
+                "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
+                "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
+            ),
+            (
                 JMLR,
                 "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
                 "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
