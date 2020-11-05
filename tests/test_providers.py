@@ -232,7 +232,7 @@ class TestProviders(unittest.TestCase):
     def test_neurips_1(self):
         prov = NeurIPS(upload=False, verbose=VERBOSE)
         url = "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf"
-        exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1991.pdf"
+        exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1990.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
@@ -282,6 +282,8 @@ class TestProviders(unittest.TestCase):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/pdf/10.1080/03610918.2012.625790?scroll=top&needAccess=true"
         exp = "Huskova_Marusiakova_-_M-Procedures_for_Detection_of_Changes_for_Dependent_Observations_2012.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
 
     def test_html_1(self):
         prov = HTML(upload=False, verbose=VERBOSE)
