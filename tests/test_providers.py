@@ -232,7 +232,7 @@ class TestProviders(unittest.TestCase):
     def test_neurips_1(self):
         prov = NeurIPS(upload=False, verbose=VERBOSE)
         url = "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf"
-        exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1991.pdf"
+        exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1990.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

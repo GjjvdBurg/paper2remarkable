@@ -149,12 +149,12 @@ class TestUI(unittest.TestCase):
             (
                 NeurIPS,
                 "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf",
-                "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf",
+                "https://papers.nips.cc/paper/1990/file/89f0fd5c927d466d6ec9a21b9ac34ffa-Paper.pdf",
             ),
             (
                 NeurIPS,
                 "https://papers.nips.cc/paper/7796-middle-out-decoding",
-                "https://papers.nips.cc/paper/7796-middle-out-decoding",
+                "https://papers.nips.cc/paper/2018/hash/0c215f194276000be6a6df6528067151-Abstract.html",
             ),
             (
                 NeurIPS,
