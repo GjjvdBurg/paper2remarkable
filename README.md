@@ -229,19 +229,31 @@ docker build -t p2r .
 
 ### Authorization
 
-If you already have a `~/.rmapi` file, you can skip this section. Otherwise 
-we'll use `rmapi` to create it.
+``paper2remarkable`` uses [rMapi](https://github.com/juruen/rmapi) to sync 
+documents to the reMarkable. The first time you run ``paper2remarkable`` you 
+will have to authenticate rMapi using a one-time code provided by reMarkable. 
+By default, rMapi uses the ``${HOME}/.rmapi`` file as a configuration file to 
+store the credentials, and so this is the location we will use in the commands 
+below. If you'd like to use a different location for the configuration (for 
+instance, ``${HOME}/.config/rmapi/rmapi.conf``), make sure to change the 
+commands below accordingly.
+
+If you already have a `~/.rmapi` file with the authentication details, you can 
+skip this section. Otherwise we'll create it and run ``rmapi`` in the docker 
+container for authentication:
 
 ```bash
-touch ${HOME}/.rmapi
-docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
+$ touch ${HOME}/.rmapi
+$ docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
 ```
 
-which should end with output like
+This command will print a link where you can obtain a one-time code to 
+authenticate rMapi and afterwards print the rMapi version (the version number 
+may be different):
 
 ```bash
 ReMarkable Cloud API Shell
-rmapi version: 0.0.5
+rmapi version: 0.0.12
 ```
 
 ### Usage
