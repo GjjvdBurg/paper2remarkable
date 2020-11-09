@@ -285,7 +285,8 @@ your ``~/.bashrc`` file to abstract away the Docker commands:
 alias p2r="docker run --rm -v \"${HOME}/.rmapi:/home/user/.rmapi:rw\" p2r"
 ```
 
-Then you can use ``paper2remarkable`` from the command line as ``p2r``!
+After running ``source ~/.bashrc`` to activate the alias, you can then use 
+``paper2remarkable`` through Docker by calling ``p2r`` from the command line.
 
 # Notes
 
