@@ -41,6 +41,12 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "-e",
+        "--experimental",
+        help="enable experimental features",
+        action="store_true",
+    )
+    parser.add_argument(
         "-n",
         "--no-upload",
         help="don't upload to the reMarkable, save the output in current working dir",
@@ -211,6 +217,7 @@ def main():
             verbose=args.verbose,
             upload=not args.no_upload,
             debug=args.debug,
+            experimental=args.experimental,
             center=args.center,
             right=args.right,
             blank=args.blank,

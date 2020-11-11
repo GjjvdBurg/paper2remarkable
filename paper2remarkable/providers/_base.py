@@ -38,6 +38,7 @@ class Provider(metaclass=abc.ABCMeta):
         verbose=False,
         upload=True,
         debug=False,
+        experimental=False,
         center=False,
         right=False,
         blank=False,
@@ -52,6 +53,7 @@ class Provider(metaclass=abc.ABCMeta):
     ):
         self.upload = upload
         self.debug = debug
+        self.experimental = experimental
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
         self.pdftoppm_path = pdftoppm_path
