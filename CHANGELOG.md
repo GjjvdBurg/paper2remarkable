@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.1
+
+* Add experimental fix for lazy loaded images in HTML
+
 ## Version 0.8.0
 
 * Add provider for Nature
