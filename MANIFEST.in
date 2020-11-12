@@ -5,3 +5,4 @@ exclude .gitignore
 exclude Dockerfile
 exclude make_release.py
 prune old
+include p2r.1

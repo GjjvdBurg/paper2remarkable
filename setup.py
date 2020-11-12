@@ -86,6 +86,7 @@ setup(
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
+    data_files=[("man/man1", ["p2r.1"])],
     license=LICENSE,
     ext_modules=[],
     entry_points={"console_scripts": ["p2r = paper2remarkable.__main__:main"]},
