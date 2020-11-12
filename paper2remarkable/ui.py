@@ -79,6 +79,7 @@ def parse_args():
         version=__version__,
     )
     parser.add_argument(
+        "-f",
         "--filename",
         help="Filename to use for the file on reMarkable",
         action="append",
