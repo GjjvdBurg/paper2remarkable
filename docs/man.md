@@ -13,7 +13,8 @@ reMarkable tablet. The input to the script can be a URL to a PDF file or
 article on a website, or a local file. For supported scientific outlets, the 
 program will collect the metadata for the paper and create a nice filename 
 (unless ``--filename`` is specified). See [SUPPORTED 
-SOURCES](#supported-sources) for an overview of supported scientific outlets.
+SOURCES](#supported-sources) for an overview of supported scientific paper 
+sources.
 
 By default, paper2remarkable crops the unnecessary whitespace from a PDF file 
 to make the paper fit better on the reMarkable. The default setting yields a 

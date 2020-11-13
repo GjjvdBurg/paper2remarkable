@@ -44,6 +44,7 @@ clean_output:
 	rm -f man.rst
 	rm -rf $(OUTPUT_DIR)
 	rm -rf _static
+	rm -rf .build
 
 #######################
 # Virtual environment #
