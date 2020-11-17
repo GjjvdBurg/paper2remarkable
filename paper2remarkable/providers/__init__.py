@@ -15,6 +15,7 @@ from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
 from .sagepub import SagePub
+from .science_direct import ScienceDirect
 from .semantic_scholar import SemanticScholar
 from .springer import Springer
 from .tandfonline import TandFOnline
@@ -33,6 +34,7 @@ providers = [
     PMLR,
     PubMed,
     SagePub,
+    ScienceDirect,
     Springer,
     SemanticScholar,
     TandFOnline,
