@@ -41,6 +41,7 @@ reMarkable from any of the following sources:
 * [PMLR](http://proceedings.mlr.press/)
 * [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/)
 * [SagePub](https://journals.sagepub.com/)
+* [ScienceDirect](https://www.sciencedirect.com/)
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
 * [Taylor & Francis](https://www.tandfonline.com/)
@@ -148,8 +149,8 @@ Github][github-url].
 ## Usage
 
 The full help of the script is as follows. Hopefully the various command line 
-flags are self-explanatory, but if you'd like more information, please open an 
-issue [on GitHub][github-url].
+flags are self-explanatory, but if you'd like more information see the [man 
+page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 
 ```
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]

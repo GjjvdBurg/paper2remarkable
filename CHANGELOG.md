@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.2
+
+* Add provider for ScienceDirect
+* Add man page to package
+* Add short flag, -f, for --filename
+
 ## Version 0.8.1
 
 * Add experimental fix for lazy loaded images in HTML
