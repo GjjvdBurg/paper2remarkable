@@ -119,6 +119,7 @@ to whether a URL to the PDF or to the abstract page is provided.
 - PMLR
 - PubMed Central
 - SagePub
+- ScienceDirect
 - SemanticScholar
 - SpringerLink
 - Taylor & Francis
