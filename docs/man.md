@@ -64,7 +64,7 @@ reMarkable options:
 
 -n, --no-upload
       Don't upload the document to the reMarkable, save the output in the 
-      current working dir.
+      current working directory.
 
 -p, --remarkable-path=DIR
       The directory on the reMarkable where the document will be uploaded to. 
@@ -80,16 +80,18 @@ the PATH variable.
       Path to the GhostScript executable.
 
 --pdftoppm=PDFTOPPM
-      Path to pdftoppm executable (default: pdftoppm)
+      Path to pdftoppm executable (default: pdftoppm). Note that pdftoppm is 
+      optional.
 
 --pdftk=PDFTK
-      Path to PDFtk executable (default: pdftk)
+      Path to PDFtk executable (default: pdftk). Either pdftk or qpdf is 
+      needed.
 
 --qpdf=QPDF
-      Path to qpdf executable (default: qpdf)
+      Path to qpdf executable (default: qpdf). Either pdftk or qpdf is needed.
 
 --rmapi=RMAPI
-      Path to rmapi executable (default: rmapi)
+      Path to rmapi executable (default: rmapi).
 
 Developer options:
 
@@ -127,7 +129,7 @@ which case no "nice" filename will be generated.
 
 - A generic URL to a PDF file. This can be considered a fallback option for 
   when a PDF source is not supported (yet).
-- A local PDF file
+- A local PDF file.
 
 Finally, paper2remarkable supports extracting articles from websites. In this 
 case an effort is done to detect the main content of the article and clean up 
@@ -137,13 +139,14 @@ the HTML before sending the file to the reMarkable.
 
 Occassionally, experimental (beta) features will be included in 
 paper2remarkable and they will be listed here. You can enable the experimental 
-features using the ``-e`` flag to paper2remarkable.
+features by using the ``-e`` flag to paper2remarkable.
 
 - The HTML provider currently has an experimental feature to handle lazy 
-  loading of images. Certain websites use a small placeholder image and 
-  subsequently load the main image, which is often stored in a ``data-src`` 
-  attribute in the ``img`` tag. The experimental feature uses the ``data-src`` 
-  attribute as the image source instead of the ``src``.
+  loading of images. Certain websites use a small placeholder image and load 
+  the main image using Javascript, with the actual image source stored in a 
+  ``data-src`` attribute in the ``img`` tag. The experimental feature uses the 
+  ``data-src`` attribute as the image source instead of that in the ``src`` 
+  attribute.
 
 ## BUGS
 
