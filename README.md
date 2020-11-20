@@ -187,6 +187,12 @@ optional arguments:
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
 ```
 
+By default ``paper2remarkable`` makes a PDF fit better on the reMarkable by 
+changing the page size and removing unnecessary whitespace. Some tools for 
+exporting a PDF with annotations do not handle different page sizes properly, 
+causing annotations to be misplaced. If this is an issue for you, you can 
+disable cropping using the ``-k``/``--no-crop`` option to ``p2r``.
+
 ## Alfred Workflow
 
 On MacOS, you can optionally install [this Alfred workflow][workflow]. Alfred 
