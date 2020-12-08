@@ -280,7 +280,7 @@ docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
 
 # to transfer a local file in the current directory
-docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:r" p2r -v localfile.pdf
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:ro" p2r -v localfile.pdf
 ```
 
 For transferring local files using the Docker image, you may find [this helper 
