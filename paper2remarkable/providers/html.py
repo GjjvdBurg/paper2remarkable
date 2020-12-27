@@ -13,13 +13,13 @@ Copyright: 2020, G.J.J. van den Burg
 
 import html2text
 import markdown
+import os
 import re
 import readability
 import titlecase
 import unidecode
 import urllib
 import weasyprint
-import weasyprint.fonts
 
 from ._base import Provider
 from ._info import Informer
@@ -34,7 +34,6 @@ from ..log import Logger
 logger = Logger()
 
 CSS = """
-@import url('https://fonts.googleapis.com/css?family=EB+Garamond|Noto+Serif|Inconsolata&display=swap');
 @page { size: 702px 936px; margin: 1in; }
 a { color: black; }
 img { display: block; margin: 0 auto; text-align: center; max-width: 70%; max-height: 300px; }
@@ -47,6 +46,13 @@ blockquote { font-style: italic; }
 pre { font-family: 'Inconsolata'; padding-left: 2.5%; background: #efefef; }
 code { font-family: 'Inconsolata'; font-size: .7rem; background: #efefef; }
 """
+
+# NOTE: For some reason, Weasyprint no longer accepts the @import statement in
+# the CSS to load the fonts. This may have to do with recent changes they've
+# introduced. Providing the font urls separately does seem to work.
+FONT_URLS = [
+    "https://fonts.googleapis.com/css2?family=EB+Garamond&family=Noto+Serif&family=Inconsolata"
+]
 
 
 def url_fetcher(url):
@@ -168,6 +174,30 @@ class HTML(Provider):
         html_article = md.convert(article)
         return html_article
 
+    def get_css(self):
+        if self.css_path is None:
+            return CSS
+        if not os.path.exists(self.css_path):
+            logger.warning(
+                f"CSS file {self.css_path} doesn't exist, using default style."
+            )
+            return CSS
+        with open(self.css_path, "r") as fp:
+            css = fp.read()
+        return css
+
+    def get_font_urls(self):
+        if self.font_urls_path is None:
+            return FONT_URLS
+        if not os.path.exists(self.font_urls_path):
+            logger.warning(
+                f"Font urls file {self.font_urls_path} doesn't exist, using default."
+            )
+            return FONT_URLS
+        with open(self.font_urls_path, "r") as fp:
+            font_urls = [l.strip() for l in fp.read().split("\n")]
+        return font_urls
+
     def retrieve_pdf(self, pdf_url, filename):
         """Turn the HTML article in a clean pdf file
 
@@ -193,11 +223,11 @@ class HTML(Provider):
             with open("./paper.html", "w") as fp:
                 fp.write(html_article)
 
-        font_config = weasyprint.fonts.FontConfiguration()
         html = weasyprint.HTML(string=html_article, url_fetcher=url_fetcher)
-        css = weasyprint.CSS(string=CSS, font_config=font_config)
-
-        html.write_pdf(filename, stylesheets=[css], font_config=font_config)
+        css = self.get_css()
+        font_urls = self.get_font_urls()
+        style = weasyprint.CSS(string=css)
+        html.write_pdf(filename, stylesheets=[style] + font_urls)
 
     def validate(src):
         # first check if it is a valid url

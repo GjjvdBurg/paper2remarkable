@@ -49,6 +49,8 @@ class Provider(metaclass=abc.ABCMeta):
         pdftk_path="pdftk",
         qpdf_path="qpdf",
         gs_path="gs",
+        css_path=None,
+        font_urls_path=None,
         cookiejar=None,
     ):
         self.upload = upload
@@ -60,8 +62,11 @@ class Provider(metaclass=abc.ABCMeta):
         self.pdftk_path = pdftk_path
         self.qpdf_path = qpdf_path
         self.gs_path = gs_path
-        self.informer = Informer()
+        self.css_path = css_path
+        self.font_urls_path = font_urls_path
         self.cookiejar = cookiejar
+
+        self.informer = Informer()
 
         self.pdftool = check_pdftool(self.pdftk_path, self.qpdf_path)
 
