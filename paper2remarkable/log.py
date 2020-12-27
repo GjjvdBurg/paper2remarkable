@@ -9,8 +9,8 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 # NOTE: I know about the logging module, but this was easier because one of the
-# dependencies was using that and it became complicated. This one is obviously
-# not thread-safe and is very simple.
+# dependencies was using that and it interfered with our logging. The logger
+# class below is obviously not thread-safe and is very simple.
 
 import datetime
 import sys

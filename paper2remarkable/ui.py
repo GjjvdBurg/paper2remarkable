@@ -108,6 +108,14 @@ def parse_args():
         default="rmapi",
     )
     parser.add_argument(
+        "--css", help="path to custom CSS file for HTML output", default=None
+    )
+    parser.add_argument(
+        "--font-urls",
+        help="path to custom font urls file for HTML output",
+        default=None,
+    )
+    parser.add_argument(
         "input",
         help="One or more URLs to a paper or paths to local PDF files",
         nargs="+",
@@ -229,6 +237,8 @@ def main():
             pdftk_path=args.pdftk,
             qpdf_path=args.qpdf,
             gs_path=args.gs,
+            css_path=args.css,
+            font_urls_path=args.font_urls,
             cookiejar=cookiejar,
         )
         prov.run(new_input, filename=filename)

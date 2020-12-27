@@ -71,6 +71,18 @@ reMarkable options:
       If the target directory does not exist it will be created. If not 
       specified, the root directory will be used.
 
+Output customization:
+
+--css=FILENAME
+      Path to a CSS file with custom styling for the HTML output. This option 
+      is ignored for any of the other providers. The code for the HTML 
+      provider contains the default CSS style, which can be used as a starting 
+      point.
+
+--font-urls=FILENAME
+      Path to a file with font urls (one per line) for the HTML output. This 
+      will generally be used in combination with the ``--css`` option.
+
 System settings:
 
 You'll only need to specify these options if the programs are not available on 
