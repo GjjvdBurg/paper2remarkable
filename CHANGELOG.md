@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.8.3
+
+* Add support for providing custom styling for HTML output (closes 
+  [#82](https://github.com/GjjvdBurg/paper2remarkable/issues/82)).
+
 ## Version 0.8.2
 
 * Add provider for ScienceDirect

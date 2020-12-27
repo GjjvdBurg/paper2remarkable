@@ -154,11 +154,11 @@ page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 
 ```
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
-           [-V] [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM]
-           [--pdftk PDFTK] [--qpdf QPDF] [--rmapi RMAPI]
+           [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
+           [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
            input [input ...]
 
-Paper2reMarkable version 0.8.1
+Paper2reMarkable version 0.8.3
 
 positional arguments:
   input                 One or more URLs to a paper or paths to local PDF
@@ -179,19 +179,30 @@ optional arguments:
   -k, --no-crop         Don't crop the pdf file
   -v, --verbose         be verbose
   -V, --version         Show version and exit
-  --filename FILENAME   Filename to use for the file on reMarkable
+  -f FILENAME, --filename FILENAME
+                        Filename to use for the file on reMarkable
   --gs GS               path to gs executable (default: gs)
   --pdftoppm PDFTOPPM   path to pdftoppm executable (default: pdftoppm)
   --pdftk PDFTK         path to pdftk executable (default: pdftk)
   --qpdf QPDF           path to qpdf executable (default: qpdf)
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
+  --css CSS             path to custom CSS file for HTML output
+  --font-urls FONT_URLS
+                        path to custom font urls file for HTML output
 ```
 
 By default ``paper2remarkable`` makes a PDF fit better on the reMarkable by 
 changing the page size and removing unnecessary whitespace. Some tools for 
 exporting a PDF with annotations do not handle different page sizes properly, 
-causing annotations to be misplaced. If this is an issue for you, you can 
-disable cropping using the ``-k``/``--no-crop`` option to ``p2r``.
+causing annotations to be misplaced (see 
+[discussion](https://github.com/GjjvdBurg/paper2remarkable/issues/77)). If 
+this is an issue for you, you can disable cropping using the 
+``-k``/``--no-crop`` option to ``p2r``.
+
+For HTML sources (i.e. web articles) you can specify custom styling using the 
+``--css`` and ``--font-urls`` options. The default style in the [HTML 
+provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0a09e4b173c87850c6ddee/paper2remarkable/providers/html.py#L36) 
+can serve as a starting point.
 
 ## Alfred Workflow
 
