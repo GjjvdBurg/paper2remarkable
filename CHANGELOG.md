@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.5
+
+* Handle the case where the configuration file doesn't contain all sections.
+
 ## Version 0.8.4
 
 * Add support for using a configuration file to avoid having to use command 
