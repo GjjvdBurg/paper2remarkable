@@ -208,6 +208,9 @@ def load_config(path=None):
 def merge_options(config, args):
     # command line arguments always overwrite config
     opts = copy.deepcopy(config)
+    opts.setdefault("core", {})
+    opts.setdefault("system", {})
+    opts.setdefault("html", {})
 
     def set_bool(d, key, value):
         if value:
