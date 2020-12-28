@@ -156,9 +156,10 @@ page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
            [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
            [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
+           [-C CONFIG]
            input [input ...]
 
-Paper2reMarkable version 0.8.3
+Paper2reMarkable version 0.8.4
 
 positional arguments:
   input                 One or more URLs to a paper or paths to local PDF
@@ -170,8 +171,8 @@ optional arguments:
   -c, --center          Center the PDF on the page, instead of left align
   -d, --debug           debug mode, doesn't upload to reMarkable
   -e, --experimental    enable experimental features
-  -n, --no-upload       don't upload to the reMarkable, save the output in
-                        current working dir
+  -n, --no-upload       don't upload to reMarkable, save the output in current
+                        directory
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
                         directory on reMarkable to put the file (created if
                         missing, default: /)
@@ -189,6 +190,8 @@ optional arguments:
   --css CSS             path to custom CSS file for HTML output
   --font-urls FONT_URLS
                         path to custom font urls file for HTML output
+  -C CONFIG, --config CONFIG
+                        path to config file (default: ~/.p2r.yml)
 ```
 
 By default ``paper2remarkable`` makes a PDF fit better on the reMarkable by 
@@ -203,6 +206,13 @@ For HTML sources (i.e. web articles) you can specify custom styling using the
 ``--css`` and ``--font-urls`` options. The default style in the [HTML 
 provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0a09e4b173c87850c6ddee/paper2remarkable/providers/html.py#L36) 
 can serve as a starting point.
+
+A configuration file can be used to provide commonly-used command line 
+options. By default the configuration file at ``~/.p2r.yml`` is used if it 
+exists, but an alternative location can be provided with the ``-C/--config`` 
+flag. Command line flags override the settings in the configuration file.  See 
+the [config.example.yml](./config.example.yml) file for an example 
+configuration file and an overview of supported options.
 
 ## Alfred Workflow
 

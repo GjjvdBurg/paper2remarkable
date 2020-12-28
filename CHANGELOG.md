@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.8.4
+
+* Add support for using a configuration file to avoid having to use command 
+  line flags.
+
 ## Version 0.8.3
 
 * Add support for providing custom styling for HTML output (closes 
