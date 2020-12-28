@@ -13,12 +13,12 @@ Copyright: 2020, G.J.J. van den Burg
 
 import html2text
 import markdown
+import re
 import readability
 import titlecase
 import unidecode
 import urllib
 import weasyprint
-import weasyprint.fonts
 
 from ._base import Provider
 from ._info import Informer
@@ -33,7 +33,6 @@ from ..log import Logger
 logger = Logger()
 
 CSS = """
-@import url('https://fonts.googleapis.com/css?family=EB+Garamond|Noto+Serif|Inconsolata&display=swap');
 @page { size: 702px 936px; margin: 1in; }
 a { color: black; }
 img { display: block; margin: 0 auto; text-align: center; max-width: 70%; max-height: 300px; }
@@ -46,6 +45,13 @@ blockquote { font-style: italic; }
 pre { font-family: 'Inconsolata'; padding-left: 2.5%; background: #efefef; }
 code { font-family: 'Inconsolata'; font-size: .7rem; background: #efefef; }
 """
+
+# NOTE: For some reason, Weasyprint no longer accepts the @import statement in
+# the CSS to load the fonts. This may have to do with recent changes they've
+# introduced. Providing the font urls separately does seem to work.
+FONT_URLS = [
+    "https://fonts.googleapis.com/css2?family=EB+Garamond&family=Noto+Serif&family=Inconsolata"
+]
 
 
 def url_fetcher(url):
@@ -133,6 +139,41 @@ class HTML(Provider):
     def get_abs_pdf_urls(self, url):
         return url, url
 
+    def fix_lazy_loading(self, article):
+        if not self.experimental:
+            return article
+
+        # This attempts to fix sites where the image src element points to a
+        # placeholder and the data-src attribute contains the url to the actual
+        # image. Note that results may differ between readability and
+        # Readability.JS
+        regex = '<img src="(?P<src>.*?)" (?P<rest1>.*) data-src="(?P<datasrc>.*?)" (?P<rest2>.*?)>'
+        sub = '<img src="\g<datasrc>" \g<rest1> \g<rest2>>'
+
+        article, nsub = re.subn(regex, sub, article, flags=re.MULTILINE)
+        if nsub:
+            logger.info(
+                f"[experimental] Attempted to fix lazy image loading ({nsub} times). "
+                "Please report bad results."
+            )
+        return article
+
+    def preprocess_html(self, pdf_url, title, article):
+        article = self.fix_lazy_loading(article)
+
+        h2t = html2text.HTML2Text()
+        h2t.wrap_links = False
+        text = h2t.handle(article)
+
+        # Add the title back to the document
+        article = "# {title}\n\n{text}".format(title=title, text=text)
+
+        # Convert to html, fixing relative image urls.
+        md = markdown.Markdown()
+        md.treeprocessors.register(ImgProcessor(pdf_url), "img", 10)
+        html_article = md.convert(article)
+        return html_article
+
     def retrieve_pdf(self, pdf_url, filename):
         """Turn the HTML article in a clean pdf file
 
@@ -152,27 +193,17 @@ class HTML(Provider):
             request_html = get_page_with_retry(pdf_url, return_text=True)
             title, article = make_readable(request_html)
 
-        h2t = html2text.HTML2Text()
-        h2t.wrap_links = False
-        text = h2t.handle(article)
-
-        # Add the title back to the document
-        article = "# {title}\n\n{text}".format(title=title, text=text)
-
-        # Convert to html, fixing relative image urls.
-        md = markdown.Markdown()
-        md.treeprocessors.register(ImgProcessor(pdf_url), "img", 10)
-        html_article = md.convert(article)
+        html_article = self.preprocess_html(pdf_url, title, article)
 
         if self.debug:
             with open("./paper.html", "w") as fp:
                 fp.write(html_article)
 
-        font_config = weasyprint.fonts.FontConfiguration()
         html = weasyprint.HTML(string=html_article, url_fetcher=url_fetcher)
-        css = weasyprint.CSS(string=CSS, font_config=font_config)
-
-        html.write_pdf(filename, stylesheets=[css], font_config=font_config)
+        css = CSS if self.css is None else self.css
+        font_urls = FONT_URLS if self.font_urls is None else self.font_urls
+        style = weasyprint.CSS(string=css)
+        html.write_pdf(filename, stylesheets=[style] + font_urls)
 
     def validate(src):
         # first check if it is a valid url

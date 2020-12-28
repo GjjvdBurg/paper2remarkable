@@ -1,5 +1,33 @@
 # Changelog
 
+## Version 0.8.6
+
+* Rename default configuration file
+
+## Version 0.8.5
+
+* Handle the case where the configuration file doesn't contain all sections.
+
+## Version 0.8.4
+
+* Add support for using a configuration file to avoid having to use command 
+  line flags.
+
+## Version 0.8.3
+
+* Add support for providing custom styling for HTML output (closes 
+  [#82](https://github.com/GjjvdBurg/paper2remarkable/issues/82)).
+
+## Version 0.8.2
+
+* Add provider for ScienceDirect
+* Add man page to package
+* Add short flag, -f, for --filename
+
+## Version 0.8.1
+
+* Add experimental fix for lazy loaded images in HTML
+
 ## Version 0.8.0
 
 * Add provider for Nature

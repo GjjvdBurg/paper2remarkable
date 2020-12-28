@@ -9,7 +9,10 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import argparse
+import copy
+import os
 import sys
+import yaml
 
 from . import __version__, GITHUB_URL
 
@@ -41,9 +44,15 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "-e",
+        "--experimental",
+        help="enable experimental features",
+        action="store_true",
+    )
+    parser.add_argument(
         "-n",
         "--no-upload",
-        help="don't upload to the reMarkable, save the output in current working dir",
+        help="don't upload to reMarkable, save the output in current directory",
         action="store_true",
     )
     parser.add_argument(
@@ -73,32 +82,47 @@ def parse_args():
         version=__version__,
     )
     parser.add_argument(
+        "-f",
         "--filename",
         help="Filename to use for the file on reMarkable",
         action="append",
     )
     parser.add_argument(
-        "--gs", help="path to gs executable (default: gs)", default="gs"
+        "--gs", help="path to gs executable (default: gs)", default=None
     )
     parser.add_argument(
         "--pdftoppm",
         help="path to pdftoppm executable (default: pdftoppm)",
-        default="pdftoppm",
+        default=None,
     )
     parser.add_argument(
         "--pdftk",
         help="path to pdftk executable (default: pdftk)",
-        default="pdftk",
+        default=None,
     )
     parser.add_argument(
         "--qpdf",
         help="path to qpdf executable (default: qpdf)",
-        default="qpdf",
+        default=None,
     )
     parser.add_argument(
         "--rmapi",
         help="path to rmapi executable (default: rmapi)",
-        default="rmapi",
+        default=None,
+    )
+    parser.add_argument(
+        "--css", help="path to custom CSS file for HTML output", default=None
+    )
+    parser.add_argument(
+        "--font-urls",
+        help="path to custom font urls file for HTML output",
+        default=None,
+    )
+    parser.add_argument(
+        "-C",
+        "--config",
+        help="path to config file (default: ~/.paper2remarkable.yml)",
+        default=None,
     )
     parser.add_argument(
         "input",
@@ -171,6 +195,72 @@ def choose_provider(cli_input):
     return provider, new_input, cookiejar
 
 
+def load_config(path=None):
+    if path is None:
+        path = os.path.join(os.path.expanduser("~"), ".paper2remarkable.yml")
+    if not os.path.exists(path):
+        return {"core": {}, "system": {}, "html": {}}
+    with open(path, "r") as fp:
+        config = yaml.safe_load(fp)
+    return config
+
+
+def merge_options(config, args):
+    # command line arguments always overwrite config
+    opts = copy.deepcopy(config)
+    opts.setdefault("core", {})
+    opts.setdefault("system", {})
+    opts.setdefault("html", {})
+
+    def set_bool(d, key, value):
+        if value:
+            d[key] = True
+        elif not key in d:
+            d[key] = False
+
+    def set_path(d, key, value):
+        if not value is None:
+            d[key] = value
+        elif not key in d:
+            d[key] = key
+
+    set_bool(opts["core"], "blank", args.blank)
+    set_bool(opts["core"], "verbose", args.verbose)
+    set_bool(opts["core"], "upload", not args.no_upload)
+    set_bool(opts["core"], "experimental", args.experimental)
+
+    if args.center:
+        opts["core"]["crop"] = "center"
+    elif args.right:
+        opts["core"]["crop"] = "right"
+    elif args.no_crop:
+        opts["core"]["crop"] = "none"
+    elif not "crop" in opts["core"]:
+        opts["core"]["crop"] = "left"
+
+    set_path(opts["system"], "gs", args.gs)
+    set_path(opts["system"], "pdftoppm", args.pdftoppm)
+    set_path(opts["system"], "pdftk", args.pdftk)
+    set_path(opts["system"], "qpdf", args.qpdf)
+    set_path(opts["system"], "rmapi", args.rmapi)
+
+    if args.css and os.path.exists(args.css):
+        with open(args.css, "r") as fp:
+            contents = fp.read()
+        opts["html"]["css"] = contents
+    else:
+        opts["html"]["css"] = None
+
+    if args.font_urls and os.path.exists(args.font_urls):
+        with open(args.font_urls, "r") as fp:
+            urls = [l.strip() for l in fp.readlines()]
+        opts["html"]["font_urls"] = urls
+    else:
+        opts["html"]["font_urls"] = None
+
+    return opts
+
+
 def set_excepthook(debug):
     sys_hook = sys.excepthook
 
@@ -201,6 +291,9 @@ def main():
             "When providing --filename and multiple inputs, their number must match."
         )
 
+    config = load_config(path=args.config)
+    options = merge_options(config, args)
+
     filenames = (
         [None] * len(args.input) if not args.filename else args.filename
     )
@@ -208,19 +301,20 @@ def main():
     for cli_input, filename in zip(args.input, filenames):
         provider, new_input, cookiejar = choose_provider(cli_input)
         prov = provider(
-            verbose=args.verbose,
-            upload=not args.no_upload,
+            verbose=options["core"]["verbose"],
+            upload=options["core"]["upload"],
             debug=args.debug,
-            center=args.center,
-            right=args.right,
-            blank=args.blank,
-            no_crop=args.no_crop,
+            experimental=options["core"]["experimental"],
+            crop=options["core"]["crop"],
+            blank=options["core"]["blank"],
             remarkable_dir=args.remarkable_dir,
-            rmapi_path=args.rmapi,
-            pdftoppm_path=args.pdftoppm,
-            pdftk_path=args.pdftk,
-            qpdf_path=args.qpdf,
-            gs_path=args.gs,
+            rmapi_path=options["system"]["rmapi"],
+            pdftoppm_path=options["system"]["pdftoppm"],
+            pdftk_path=options["system"]["pdftk"],
+            qpdf_path=options["system"]["qpdf"],
+            gs_path=options["system"]["gs"],
+            css=options["html"]["css"],
+            font_urls=options["html"]["font_urls"],
             cookiejar=cookiejar,
         )
         prov.run(new_input, filename=filename)

@@ -41,6 +41,7 @@ reMarkable from any of the following sources:
 * [PMLR](http://proceedings.mlr.press/)
 * [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/)
 * [SagePub](https://journals.sagepub.com/)
+* [ScienceDirect](https://www.sciencedirect.com/)
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
 * [Taylor & Francis](https://www.tandfonline.com/)
@@ -148,39 +149,70 @@ Github][github-url].
 ## Usage
 
 The full help of the script is as follows. Hopefully the various command line 
-flags are self-explanatory, but if you'd like more information, please open an 
-issue [on GitHub][github-url].
+flags are self-explanatory, but if you'd like more information see the [man 
+page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 
 ```
-usage: p2r [-h] [-b] [-c] [-d] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v] [-V]
-           [--filename FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
-           [--qpdf QPDF] [--rmapi RMAPI]
+usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
+           [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
+           [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
+           [-C CONFIG]
            input [input ...]
 
-Paper2reMarkable version 0.7.3
+Paper2reMarkable version 0.8.6
 
 positional arguments:
-  input                 One or more URLs to a paper or paths to local PDF files
+  input                 One or more URLs to a paper or paths to local PDF
+                        files
 
 optional arguments:
   -h, --help            show this help message and exit
   -b, --blank           Add a blank page after every page of the PDF
   -c, --center          Center the PDF on the page, instead of left align
   -d, --debug           debug mode, doesn't upload to reMarkable
-  -n, --no-upload       don't upload to the reMarkable, save the output in current working dir
+  -e, --experimental    enable experimental features
+  -n, --no-upload       don't upload to reMarkable, save the output in current
+                        directory
   -p REMARKABLE_DIR, --remarkable-path REMARKABLE_DIR
-                        directory on reMarkable to put the file (created if missing, default: /)
+                        directory on reMarkable to put the file (created if
+                        missing, default: /)
   -r, --right           Right align so the menu doesn't cover it
   -k, --no-crop         Don't crop the pdf file
   -v, --verbose         be verbose
   -V, --version         Show version and exit
-  --filename FILENAME   Filename to use for the file on reMarkable
+  -f FILENAME, --filename FILENAME
+                        Filename to use for the file on reMarkable
   --gs GS               path to gs executable (default: gs)
   --pdftoppm PDFTOPPM   path to pdftoppm executable (default: pdftoppm)
   --pdftk PDFTK         path to pdftk executable (default: pdftk)
   --qpdf QPDF           path to qpdf executable (default: qpdf)
   --rmapi RMAPI         path to rmapi executable (default: rmapi)
+  --css CSS             path to custom CSS file for HTML output
+  --font-urls FONT_URLS
+                        path to custom font urls file for HTML output
+  -C CONFIG, --config CONFIG
+                        path to config file (default: ~/.paper2remarkable.yml)
 ```
+
+By default ``paper2remarkable`` makes a PDF fit better on the reMarkable by 
+changing the page size and removing unnecessary whitespace. Some tools for 
+exporting a PDF with annotations do not handle different page sizes properly, 
+causing annotations to be misplaced (see 
+[discussion](https://github.com/GjjvdBurg/paper2remarkable/issues/77)). If 
+this is an issue for you, you can disable cropping using the 
+``-k``/``--no-crop`` option to ``p2r``.
+
+For HTML sources (i.e. web articles) you can specify custom styling using the 
+``--css`` and ``--font-urls`` options. The default style in the [HTML 
+provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0a09e4b173c87850c6ddee/paper2remarkable/providers/html.py#L36) 
+can serve as a starting point.
+
+A configuration file can be used to provide commonly-used command line 
+options. By default the configuration file at ``~/.paper2remarkable.yml`` is 
+used if it exists, but an alternative location can be provided with the 
+``-C/--config`` flag. Command line flags override the settings in the 
+configuration file.  See the [config.example.yml](./config.example.yml) file 
+for an example configuration file and an overview of supported options.
 
 ## Alfred Workflow
 
@@ -229,19 +261,31 @@ docker build -t p2r .
 
 ### Authorization
 
-If you already have a `~/.rmapi` file, you can skip this section. Otherwise 
-we'll use `rmapi` to create it.
+``paper2remarkable`` uses [rMapi](https://github.com/juruen/rmapi) to sync 
+documents to the reMarkable. The first time you run ``paper2remarkable`` you 
+will have to authenticate rMapi using a one-time code provided by reMarkable. 
+By default, rMapi uses the ``${HOME}/.rmapi`` file as a configuration file to 
+store the credentials, and so this is the location we will use in the commands 
+below. If you'd like to use a different location for the configuration (for 
+instance, ``${HOME}/.config/rmapi/rmapi.conf``), make sure to change the 
+commands below accordingly.
+
+If you already have a `~/.rmapi` file with the authentication details, you can 
+skip this section. Otherwise we'll create it and run ``rmapi`` in the docker 
+container for authentication:
 
 ```bash
-touch ${HOME}/.rmapi
-docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
+$ touch ${HOME}/.rmapi
+$ docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
 ```
 
-which should end with output like
+This command will print a link where you can obtain a one-time code to 
+authenticate rMapi and afterwards print the rMapi version (the version number 
+may be different):
 
 ```bash
 ReMarkable Cloud API Shell
-rmapi version: 0.0.5
+rmapi version: 0.0.12
 ```
 
 ### Usage
@@ -257,7 +301,7 @@ docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r --help
 docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" p2r -v https://arxiv.org/abs/1811.11242
 
 # to transfer a local file in the current directory
-docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:r" p2r -v localfile.pdf
+docker run --rm -v "${HOME}/.rmapi:/home/user/.rmapi:rw" -v "$(pwd):/home/user:ro" p2r -v localfile.pdf
 ```
 
 For transferring local files using the Docker image, you may find [this helper 
@@ -273,7 +317,8 @@ your ``~/.bashrc`` file to abstract away the Docker commands:
 alias p2r="docker run --rm -v \"${HOME}/.rmapi:/home/user/.rmapi:rw\" p2r"
 ```
 
-Then you can use ``paper2remarkable`` from the command line as ``p2r``!
+After running ``source ~/.bashrc`` to activate the alias, you can then use 
+``paper2remarkable`` through Docker by calling ``p2r`` from the command line.
 
 # Notes
 

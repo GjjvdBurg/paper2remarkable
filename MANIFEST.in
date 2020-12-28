@@ -1,7 +1,10 @@
 include README.md
+include p2r.1
 recursive-include tests *.py
 exclude Makefile
 exclude .gitignore
 exclude Dockerfile
 exclude make_release.py
+exclude pyproject.toml
 prune old
+prune tests
