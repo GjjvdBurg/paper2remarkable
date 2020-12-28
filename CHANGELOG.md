@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.6
+
+* Rename default configuration file
+
 ## Version 0.8.5
 
 * Handle the case where the configuration file doesn't contain all sections.

@@ -159,7 +159,7 @@ usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
            [-C CONFIG]
            input [input ...]
 
-Paper2reMarkable version 0.8.4
+Paper2reMarkable version 0.8.6
 
 positional arguments:
   input                 One or more URLs to a paper or paths to local PDF
