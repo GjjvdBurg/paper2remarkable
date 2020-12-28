@@ -5,7 +5,7 @@ on: push
 jobs:
   p2r-test:
     name: Unit tests for paper2remarkable
-    runs-on: ubuntu-xenial
+    runs-on: ubuntu-16.04
 
     steps:
       - name: Install Python 3.6
