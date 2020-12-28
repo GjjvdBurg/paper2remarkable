@@ -1,7 +1,7 @@
 # paper2remarkable
 
 [![PyPI version](https://badge.fury.io/py/paper2remarkable.svg)](https://pypi.org/project/paper2remarkable)
-[![Build Status](https://travis-ci.org/GjjvdBurg/paper2remarkable.svg?branch=master)](https://travis-ci.org/GjjvdBurg/paper2remarkable)
+[![Build status](https://github.com/GjjvdBurg/paper2remarkable/workflows/build/badge.svg)](https://github.com/GjjvdBurg/paper2remarkable/actions)
 [![Downloads](https://pepy.tech/badge/paper2remarkable)](https://pepy.tech/project/paper2remarkable)
 
 ``paper2remarkable`` is a command line program for quickly and easily 
