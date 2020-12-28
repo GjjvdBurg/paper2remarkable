@@ -13,7 +13,6 @@ Copyright: 2020, G.J.J. van den Burg
 
 import html2text
 import markdown
-import os
 import re
 import readability
 import titlecase
@@ -146,7 +145,8 @@ class HTML(Provider):
 
         # This attempts to fix sites where the image src element points to a
         # placeholder and the data-src attribute contains the url to the actual
-        # image.
+        # image. Note that results may differ between readability and
+        # Readability.JS
         regex = '<img src="(?P<src>.*?)" (?P<rest1>.*) data-src="(?P<datasrc>.*?)" (?P<rest2>.*?)>'
         sub = '<img src="\g<datasrc>" \g<rest1> \g<rest2>>'
 
@@ -174,30 +174,6 @@ class HTML(Provider):
         html_article = md.convert(article)
         return html_article
 
-    def get_css(self):
-        if self.css_path is None:
-            return CSS
-        if not os.path.exists(self.css_path):
-            logger.warning(
-                f"CSS file {self.css_path} doesn't exist, using default style."
-            )
-            return CSS
-        with open(self.css_path, "r") as fp:
-            css = fp.read()
-        return css
-
-    def get_font_urls(self):
-        if self.font_urls_path is None:
-            return FONT_URLS
-        if not os.path.exists(self.font_urls_path):
-            logger.warning(
-                f"Font urls file {self.font_urls_path} doesn't exist, using default."
-            )
-            return FONT_URLS
-        with open(self.font_urls_path, "r") as fp:
-            font_urls = [l.strip() for l in fp.read().split("\n")]
-        return font_urls
-
     def retrieve_pdf(self, pdf_url, filename):
         """Turn the HTML article in a clean pdf file
 
@@ -224,8 +200,8 @@ class HTML(Provider):
                 fp.write(html_article)
 
         html = weasyprint.HTML(string=html_article, url_fetcher=url_fetcher)
-        css = self.get_css()
-        font_urls = self.get_font_urls()
+        css = CSS if self.css is None else self.css
+        font_urls = FONT_URLS if self.font_urls is None else self.font_urls
         style = weasyprint.CSS(string=css)
         html.write_pdf(filename, stylesheets=[style] + font_urls)
 

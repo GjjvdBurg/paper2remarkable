@@ -1,0 +1,23 @@
+---
+core:
+  crop: 'left'          # or: 'none', 'left', 'right'
+  blank: false          # or: false
+  upload: true          # or: false
+  verbose: true         # or: false
+  experimental: true    # or: false
+
+# System settings are all optional, but can be used if executables are not on 
+# the PATH.
+system:
+  gs: /usr/bin/gs
+
+# Settings for styling HTML sources
+html:
+  css: |
+    @page { size: 702px 936px; margin: 1in; }
+    img { display: block; margin: 0 auto; text-align: center; max-width: 70%; }
+    h1,h2,h3 { font-family: 'Montserrat'; }
+    p, li { font-size: 12pt; line-height: 2; font-family: 'Montserrat'; }
+
+  font_urls:
+    - https://fonts.googleapis.com/css2?family=Montserrat&display=swap

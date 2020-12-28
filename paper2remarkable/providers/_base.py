@@ -39,18 +39,16 @@ class Provider(metaclass=abc.ABCMeta):
         upload=True,
         debug=False,
         experimental=False,
-        center=False,
-        right=False,
+        crop="left",
         blank=False,
-        no_crop=False,
         remarkable_dir="/",
         rmapi_path="rmapi",
         pdftoppm_path="pdftoppm",
         pdftk_path="pdftk",
         qpdf_path="qpdf",
         gs_path="gs",
-        css_path=None,
-        font_urls_path=None,
+        css=None,
+        font_urls=None,
         cookiejar=None,
     ):
         self.upload = upload
@@ -62,8 +60,8 @@ class Provider(metaclass=abc.ABCMeta):
         self.pdftk_path = pdftk_path
         self.qpdf_path = qpdf_path
         self.gs_path = gs_path
-        self.css_path = css_path
-        self.font_urls_path = font_urls_path
+        self.css = css
+        self.font_urls = font_urls
         self.cookiejar = cookiejar
 
         self.informer = Informer()
@@ -79,11 +77,11 @@ class Provider(metaclass=abc.ABCMeta):
 
         # Define the operations to run on the pdf. Providers can add others.
         self.operations = [("rewrite", self.rewrite_pdf)]
-        if center:
+        if crop == "center":
             self.operations.append(("center", self.center_pdf))
-        elif right:
+        elif crop == "right":
             self.operations.append(("right", self.right_pdf))
-        elif not no_crop:
+        elif crop == "left":
             self.operations.append(("crop", self.crop_pdf))
 
         if blank:
