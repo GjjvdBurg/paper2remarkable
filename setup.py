@@ -19,17 +19,18 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "beautifulsoup4>=4.8",
-    "requests>=2.21",
-    "pdfplumber>=0.5",
-    "unidecode>=1.1",
-    "titlecase>=0.12",
     "PyPDF2>=1.26",
-    "regex>=2018.11",
-    "readability-lxml>=0.7.1",
+    "beautifulsoup4>=4.8",
     "html2text>=2020.1.16",
-    "weasyprint>=51",
     "markdown>=3.1.1",
+    "pdfplumber>=0.5",
+    "pyyaml>=5.1",
+    "readability-lxml>=0.7.1",
+    "regex>=2018.11",
+    "requests>=2.21",
+    "titlecase>=0.12",
+    "unidecode>=1.1",
+    "weasyprint>=51",
 ]
 
 full_require = ["readabilipy"]

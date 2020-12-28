@@ -30,6 +30,11 @@ Basic options:
       Add a blank page after every page of the PDF document. This can be 
       useful for taking notes on papers.
 
+-C, --config=FILENAME
+      Read options from a configuration file. A YAML file is supported, see 
+      [CONFIGURATION FILE](#configuration) for further details. By default the 
+      file at ``~/.p2r.yml`` is used if it exists.
+
 -e, --experimental
       Enable the experimental features of paper2remarkable. See below under 
       [EXPERIMENTAL FEATURES](#experimental-features) for an overview.
@@ -146,6 +151,29 @@ which case no "nice" filename will be generated.
 Finally, paper2remarkable supports extracting articles from websites. In this 
 case an effort is done to detect the main content of the article and clean up 
 the HTML before sending the file to the reMarkable.
+
+## CONFIGURATION FILE
+
+To avoid having to provide frequently-used command line flags, a configuration 
+file can be created for paper2remarkable. By default it is a YAML file located 
+at ``~/.p2r.yml``, but an alternative location can be provided with the 
+``--config`` option to the script.
+
+The configuration file consists of three sections: ``core``, ``system``, and 
+``html``. In the ``core`` section options for cropping, verbosity, and blank 
+pages can be added, among others. The ``system`` section allows setting paths 
+to executables such as ``rmapi``, ``pdftk``, etc.  Finally, the ``html`` 
+section allows you to provide custom CSS and font urls for formatting the 
+output of web articles.
+
+Options provided on the command line overwrite those in the configuration 
+file. So, for instance, if the configuration file has the setting ``crop: 
+'left'`` in the ``core`` section and the command line flag ``-c`` is provided, 
+the PDF will be centered.
+
+An example file is provided in the repository on 
+[GitHub](https://www.github.com/GjjvdBurg/paper2remarkable), which also 
+contains more information on the available options and their values.
 
 ## EXPERIMENTAL FEATURES
 

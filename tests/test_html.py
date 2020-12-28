@@ -9,7 +9,6 @@ This file is part of paper2remarkable.
 
 import os
 import pdfplumber
-import tempfile
 import unittest
 
 from paper2remarkable.providers.html import HTML
@@ -39,24 +38,12 @@ class TestHTML(unittest.TestCase):
             "https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
         ]
 
-        tmpfd, tempfname_css = tempfile.mkstemp(prefix="p2r_", suffix=".css")
-        with os.fdopen(tmpfd, "w") as fp:
-            fp.write(test_css)
-
-        tmpfd, tempfname_urls = tempfile.mkstemp(prefix="p2r_", suffix=".txt")
-        with os.fdopen(tmpfd, "w") as fp:
-            fp.write("\n".join(test_font_urls))
-
         url = "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines"
-        prov = HTML(
-            upload=False, css_path=tempfname_css, font_urls_path=tempfname_urls
-        )
+        prov = HTML(upload=False, css=test_css, font_urls=test_font_urls)
         filename = prov.run(url)
         with pdfplumber.open(filename) as pdf:
             self.assertEqual(8, len(pdf.pages))
 
-        os.unlink(tempfname_css)
-        os.unlink(tempfname_urls)
         os.unlink(filename)
 
 
