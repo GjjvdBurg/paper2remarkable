@@ -33,7 +33,7 @@ Basic options:
 -C, --config=FILENAME
       Read options from a configuration file. A YAML file is supported, see 
       [CONFIGURATION FILE](#configuration) for further details. By default the 
-      file at ``~/.p2r.yml`` is used if it exists.
+      file at ``~/.paper2remarkable.yml`` is used if it exists.
 
 -e, --experimental
       Enable the experimental features of paper2remarkable. See below under 
@@ -156,8 +156,8 @@ the HTML before sending the file to the reMarkable.
 
 To avoid having to provide frequently-used command line flags, a configuration 
 file can be created for paper2remarkable. By default it is a YAML file located 
-at ``~/.p2r.yml``, but an alternative location can be provided with the 
-``--config`` option to the script.
+at ``~/.paper2remarkable.yml``, but an alternative location can be provided 
+with the ``--config`` option to the script.
 
 The configuration file consists of three sections: ``core``, ``system``, and 
 ``html``. In the ``core`` section options for cropping, verbosity, and blank 

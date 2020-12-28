@@ -121,7 +121,7 @@ def parse_args():
     parser.add_argument(
         "-C",
         "--config",
-        help="path to config file (default: ~/.p2r.yml)",
+        help="path to config file (default: ~/.paper2remarkable.yml)",
         default=None,
     )
     parser.add_argument(
@@ -197,7 +197,7 @@ def choose_provider(cli_input):
 
 def load_config(path=None):
     if path is None:
-        path = os.path.join(os.path.expanduser("~"), ".p2r.yml")
+        path = os.path.join(os.path.expanduser("~"), ".paper2remarkable.yml")
     if not os.path.exists(path):
         return {"core": {}, "system": {}, "html": {}}
     with open(path, "r") as fp:

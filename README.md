@@ -191,7 +191,7 @@ optional arguments:
   --font-urls FONT_URLS
                         path to custom font urls file for HTML output
   -C CONFIG, --config CONFIG
-                        path to config file (default: ~/.p2r.yml)
+                        path to config file (default: ~/.paper2remarkable.yml)
 ```
 
 By default ``paper2remarkable`` makes a PDF fit better on the reMarkable by 
@@ -208,11 +208,11 @@ provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0
 can serve as a starting point.
 
 A configuration file can be used to provide commonly-used command line 
-options. By default the configuration file at ``~/.p2r.yml`` is used if it 
-exists, but an alternative location can be provided with the ``-C/--config`` 
-flag. Command line flags override the settings in the configuration file.  See 
-the [config.example.yml](./config.example.yml) file for an example 
-configuration file and an overview of supported options.
+options. By default the configuration file at ``~/.paper2remarkable.yml`` is 
+used if it exists, but an alternative location can be provided with the 
+``-C/--config`` flag. Command line flags override the settings in the 
+configuration file.  See the [config.example.yml](./config.example.yml) file 
+for an example configuration file and an overview of supported options.
 
 ## Alfred Workflow
 
