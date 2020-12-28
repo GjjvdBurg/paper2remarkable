@@ -1,17 +1,20 @@
 ---
 core:
-  crop: 'left'          # or: 'none', 'left', 'right'
-  blank: false          # or: false
-  upload: true          # or: false
-  verbose: true         # or: false
-  experimental: true    # or: false
+  crop: 'left'          # options: 'none', 'left', 'center', 'right'
+  blank: false          # options: true, false
+  upload: true          # options: true, false
+  verbose: true         # options: true, false
+  experimental: true    # options: true, false
 
 # System settings are all optional, but can be used if executables are not on 
-# the PATH.
+# the PATH. Options in this section include: gs, pdftk, pdftoppm, qpdf, and 
+# rmapi.
 system:
   gs: /usr/bin/gs
 
-# Settings for styling HTML sources
+# Settings for styling HTML sources. This section has support for a css field 
+# and a font_urls field. The former is expected to be a multiline string and 
+# the latter a list of urls.
 html:
   css: |
     @page { size: 702px 936px; margin: 1in; }
