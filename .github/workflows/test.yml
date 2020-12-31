@@ -1,6 +1,10 @@
 name: build
 
-on: push
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: 33 21 * * */7
 
 jobs:
   p2r-test:
