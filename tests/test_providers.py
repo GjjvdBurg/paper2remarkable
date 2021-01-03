@@ -117,8 +117,8 @@ class TestProviders(unittest.TestCase):
 
     def test_acm_1(self):
         prov = ACM(upload=False, verbose=VERBOSE)
-        url = "https://dl.acm.org/citation.cfm?id=3025626"
-        exp_filename = "Kery_Horvath_Myers_-_Variolite_Supporting_Exploratory_Programming_by_Data_Scientists_2017.pdf"
+        url = "https://dl.acm.org/doi/10.1145/3025453.3026030"
+        exp_filename = "Bergstrom-Lehtovirta_Boring_Hornbaek_-_Placing_and_Recalling_Virtual_Items_on_the_Skin_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
