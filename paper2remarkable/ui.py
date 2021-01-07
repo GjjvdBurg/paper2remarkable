@@ -21,7 +21,7 @@ from .providers import providers, LocalFile
 from .utils import follow_redirects, is_url
 
 
-def parse_args():
+def build_argument_parser():
     parser = argparse.ArgumentParser(
         description="Paper2reMarkable version %s" % __version__
     )
@@ -129,6 +129,11 @@ def parse_args():
         help="One or more URLs to a paper or paths to local PDF files",
         nargs="+",
     )
+    return parser
+
+
+def parse_args():
+    parser = build_argument_parser()
     return parser.parse_args()
 
 
@@ -199,24 +204,26 @@ def load_config(path=None):
     if path is None:
         path = os.path.join(os.path.expanduser("~"), ".paper2remarkable.yml")
     if not os.path.exists(path):
-        return {"core": {}, "system": {}, "html": {}}
+        return None
     with open(path, "r") as fp:
         config = yaml.safe_load(fp)
     return config
 
 
-def merge_options(config, args):
+def merge_options(args, config=None):
     # command line arguments always overwrite config
+    config = {} if config is None else config
+
     opts = copy.deepcopy(config)
     opts.setdefault("core", {})
     opts.setdefault("system", {})
     opts.setdefault("html", {})
 
-    def set_bool(d, key, value):
+    def set_bool(d, key, value, invert=False):
         if value:
-            d[key] = True
+            d[key] = True ^ invert
         elif not key in d:
-            d[key] = False
+            d[key] = False ^ invert
 
     def set_path(d, key, value):
         if not value is None:
@@ -226,7 +233,7 @@ def merge_options(config, args):
 
     set_bool(opts["core"], "blank", args.blank)
     set_bool(opts["core"], "verbose", args.verbose)
-    set_bool(opts["core"], "upload", not args.no_upload)
+    set_bool(opts["core"], "upload", args.no_upload, invert=True)
     set_bool(opts["core"], "experimental", args.experimental)
 
     if args.center:
@@ -248,14 +255,14 @@ def merge_options(config, args):
         with open(args.css, "r") as fp:
             contents = fp.read()
         opts["html"]["css"] = contents
-    else:
+    elif not "css" in opts["html"]:
         opts["html"]["css"] = None
 
     if args.font_urls and os.path.exists(args.font_urls):
         with open(args.font_urls, "r") as fp:
             urls = [l.strip() for l in fp.readlines()]
         opts["html"]["font_urls"] = urls
-    else:
+    elif not "font_urls" in opts["html"]:
         opts["html"]["font_urls"] = None
 
     return opts
@@ -292,7 +299,7 @@ def main():
         )
 
     config = load_config(path=args.config)
-    options = merge_options(config, args)
+    options = merge_options(args, config=config)
 
     filenames = (
         [None] * len(args.input) if not args.filename else args.filename
