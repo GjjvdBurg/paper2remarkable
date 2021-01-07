@@ -33,7 +33,11 @@ from paper2remarkable.providers import (
     PubMed,
     Springer,
 )
-from paper2remarkable.ui import choose_provider
+from paper2remarkable.ui import (
+    build_argument_parser,
+    choose_provider,
+    merge_options,
+)
 
 
 class TestUI(unittest.TestCase):
@@ -219,6 +223,141 @@ class TestUI(unittest.TestCase):
         url = "https://raw.githubusercontent.com/GjjvdBurg/paper2remarkable/master/README.md"
         with self.assertRaises(InvalidURLError):
             choose_provider(url)
+
+    def test_merge_options_1(self):
+        config = None
+        source = "/tmp/local.pdf"  # doesn't need to exist
+
+        parser = build_argument_parser()
+        args = parser.parse_args([source])
+
+        # empty config and default args
+        opts = merge_options(args, config)
+        self.assertEqual(opts["core"]["blank"], False)
+        self.assertEqual(opts["core"]["crop"], "left")
+        self.assertEqual(opts["core"]["experimental"], False)
+        self.assertEqual(opts["core"]["upload"], True)
+        self.assertEqual(opts["core"]["verbose"], False)
+
+        test_sys = lambda s: self.assertEqual(opts["system"][s], s)
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+            with self.subTest(s):
+                test_sys(s)
+
+        self.assertIsNone(opts["html"]["css"])
+        self.assertIsNone(opts["html"]["font_urls"])
+
+    def test_merge_options_2(self):
+        config = None
+        source = "/tmp/local.pdf"  # doesn't need to exist
+
+        parser = build_argument_parser()
+        args = parser.parse_args(["-v", "-n", source])
+
+        # empty config and default args
+        opts = merge_options(args, config)
+
+        self.assertEqual(opts["core"]["blank"], False)
+        self.assertEqual(opts["core"]["crop"], "left")
+        self.assertEqual(opts["core"]["experimental"], False)
+        self.assertEqual(opts["core"]["upload"], False)
+        self.assertEqual(opts["core"]["verbose"], True)
+
+        test_sys = lambda s: self.assertEqual(opts["system"][s], s)
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+            with self.subTest(s):
+                test_sys(s)
+
+        self.assertIsNone(opts["html"]["css"])
+        self.assertIsNone(opts["html"]["font_urls"])
+
+    def test_merge_options_3(self):
+        source = "/tmp/local.pdf"  # doesn't need to exist
+
+        parser = build_argument_parser()
+        args = parser.parse_args(["-v", "-n", "-k", source])
+        config = {"core": {"blank": True, "upload": True, "verbose": False}}
+
+        # empty config and default args
+        opts = merge_options(args, config)
+
+        self.assertEqual(opts["core"]["blank"], True)
+        self.assertEqual(opts["core"]["crop"], "none")
+        self.assertEqual(opts["core"]["experimental"], False)
+        self.assertEqual(opts["core"]["upload"], False)
+        self.assertEqual(opts["core"]["verbose"], True)
+
+        test_sys = lambda s: self.assertEqual(opts["system"][s], s)
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+            with self.subTest(s):
+                test_sys(s)
+
+        self.assertIsNone(opts["html"]["css"])
+        self.assertIsNone(opts["html"]["font_urls"])
+
+    def test_merge_options_4(self):
+        source = "/tmp/local.pdf"  # doesn't need to exist
+
+        parser = build_argument_parser()
+        args = parser.parse_args(["-n", "-c", source])
+        gs_path = "/path/to/gs"
+        config = {
+            "core": {"upload": False, "verbose": True},
+            "system": {"gs": gs_path},
+        }
+
+        # empty config and default args
+        opts = merge_options(args, config)
+
+        self.assertEqual(opts["core"]["blank"], False)
+        self.assertEqual(opts["core"]["crop"], "center")
+        self.assertEqual(opts["core"]["experimental"], False)
+        self.assertEqual(opts["core"]["upload"], False)
+        self.assertEqual(opts["core"]["verbose"], True)
+
+        self.assertEqual(opts["system"]["gs"], gs_path)
+        test_sys = lambda s: self.assertEqual(opts["system"][s], s)
+        for s in ["pdftoppm", "pdftk", "qpdf", "rmapi"]:
+            with self.subTest(s):
+                test_sys(s)
+
+        self.assertIsNone(opts["html"]["css"])
+        self.assertIsNone(opts["html"]["font_urls"])
+
+    def test_merge_options_5(self):
+        source = "/tmp/local.pdf"  # doesn't need to exist
+
+        parser = build_argument_parser()
+        args = parser.parse_args(["-n", "-c", source])
+        gs_path = "/path/to/gs"
+        qpdf_path = "/path/to/qpdf"
+        config = {
+            "core": {"upload": False, "verbose": True},
+            "system": {"gs": gs_path, "qpdf": qpdf_path},
+            "html": {
+                "css": "Hello, World!\n",
+                "font_urls": ["url_1", "url_2"],
+            },
+        }
+
+        # empty config and default args
+        opts = merge_options(args, config)
+
+        self.assertEqual(opts["core"]["blank"], False)
+        self.assertEqual(opts["core"]["crop"], "center")
+        self.assertEqual(opts["core"]["experimental"], False)
+        self.assertEqual(opts["core"]["upload"], False)
+        self.assertEqual(opts["core"]["verbose"], True)
+
+        self.assertEqual(opts["system"]["gs"], gs_path)
+        self.assertEqual(opts["system"]["qpdf"], qpdf_path)
+        test_sys = lambda s: self.assertEqual(opts["system"][s], s)
+        for s in ["pdftoppm", "pdftk", "rmapi"]:
+            with self.subTest(s):
+                test_sys(s)
+
+        self.assertEquals(opts["html"]["css"], "Hello, World!\n")
+        self.assertEquals(opts["html"]["font_urls"], ["url_1", "url_2"])
 
 
 if __name__ == "__main__":
