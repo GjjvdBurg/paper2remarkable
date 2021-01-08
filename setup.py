@@ -28,6 +28,7 @@ REQUIRED = [
     "readability-lxml>=0.7.1",
     "regex>=2018.11",
     "requests>=2.21",
+    "rmapy>=0.2.2",
     "titlecase>=0.12",
     "unidecode>=1.1",
     "weasyprint>=51",

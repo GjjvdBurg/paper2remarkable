@@ -18,12 +18,12 @@ import time
 from ..exceptions import _CalledProcessError
 from ..log import Logger
 from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
+from ..remarkable import upload_to_remarkable
 from ..utils import (
     assert_file_is_pdf,
     check_pdftool,
     download_url,
     follow_redirects,
-    upload_to_remarkable,
 )
 from ._info import Informer
 
