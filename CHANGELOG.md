@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.7
+
+* Fix issues with merging configuration settings and command line flags
+
 ## Version 0.8.6
 
 * Rename default configuration file
