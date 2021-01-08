@@ -180,3 +180,5 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
         )
     elif backend == "rmapy":
         upload_to_remarkable_rmapy(filepath, remarkable_dir=remarkable_dir)
+    else:
+        raise RemarkableError("Unknown reMarkable client: %s" % backend)
