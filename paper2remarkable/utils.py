@@ -89,50 +89,32 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
 
 
 def get_content_type_with_retry(url, tries=5, cookiejar=None):
-    count = 0
     if cookiejar is None:
         jar = requests.cookies.RequestsCookieJar()
     else:
         jar = cookiejar
-    while count < tries:
-        count += 1
-        error = False
-        try:
-            res = requests.head(
-                url, headers=HEADERS, cookies=jar, allow_redirects=True
-            )
-        except requests.exceptions.ConnectionError:
-            error = True
-        if error or not res.ok:
-            logger.warning(
-                "(%i/%i) Error getting headers for %s. Retrying in 5 seconds."
-                % (count, tries, url)
-            )
-            time.sleep(5)
-            continue
-        return res.headers.get("Content-Type", None)
+
+    msg = "(%i/%i) Error getting content type for %s. Retrying in 5 seconds."
 
     # In rare cases, a HEAD request fails but a GET request does work. So here
-    # we try to get the content type from a GET request.
-    count = 0
-    jar = {} if cookiejar is None else cookiejar
-    while count < tries:
-        count += 1
-        error = False
-        try:
-            res = requests.get(
-                url, headers=HEADERS, cookies=jar, allow_redirects=True
-            )
-        except requests.exceptions.ConnectionError:
-            error = True
-        if error or not res.ok:
-            logger.warning(
-                "(%i/%i) Error getting headers for %s. Retrying in 5 seconds."
-                % (count, tries, url)
-            )
-            time.sleep(5)
-            continue
-        return res.headers.get("Content-Type", None)
+    # we try both
+    ops = [requests.head, requests.get]
+    kwargs = dict(headers=HEADERS, cookies=jar, allow_redirects=True)
+    for op in ops:
+        count = 0
+        while count < tries:
+            count += 1
+            error = False
+            try:
+                res = op(url, **kwargs)
+            except requests.exceptions.ConnectionError:
+                error = True
+            if error or not res.ok:
+                logger.warning(msg % (count, tries, url))
+                time.sleep(5)
+                continue
+            return res.headers.get("Content-Type", None)
+    return None
 
 
 def follow_redirects(url):
