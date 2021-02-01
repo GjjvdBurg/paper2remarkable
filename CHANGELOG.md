@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.8
+
+* Bugfix for NeurIPS provider
+
 ## Version 0.8.7
 
 * Fix issues with merging configuration settings and command line flags
