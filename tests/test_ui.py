@@ -163,7 +163,7 @@ class TestUI(unittest.TestCase):
             (
                 NeurIPS,
                 "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
-                "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
+                "https://proceedings.neurips.cc/paper/2018/file/b534ba68236ba543ae44b22bd110a1d6-Paper.pdf",
             ),
             (
                 CiteSeerX,
