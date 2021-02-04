@@ -156,7 +156,7 @@ class TestProviders(unittest.TestCase):
         local_filename = "test.pdf"
         with open(local_filename, "w") as fp:
             fp.write(
-                "%PDF-1.1\n%¥±ë\n\n1 0 obj\n  << /Type /Catalog\n     /Pages 2 0 R\n  >>\nendobj\n\n2 0 obj\n  << /Type /Pages\n     /Kids [3 0 R]\n     /Count 1\n     /MediaBox [0 0 300 144]\n  >>\nendobj\n\n3 0 obj\n  <<  /Type /Page\n      /Parent 2 0 R\n      /Resources\n       << /Font\n           << /F1\n               << /Type /Font\n                  /Subtype /Type1\n                  /BaseFont /Times-Roman\n               >>\n           >>\n       >>\n      /Contents 4 0 R\n  >>\nendobj\n\n4 0 obj\n  << /Length 55 >>\nstream\n  BT\n    /F1 18 Tf\n    0 0 Td\n    (Hello World) Tj\n  ET\nendstream\nendobj\n\nxref\n0 5\n0000000000 65535 f \n0000000018 00000 n \n0000000077 00000 n \n0000000178 00000 n \n0000000457 00000 n \ntrailer\n  <<  /Root 1 0 R\n      /Size 5\n  >>\nstartxref\n565\n%%EOF"
+                "%PDF-1.1\n%¿÷¢þ\n1 0 obj\n<< /Pages 2 0 R /Type /Catalog >>\nendobj\n2 0 obj\n<< /Count 1 /Kids [ 3 0 R ] /MediaBox [ 0 0 300 600 ] /Type /Pages >>\nendobj\n3 0 obj\n<< /Contents 4 0 R /Parent 2 0 R /Resources << /Font << /F1 << /BaseFont /Times-Roman /Subtype /Type1 /Type /Font >> >> >> /Type /Page >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT /F1 18 Tf 80 80 Td (Hello World 1) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000019 00000 n \n0000000067 00000 n \n0000000153 00000 n \n0000000306 00000 n \ntrailer << /Root 1 0 R /Size 5 /ID [<015d3b8119c73f2291496f4b9d03fe4f><015d3b8119c73f2291496f4b9d03fe4f>] >>\nstartxref\n399\n%%EOF"
             )
         prov = LocalFile(upload=False, verbose=VERBOSE)
         filename = prov.run(local_filename)
