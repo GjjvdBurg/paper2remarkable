@@ -82,3 +82,46 @@ def shrink_pdf(filepath, gs_path="gs"):
         logger.info("Shrinking has no effect for this file, using original.")
         return filepath
     return output_file
+
+
+def copy_toc(toc, filepath):
+    logger.info("Copying table of content ...")
+    reader = PyPDF2.PdfFileReader(filepath)
+    output_pdf = PyPDF2.PdfFileWriter()
+    output_pdf.cloneDocumentFromReader(reader)
+
+    # It holds the corresponding bookmark for the last level seen, which will be retrieved to
+    # specify the parent when we add the bookmark, to generate nested bookmarks.
+    # It assumes the table of content is well constructed and doesn't jump from a level 1 to a
+    # level 3 title without going through a level 2 at first. If it does, the parent bookmark
+    # associated to the level 3 could be wrong if we saw a level 2 previously (but not the right
+    # now obviously).
+    level_last_bookmarks = {}
+
+    for level, page, title in toc:
+        parent = None
+        if level > 0:
+            parent = level_last_bookmarks.get(level - 1)
+
+        bookmark = output_pdf.addBookmark(title, page, parent=parent, fit="/Fit")
+        level_last_bookmarks[level] = bookmark
+
+    output_file = os.path.splitext(filepath)[0] + "-with-toc.pdf"
+    with open(output_file, "wb") as f:
+        output_pdf.write(f)
+
+    return output_file
+
+
+def get_toc(filepath):
+    input_pdf = PyPDF2.PdfFileReader(filepath)
+    return list(yield_outlines(input_pdf, input_pdf.getOutlines()))
+
+
+def yield_outlines(reader, outlines, level=0):
+    if isinstance(outlines, list):
+        for item in outlines:
+            yield from yield_outlines(reader, item, level=level + 1)
+    else:
+        page_number = reader.getDestinationPageNumber(outlines)
+        yield level, page_number, outlines["/Title"]
