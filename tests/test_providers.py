@@ -13,6 +13,7 @@ import tempfile
 import unittest
 
 from paper2remarkable.providers import (
+    ACL,
     ACM,
     Arxiv,
     CVF,
@@ -411,6 +412,29 @@ class TestProviders(unittest.TestCase):
         prov = ScienceDirect(upload=False, verbose=VERBOSE)
         url = r"https://pdf.sciencedirectassets.com/272398/1-s2.0-S0022039616X00095/1-s2.0-S0022039616001029/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQCRRFGFc7b02V86pkMeqytyBK%2BR8I%2BfdsIpYbjfXSpIBwIhAORxDxLYdr4EoSyn1P7wlhG%2F1RnX8tIG0IRGOidKKm69KrQDCDAQAxoMMDU5MDAzNTQ2ODY1IgwzsYwSRMjSfdr4cbUqkQOPUxG702LEv3POe5ESC9FBVVHGeUF%2BB46FTtWqkhHgjkRIpuoFiavu1cuBWHQ9FwCZjcocan56LfXiySYBfl259MC8ieSYor9FKZLBaAhDCEblkiTdW2%2Fk4nfogp6fwWVdckC8gGVbu3wQ9Mdh%2FE91ZEix%2FIftmJ6IpAZkm0l0AFFt%2BngI7geWoZDeku5iImEUw6JJPgFz5Yw9cKa%2FuGM3hi29JsuI30qzBqZC9nGRCIx%2FLYeiDfF1v0QjFLmT%2FE5xpaNxMt%2FoWLiazRcconSQCCax6%2Bw9SR4NvWg2illOrLMEPuRYacIFRNhV9zj7Y06Bf%2BfG%2FTQxXdnDLH0VMkUWx%2BgjwRAqSvIb0JRg9q5gErPB1cZLCuCd3ybFSmtj7aQmfl7uhMAjQwnCcN6fhtlVK6Xb3Us7YglDaHekzf8RDv9stbxBWFGMPVmDUXHWOsUo89LY%2F9IbtQTs5Uu3ieMGePUVMY4ox3FPYAb5jWjaOFqs54LqfQ5nqjkLMiAY%2F11zCVyOAoPiDnDs6Wjuj52iszCtuc%2F9BTrqATkmIC%2Bu2w6MEow0zbPVAaqNF%2BjUh8Tv%2BWTInq9G3Q4PXIqL3CNNiISPDvuUggRwWGJDgXtr0C%2B4Gtv1bfs3BGHHgWOD261c6O0LHQuP11BLN8GCr7bFO1hjVAqHhC06vyhGQRmRzN32CPwo8pUM2gWw9xXGUioUiSJ%2FgRpDaszsW4Yr8Wm7L9Q7jAOYxEf7WLxPwAWO69o8JbJoouxwL4qeTEGMJ5IpUk3x3xPQIlawOlqY%2FHi0s4E1DE4ZMjH21hc3PrQ%2FiwI%2BTqY9Rg5sjLCBJ4vRCiqb3dpOWLsR5LFOTySXWoqIdO7b9Q%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20201117T155020Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTY7OS7PK7A%2F20201117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=03abad117208b684a1a4ca2ffdcbe5b9a40a19e6c841c609e299315a2f2234ce&hash=24f71da9f05f6835c9797841d1462d11eea85c49e9655dde043ed9f748edf17e&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0022039616001029&tid=spdf-6b78a4fa-826e-4267-8ce6-43c814fa51b2&sid=776192553463724f1a4b56613fcf5e514b72gxrqb&type=client"
         exp = "Kristiansen_Wulff_-_Exponential_Estimates_of_Symplectic_Slow_Manifolds_2016.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_1(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/A88-1033/"
+        exp = "Newman_-_Combinatorial_Disambiguation_1988.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_2(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/2020.acl-main.79.pdf"
+        exp = "Zhong_et_al_-_Interpreting_Twitter_User_Geolocation_2020.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_3(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf"
+        exp = (
+            "Burness_McMullin_-_Multi-Tiered_Strictly_Local_Functions_2020.pdf"
+        )
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

@@ -30,6 +30,7 @@ papers easier (just use the `-n` flag).
 reMarkable from any of the following sources:
 
 * [arXiv](https://arxiv.org/)
+* [ACL Web](https://www.aclweb.org/anthology/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
 * [CiteSeerX](http://citeseerx.ist.psu.edu/index)
 * [CVF](https://openaccess.thecvf.com/menu)
