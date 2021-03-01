@@ -17,7 +17,7 @@ import time
 
 from ..exceptions import _CalledProcessError
 from ..log import Logger
-from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf, get_toc, copy_toc
+from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
 from ..utils import (
     assert_file_is_pdf,
     check_pdftool,
@@ -84,7 +84,6 @@ class Provider(metaclass=abc.ABCMeta):
         elif crop == "left":
             self.operations.append(("crop", self.crop_pdf))
 
-        self.blank = blank
         if blank:
             self.operations.append(("blank", blank_pdf))
 
@@ -217,15 +216,9 @@ class Provider(metaclass=abc.ABCMeta):
 
             assert_file_is_pdf(tmp_filename)
 
-            toc = get_toc(tmp_filename)
-
             intermediate_fname = tmp_filename
             for opname, op in self.operations:
                 intermediate_fname = op(intermediate_fname)
-
-            # TODO: handle ToC with blank pages.
-            if not self.blank:
-                copy_toc(toc, intermediate_fname)
 
             shutil.copy(intermediate_fname, clean_filename)
 

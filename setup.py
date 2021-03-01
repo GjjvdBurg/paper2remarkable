@@ -13,13 +13,13 @@ EMAIL = "gertjanvandenburg@gmail.com"
 LICENSE = "MIT"
 LICENSE_TROVE = "License :: OSI Approved :: MIT License"
 NAME = "paper2remarkable"
-REQUIRES_PYTHON = ">=3.5.0"
+REQUIRES_PYTHON = ">=3.6.0"
 URL = "https://github.com/GjjvdBurg/paper2remarkable"
 VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "PyPDF2>=1.26",
+    "pikepdf>=2.8.0",
     "beautifulsoup4>=4.8",
     "html2text>=2020.1.16",
     "markdown>=3.1.1",
