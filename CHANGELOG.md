@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.9
+
+* Add provider for ACLWeb
+
 ## Version 0.8.8
 
 * Bugfix for NeurIPS provider
