@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from .acl import ACL
 from .acm import ACM
 from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
@@ -22,6 +23,7 @@ from .tandfonline import TandFOnline
 
 # NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
+    ACL,
     ACM,
     Arxiv,
     CiteSeerX,
