@@ -115,7 +115,6 @@ class TestArxiv(unittest.TestCase):
         self.assertNotIn(
             b"/URI (http://arxiv.org/abs/astro-ph/9207001v1)", data
         )
-        self.assertNotIn(b"arXiv:astro-ph/9207001v1  13 Jul 1992", data)
 
 
 if __name__ == "__main__":
