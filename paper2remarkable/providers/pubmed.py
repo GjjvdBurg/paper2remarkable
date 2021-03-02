@@ -12,7 +12,7 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class PubMedInformer(Informer):
@@ -50,7 +50,7 @@ class PubMed(Provider):
             abs_url = url
             pdf_url = url.rstrip("/") + "/pdf"  # it redirects, usually
         else:
-            exception("Couldn't figure out PMC urls.")
+            raise URLResolutionError("PMC", url)
         return abs_url, pdf_url
 
     def validate(src):

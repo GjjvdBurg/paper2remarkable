@@ -4,80 +4,63 @@
 
 Author: G.J.J. van den Burg
 License: See LICENSE file.
-Copyright: 2019, The Alan Turing Institute
+Copyright: 2019, G.J.J. van den Burg
 
 """
 
 
-import PyPDF2
 import os
 import subprocess
+
+from pikepdf import Pdf
 
 from .crop import Cropper
 from .log import Logger
 
 logger = Logger()
 
-def crop_pdf(filepath, pdfcrop_path="pdfcrop"):
-    """Crop the pdf file using Cropper
-    """
-    logger.info("Cropping pdf file")
-    cropped_file = os.path.splitext(filepath)[0] + "-crop.pdf"
 
-    cropper = Cropper(filepath, cropped_file, pdfcrop_path=pdfcrop_path)
-    status = cropper.crop(margins=15)
-
-    if not status == 0:
-        logger.warning("Failed to crop the pdf file at: %s" % filepath)
+def prepare_pdf(filepath, operation, pdftoppm_path="pdftoppm"):
+    """Prepare pdf by cropping, centering, or right-aligning the flie"""
+    logger.info("Preparing PDF using %s operation" % operation)
+    prepared_file = os.path.splitext(filepath)[0] + "-prep.pdf"
+    cropper = Cropper(filepath, prepared_file, pdftoppm_path=pdftoppm_path)
+    if operation == "crop":
+        status = cropper.crop(margins=15)
+    elif operation == "center":
+        status = cropper.center()
+    elif operation == "right":
+        status = cropper.right()
+    else:
+        logger.warning("Unknown operation: %s" % operation)
         return filepath
-    if not os.path.exists(cropped_file):
-        logger.warning(
-            "Can't find cropped file '%s' where expected." % cropped_file
-        )
+    if not status == 0 or not os.path.exists(prepared_file):
+        logger.warning("PDF prepare operation failed")
         return filepath
-    return cropped_file
-
-
-def center_pdf(filepath, pdfcrop_path="pdfcrop"):
-    """Center the pdf file on the reMarkable
-    """
-    logger.info("Centering pdf file")
-    centered_file = os.path.splitext(filepath)[0] + "-center.pdf"
-
-    cropper = Cropper(filepath, centered_file, pdfcrop_path=pdfcrop_path)
-    status = cropper.center()
-
-    if not status == 0:
-        logger.warning("Failed to center the pdf file at: %s" % filepath)
-        return filepath
-    if not os.path.exists(centered_file):
-        logger.warning(
-            "Can't find centered file '%s' where expected." % centered_file
-        )
-        return filepath
-    return centered_file
+    return prepared_file
 
 
 def blank_pdf(filepath):
-    """Add blank pages to PDF
-    """
+    """Add blank pages to PDF"""
     logger.info("Adding blank pages")
-    input_pdf = PyPDF2.PdfFileReader(filepath)
-    output_pdf = PyPDF2.PdfFileWriter()
-    for page in input_pdf.pages:
-        output_pdf.addPage(page)
-        output_pdf.addBlankPage()
+    pdf = Pdf.open(filepath)
+
+    previous_pages = pdf.pages
+    pdf.pages = []
+
+    for page in previous_pages:
+        pdf.pages.append(page)
+        pdf.add_blank_page()
 
     output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
-    with open(output_file, "wb") as fp:
-        output_pdf.write(fp)
+    pdf.save(output_file)
     return output_file
 
 
 def shrink_pdf(filepath, gs_path="gs"):
-    """Shrink the PDF file size using Ghostscript
-    """
-    logger.info("Shrinking pdf file")
+    """Shrink the PDF file size using Ghostscript"""
+    logger.info("Shrinking pdf file ...")
+    size_before = os.path.getsize(filepath)
     output_file = os.path.splitext(filepath)[0] + "-shrink.pdf"
     status = subprocess.call(
         [
@@ -90,9 +73,15 @@ def shrink_pdf(filepath, gs_path="gs"):
             "-dQUIET",
             "-sOutputFile=%s" % output_file,
             filepath,
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     if not status == 0:
         logger.warning("Failed to shrink the pdf file")
+        return filepath
+    size_after = os.path.getsize(output_file)
+    if size_after > size_before:
+        logger.info("Shrinking has no effect for this file, using original.")
         return filepath
     return output_file

@@ -12,7 +12,7 @@ import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
 
 
 class PMLRInformer(Informer):
@@ -20,7 +20,7 @@ class PMLRInformer(Informer):
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors):
-        return super()._format_authors(soup_authors, sep=' ', idx=-1)
+        return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
 
 class PMLR(Provider):
@@ -56,7 +56,7 @@ class PMLR(Provider):
             abs_url = "/".join(parts[:-1]) + ".html"
             pdf_url = url
         else:
-            exception("Couldn't figure out OpenReview urls.")
+            raise URLResolutionError("PMLR", url)
         return abs_url, pdf_url
 
     def validate(src):

@@ -14,6 +14,8 @@ Date: 2019-07-23
 
 import colorama
 import os
+import sys
+import tempfile
 
 
 def colored(msg, color=None, style=None):
@@ -50,6 +52,13 @@ def get_package_name():
             (l.strip() for l in fp if l.startswith("NAME = ")), None
         )
         return nameline.split("=")[-1].strip().strip('"')
+
+
+def get_package_version(pkgname):
+    ctx = {}
+    with open(f"{pkgname.lower()}/__version__.py", "r") as fp:
+        exec(fp.read(), ctx)
+    return ctx["__version__"]
 
 
 class Step:
@@ -96,6 +105,12 @@ class UpdateChangelog(Step):
         self.print_run("vi CHANGELOG.md")
 
 
+class UpdateReadme(Step):
+    def action(self, context):
+        self.instruct(f"Update readme if necessary")
+        self.print_run("vi README.md")
+
+
 class RunTests(Step):
     def action(self, context):
         self.instruct("Run the unit tests")
@@ -105,7 +120,7 @@ class RunTests(Step):
 class BumpVersionPackage(Step):
     def action(self, context):
         self.instruct(f"Update __version__.py with new version")
-        self.print_run(f"vi {context['pkgname']}/__version__.py")
+        self.do_cmd(f"vi {context['pkgname']}/__version__.py")
 
     def post(self, context):
         wait_for_enter()
@@ -113,10 +128,7 @@ class BumpVersionPackage(Step):
 
     def _get_version(self, context):
         # Get the version from the version file
-        about = {}
-        with open(f"{context['pkgname'].lower()}/__version__.py", "r") as fp:
-            exec(fp.read(), about)
-        return about["__version__"]
+        return get_package_version(context["pkgname"])
 
 
 class MakeClean(Step):
@@ -143,15 +155,15 @@ class PushToTestPyPI(Step):
 
 class InstallFromTestPyPI(Step):
     def action(self, context):
-        self.print_run("cd /tmp/")
-        self.print_cmd("rm -rf ./venv")
-        self.print_cmd("virtualenv ./venv")
-        self.print_cmd("cd ./venv")
-        self.print_cmd("source bin/activate")
-        self.print_cmd(
-            "pip install --index-url https://test.pypi.org/simple/ "
-            + f"--extra-index-url https://pypi.org/simple {context['pkgname']}=={context['version']}"
+        tmpvenv = tempfile.mkdtemp(prefix="p2r_venv_")
+        self.do_cmd(
+            f"python -m venv {tmpvenv} && source {tmpvenv}/bin/activate && "
+            "pip install --no-cache-dir --index-url "
+            "https://test.pypi.org/simple/ "
+            "--extra-index-url https://pypi.org/simple "
+            f"{context['pkgname']}=={context['version']}"
         )
+        context["tmpvenv"] = tmpvenv
 
 
 class TestPackage(Step):
@@ -159,13 +171,12 @@ class TestPackage(Step):
         self.instruct(
             f"Ensure that the following command gives version {context['version']}"
         )
-        self.print_run(f"p2r -h")
+        self.do_cmd(f"source {context['tmpvenv']}/bin/activate && p2r -V")
 
 
-class DeactivateVenv(Step):
+class RemoveVenv(Step):
     def action(self, context):
-        self.print_run("deactivate")
-        self.instruct("Go back to the project directory")
+        self.do_cmd(f"rm -rf {context['tmpvenv']}")
 
 
 class GitTagVersion(Step):
@@ -210,32 +221,39 @@ class WaitForRTD(Step):
         )
 
 
-def main():
+def main(target=None):
     colorama.init()
     procedure = [
-        GitToMaster(),
-        GitAdd(),
-        PushToGitHub(),
-        BumpVersionPackage(),
-        UpdateChangelog(),
-        MakeClean(),
-        RunTests(),
-        MakeDist(),
-        PushToTestPyPI(),
-        InstallFromTestPyPI(),
-        TestPackage(),
-        DeactivateVenv(),
-        GitAdd(),
-        PushToPyPI(),
-        GitTagVersion(),
-        PushToGitHub(),
+        ("gittomaster", GitToMaster()),
+        ("gitadd1", GitAdd()),
+        ("push1", PushToGitHub()),
+        ("bumpversion", BumpVersionPackage()),
+        ("changelog", UpdateChangelog()),
+        ("readme", UpdateReadme()),
+        ("clean", MakeClean()),
+        ("tests", RunTests()),
+        ("dist", MakeDist()),
+        ("testpypi", PushToTestPyPI()),
+        ("install", InstallFromTestPyPI()),
+        ("testpkg", TestPackage()),
+        ("remove_venv", RemoveVenv()),
+        ("gitadd2", GitAdd()),
+        ("pypi", PushToPyPI()),
+        ("tag", GitTagVersion()),
+        ("push2", PushToGitHub()),
     ]
     context = {}
     context["pkgname"] = get_package_name()
-    for step in procedure:
+    context["version"] = get_package_version(context["pkgname"])
+    skip = True if target else False
+    for name, step in procedure:
+        if not name == target and skip:
+            continue
+        skip = False
         step.run(context)
     cprint("\nDone!", color="yellow", style="bright")
 
 
 if __name__ == "__main__":
-    main()
+    target = sys.argv[1] if len(sys.argv) > 1 else None
+    main(target=target)

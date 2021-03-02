@@ -13,29 +13,37 @@ EMAIL = "gertjanvandenburg@gmail.com"
 LICENSE = "MIT"
 LICENSE_TROVE = "License :: OSI Approved :: MIT License"
 NAME = "paper2remarkable"
-REQUIRES_PYTHON = ">=3.5.0"
+REQUIRES_PYTHON = ">=3.6.0"
 URL = "https://github.com/GjjvdBurg/paper2remarkable"
 VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    "pikepdf>=2.8.0",
     "beautifulsoup4>=4.8",
-    "requests>=2.21",
+    "html2text>=2020.1.16",
+    "markdown>=3.1.1",
     "pdfplumber>=0.5",
-    "unidecode>=1.1",
+    "pyyaml>=5.1",
+    "readability-lxml>=0.7.1",
+    "regex>=2018.11",
+    "requests>=2.21",
     "titlecase>=0.12",
-    "PyPDF2>=1.26",
+    "unidecode>=1.1",
+    "weasyprint>=51",
 ]
 
+full_require = ["readabilipy"]
 docs_require = []
-test_require = []
-dev_require = ["green"]
+test_require = ["green"]
+dev_require = []
 
 # What packages are optional?
 EXTRAS = {
+    "full": full_require,
     "docs": docs_require,
-    "tests": test_require,
-    "dev": docs_require + test_require + dev_require,
+    "test": test_require + full_require,
+    "dev": docs_require + test_require + dev_require + full_require,
 }
 
 # The rest you shouldn't have to touch too much :)
@@ -79,6 +87,7 @@ setup(
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
+    data_files=[("man/man1", ["p2r.1"])],
     license=LICENSE,
     ext_modules=[],
     entry_points={"console_scripts": ["p2r = paper2remarkable.__main__:main"]},

@@ -8,13 +8,11 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-import bs4
 import re
 
 from ._base import Provider
 from ._info import Informer
-from .. import GITHUB_URL
-from ..utils import exception, get_page_with_retry
+from ..exceptions import URLResolutionError
 from ..log import Logger
 
 logger = Logger()
@@ -23,58 +21,58 @@ logger = Logger()
 class ACMInformer(Informer):
     meta_author_key = "citation_authors"
 
+    def get_title(self, soup):
+        target = soup.find("h1", {"class": "citation__title"})
+        return target.text
+
+    def get_authors(self, soup):
+        authors = [
+            span.find("a").text
+            for span in soup.find_all("span", {"class": "auth-name"})
+        ]
+        return self._format_authors(authors)
+
     def _format_authors(self, soup_authors):
-        op = lambda x: x[0].split(";")
-        return super()._format_authors(soup_authors, sep=",", idx=0, op=op)
+        return super()._format_authors(soup_authors, sep=" ", idx=-1)
+
+    def get_year(self, soup):
+        date = soup.find("span", {"class": "epub-section__date"})
+        return self._format_year(date.text)
 
     def _format_year(self, soup_date):
-        if not re.match("\d{2}/\d{2}/\d{4}", soup_date.strip()):
-            logger.warning(
-                "Couldn't extract year from ACM page, please raise an "
-                "issue on GitHub so it can be fixed: %s" % GITHUB_URL
-            )
-        return soup_date.strip().split("/")[-1]
+        return soup_date.strip().split(" ")[-1].strip()
 
 
 class ACM(Provider):
 
-    re_abs = "https?://dl.acm.org/citation.cfm\?id=\d+"
+    re_abs = "^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
+    re_pdf = "^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)\?download=true"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.informer = ACMInformer()
 
-    def get_acm_pdf_url(self, url):
-        page = get_page_with_retry(url)
-        soup = bs4.BeautifulSoup(page, "html.parser")
-        thea = None
-        for a in soup.find_all("a"):
-            if a.get("name") == "FullTextPDF":
-                thea = a
-                break
-        if thea is None:
-            return None
-        href = thea.get("href")
-        if href.startswith("http"):
-            return href
-        else:
-            return "https://dl.acm.org/" + href
+    def _get_doi(self, url):
+        m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)
+        if m:
+            return m["doi"]
+        raise URLResolutionError("ACM", url, reason="Failed to retrieve DOI.")
 
     def get_abs_pdf_urls(self, url):
         if re.match(self.re_abs, url):
             abs_url = url
-            pdf_url = self.get_acm_pdf_url(url)
-            if pdf_url is None:
-                exception(
-                    "Couldn't extract PDF url from ACM citation page. Maybe it's behind a paywall?"
-                )
-        else:
-            exception(
-                "Couldn't figure out ACM urls, please provide a URL of the "
-                "format: http(s)://dl.acm.org/citation.cfm?id=..."
+            doi = self._get_doi(url)
+            pdf_url = "https://dl.acm.org/doi/pdf/{doi}?download=true".format(
+                doi=doi
             )
+        elif re.match(self.re_pdf, url):
+            pdf_url = url
+            doi = self._get_doi(url)
+            abs_url = "https://dl.acm.org/doi/{doi}".format(doi=doi)
+        else:
+            raise URLResolutionError("ACM", url)
         return abs_url, pdf_url
 
     def validate(src):
-        m = re.fullmatch(ACM.re_abs, src)
+        m = re.match(ACM.re_abs, src) or re.match(ACM.re_pdf, src)
         return not m is None

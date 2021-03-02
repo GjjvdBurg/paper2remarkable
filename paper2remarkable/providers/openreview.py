@@ -8,16 +8,48 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
+import json
 import re
 
 from ._base import Provider
 from ._info import Informer
-from ..utils import exception
+from ..exceptions import URLResolutionError
+from ..log import Logger
+
+logger = Logger()
 
 
 class OpenReviewInformer(Informer):
 
     meta_date_key = "citation_publication_date"
+
+    def get_authors(self, soup):
+        # Get the authors for OpenReview by parsing the JSON payload
+        #
+        # This may not be super robust long term, but works for now.
+        warning = (
+            "Couldn't determine author information, maybe provide "
+            "the desired filename using '--filename'?"
+        )
+
+        script = soup.find("script", {"id": "__NEXT_DATA__"})
+        if not script:
+            logger.warning(warning)
+            return ""
+
+        try:
+            paper_data = json.loads(script.contents[0])
+        except json.JSONDecodeError:
+            logger.warning(warning)
+            return ""
+
+        try:
+            content = paper_data["props"]["pageProps"]["forumNote"]["content"]
+            authors = content["authors"]
+        except KeyError:
+            logger.warning(warning)
+            return ""
+        return self._format_authors(authors)
 
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
@@ -41,7 +73,7 @@ class OpenReview(Provider):
             abs_url = url.replace("pdf", "forum")
             pdf_url = url
         else:
-            exception("Couldn't figure out OpenReview urls.")
+            raise URLResolutionError("OpenReview", url)
         return abs_url, pdf_url
 
     def validate(src):
