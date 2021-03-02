@@ -11,6 +11,7 @@ import pdfplumber
 import shutil
 import tempfile
 import unittest
+from pikepdf import Pdf
 
 from paper2remarkable.providers import (
     ACL,
@@ -34,6 +35,7 @@ from paper2remarkable.providers import (
     Springer,
     TandFOnline,
 )
+from paper2remarkable.utils import download_url
 
 VERBOSE = False
 
@@ -437,6 +439,16 @@ class TestProviders(unittest.TestCase):
         )
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
+
+    def test_local_file_copy_toc(self):
+        """Make sure the table of content is kept after processing."""
+        local_filename = "test.pdf"
+        download_url("https://arxiv.org/pdf/1711.03512.pdf", local_filename)
+        prov = LocalFile(upload=False, verbose=VERBOSE)
+        filename = prov.run(local_filename)
+        with Pdf.open(filename) as pdf:
+            with pdf.open_outline() as outline:
+                assert len(outline.root) > 0
 
 
 if __name__ == "__main__":
