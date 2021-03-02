@@ -450,6 +450,14 @@ class TestProviders(unittest.TestCase):
             with pdf.open_outline() as outline:
                 assert len(outline.root) > 0
 
+    def test_arxiv_copy_toc(self):
+        """Make sure the table of content is kept after processing when using the arXiv provider."""
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        filename = prov.run("https://arxiv.org/abs/1711.03512")
+        with Pdf.open(filename) as pdf:
+            with pdf.open_outline() as outline:
+                assert len(outline.root) > 0
+
 
 if __name__ == "__main__":
     unittest.main()
