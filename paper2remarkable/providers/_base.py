@@ -86,6 +86,7 @@ class Provider(metaclass=abc.ABCMeta):
 
         if blank:
             self.operations.append(("blank", blank_pdf))
+
         self.operations.append(("shrink", self.shrink_pdf))
 
         logger.info("Starting %s provider" % type(self).__name__)
@@ -218,6 +219,7 @@ class Provider(metaclass=abc.ABCMeta):
             intermediate_fname = tmp_filename
             for opname, op in self.operations:
                 intermediate_fname = op(intermediate_fname)
+
             shutil.copy(intermediate_fname, clean_filename)
 
             if self.debug:

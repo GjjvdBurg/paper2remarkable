@@ -8,13 +8,12 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-import PyPDF2
 import io
 import os
 import pdfplumber
 import subprocess
 
-from PyPDF2.generic import RectangleObject
+from pikepdf import Pdf
 
 from .log import Logger
 
@@ -64,7 +63,7 @@ class Cropper(object):
     ):
         if not input_file is None:
             self.input_file = os.path.abspath(input_file)
-            self.reader = PyPDF2.PdfFileReader(self.input_file)
+            self.reader = Pdf.open(self.input_file)
         if not output_file is None:
             self.output_file = os.path.abspath(output_file)
 
@@ -72,7 +71,6 @@ class Cropper(object):
             pdftoppm_path = None
 
         self.pdftoppm_path = pdftoppm_path
-        self.writer = PyPDF2.PdfFileWriter()
 
     def crop(self, margins=1):
         return self.process_file(self.crop_page, margins=margins)
@@ -84,15 +82,16 @@ class Cropper(object):
         return self.process_file(self.right_page, padding=padding)
 
     def process_file(self, page_func, *args, **kwargs):
-        n = self.reader.getNumPages()
+        n = len(self.reader.pages)
         for page_idx in range(n):
             status = page_func(page_idx, *args, **kwargs)
             if not status == 0:
                 return status
             if (page_idx + 1) % 10 == 0:
                 logger.info("Processing pages ... (%i/%i)" % (page_idx + 1, n))
-        with open(self.output_file, "wb") as fp:
-            self.writer.write(fp)
+
+        self.reader.save(self.output_file)
+        self.reader.close()
         if n % 10 > 0:
             logger.info("Processing pages ... (%i/%i)" % (n, n))
         return 0
@@ -112,21 +111,25 @@ class Cropper(object):
 
     def export_page(self, page_idx):
         """Helper function that exports a single page given by index """
-        page = self.reader.getPage(page_idx)
-        writer = PyPDF2.PdfFileWriter()
-        writer.addPage(page)
+        page = self.reader.pages[page_idx]
+
+        writer = Pdf.new()
+        writer.pages.append(page)
+        # Remove the annotations to avoid warning about `Bad annotation destination` when
+        # processing the page with pdftoppm. Since we've appended the page to the writer, pikepdf
+        # does a copy of the copy and we're not modifying the original page's annotations.
+        writer.pages[0].Annots = []
+
         tmpfname = "./page.pdf"
-        with open(tmpfname, "wb") as fp:
-            writer.write(fp)
+        writer.save(tmpfname)
+        writer.close()
         return tmpfname
 
     def process_page(self, page_idx, bbox_func, *args, **kwargs):
         """Process a single page and add it to the writer """
         tmpfname = self.export_page(page_idx)
         bbox = bbox_func(tmpfname, *args, **kwargs)
-        thepage = self.reader.getPage(page_idx)
-        thepage.cropBox = RectangleObject(bbox)
-        self.writer.addPage(thepage)
+        self.reader.pages[page_idx].CropBox = bbox
         os.unlink(tmpfname)
         return 0
 

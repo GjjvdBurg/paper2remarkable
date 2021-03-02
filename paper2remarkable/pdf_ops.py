@@ -9,9 +9,10 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 
-import PyPDF2
 import os
 import subprocess
+
+from pikepdf import Pdf
 
 from .crop import Cropper
 from .log import Logger
@@ -42,15 +43,17 @@ def prepare_pdf(filepath, operation, pdftoppm_path="pdftoppm"):
 def blank_pdf(filepath):
     """Add blank pages to PDF"""
     logger.info("Adding blank pages")
-    input_pdf = PyPDF2.PdfFileReader(filepath)
-    output_pdf = PyPDF2.PdfFileWriter()
-    for page in input_pdf.pages:
-        output_pdf.addPage(page)
-        output_pdf.addBlankPage()
+    pdf = Pdf.open(filepath)
+
+    previous_pages = pdf.pages
+    pdf.pages = []
+
+    for page in previous_pages:
+        pdf.pages.append(page)
+        pdf.add_blank_page()
 
     output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
-    with open(output_file, "wb") as fp:
-        output_pdf.write(fp)
+    pdf.save(output_file)
     return output_file
 
 
