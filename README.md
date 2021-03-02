@@ -157,10 +157,9 @@ page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
            [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
            [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
-           [-C CONFIG]
-           input [input ...]
+           [-C CONFIG] input [input ...]
 
-Paper2reMarkable version 0.8.9
+Paper2reMarkable version 0.9.0
 
 positional arguments:
   input                 One or more URLs to a paper or paths to local PDF

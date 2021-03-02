@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.9.0
+
+* Replace PyPDF2 with pikepdf (thanks to @Kazy 
+  [#94](https://github.com/GjjvdBurg/paper2remarkable/pull/94))
+* Preserve ToC when present in the file (thanks to @Kazy, 
+  [#94](https://github.com/GjjvdBurg/paper2remarkable/pull/94))
+* Bump minimum Python version to 3.6
+* Remove unnecessary delay in CiteSeerX provider
+
 ## Version 0.8.9
 
 * Add provider for ACLWeb
