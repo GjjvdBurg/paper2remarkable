@@ -9,8 +9,8 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import re
-import urllib
 import requests
+import urllib
 
 from ._base import Provider
 from ._info import Informer

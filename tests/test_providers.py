@@ -19,6 +19,7 @@ from paper2remarkable.providers import (
     Arxiv,
     CVF,
     CiteSeerX,
+    Euclid,
     HTML,
     JMLR,
     LocalFile,
@@ -38,6 +39,7 @@ from paper2remarkable.providers import (
 from paper2remarkable.utils import download_url
 
 VERBOSE = False
+TEST_EUCLID = False
 
 
 def md5sum(filename):
@@ -457,6 +459,36 @@ class TestProviders(unittest.TestCase):
         with Pdf.open(filename) as pdf:
             with pdf.open_outline() as outline:
                 assert len(outline.root) > 0
+
+    def test_euclid_1(self):
+        # Tests for Euclid are generally disabled. Due to Incapsula protection
+        # on ProjectEuclid it's not possible to reliably test the site multiple
+        # times in quick succession.
+        if not TEST_EUCLID:
+            return
+        prov = Euclid(upload=False, verbose=VERBOSE)
+        url = "https://projecteuclid.org/journals/probability-surveys/volume-16/issue-none/Poisson-approximation/10.1214/18-PS318.full"
+        exp = "Novak_-_Poisson_Approximation_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_euclid_2(self):
+        if not TEST_EUCLID:
+            return
+        prov = Euclid(upload=False, verbose=VERBOSE)
+        url = "https://projecteuclid.org/journals/annals-of-statistics/volume-29/issue-5/Greedy-function-approximation-A-gradient-boosting-machine/10.1214/aos/1013203451.pdf"
+        exp = "Friedman_-_Greedy_Function_Approximation_a_Gradient_Boosting_Machine_2001.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_euclid_3(self):
+        if not TEST_EUCLID:
+            return
+        prov = Euclid(upload=False, verbose=VERBOSE)
+        url = "https://projecteuclid.org/journals/taiwanese-journal-of-mathematics/volume-25/issue-1/Classification-of-Spherical-2-distance-421-designs-by-Solving-Diophantine/10.11650/tjm/200601.full"
+        exp = "Bannai_et_al_-_Classification_of_Spherical_2-Distance_4_2_1_-Designs_by_Solving_Diophantine_Equations_2021.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
 
 
 if __name__ == "__main__":

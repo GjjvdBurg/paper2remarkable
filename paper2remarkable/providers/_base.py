@@ -10,6 +10,7 @@ Copyright: 2019, G.J.J. van den Burg
 
 import abc
 import os
+import random
 import shutil
 import subprocess
 import tempfile
@@ -118,6 +119,9 @@ class Provider(metaclass=abc.ABCMeta):
     def retrieve_pdf(self, pdf_url, filename):
         """ Download pdf from src and save to filename """
         # This must exist so that the LocalFile provider can overwrite it
+        if self.server_delay:
+            delay = self.server_delay + random.random()
+            time.sleep(delay)
         download_url(pdf_url, filename, cookiejar=self.cookiejar)
 
     def compress_pdf(self, in_pdf, out_pdf):
@@ -200,13 +204,15 @@ class Provider(metaclass=abc.ABCMeta):
             # NOTE: We assume that if the cookiejar is not None, we are
             # properly redirected.
             src, self.cookiejar = follow_redirects(src)
-            time.sleep(self.server_delay)
+            time.sleep(self.server_delay + random.random())
 
         # extract page and pdf file urls
         abs_url, pdf_url = self.get_abs_pdf_urls(src)
 
         # generate nice filename if needed
-        clean_filename = filename or self.informer.get_filename(abs_url)
+        clean_filename = filename or self.informer.get_filename(
+            abs_url, cookiejar=self.cookiejar
+        )
         tmp_filename = "paper.pdf"
 
         self.initial_dir = os.getcwd()

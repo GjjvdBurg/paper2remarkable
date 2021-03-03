@@ -35,11 +35,13 @@ def clean_string(s):
     keeping only the allowed characters (ascii letters, digits, underscore,
     space, dash, and period)"""
     normalized = unidecode.unidecode(s)
+    no_dollar = normalized.replace("$", "")
     allowed = string.ascii_letters + string.digits + "_ .-"
-    cleaned = "".join(c if c in allowed else "_" for c in normalized)
+    cleaned = "".join(c if c in allowed else "_" for c in no_dollar)
     while "__" in cleaned:
         cleaned = cleaned.replace("__", "_")
     cleaned = cleaned.strip("_")
+    cleaned = cleaned.rstrip(".")
     return cleaned
 
 

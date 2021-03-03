@@ -34,7 +34,7 @@ class Informer:
         self.authors = authors or []
         self.year = year
 
-    def get_filename(self, abs_url):
+    def get_filename(self, abs_url, cookiejar=None):
         """Generate nice filename using the paper information
 
         The provided url must be to a HTMl page where this information can be
@@ -43,7 +43,7 @@ class Informer:
         logger.info("Generating output filename")
 
         # Retrieve the paper information
-        self.get_info(abs_url)
+        self.get_info(abs_url, cookiejar=cookiejar)
 
         # we assume that the list of authors is surname only.
         if len(self.authors) > 3:
@@ -66,9 +66,9 @@ class Informer:
         logger.info("Created filename: %s" % name)
         return name
 
-    def get_info(self, url):
+    def get_info(self, url, cookiejar=None):
         logger.info("Getting paper info")
-        page = get_page_with_retry(url)
+        page = get_page_with_retry(url, cookiejar=cookiejar)
         soup = bs4.BeautifulSoup(page, "html.parser")
         self.authors = self.authors or self.get_authors(soup)
         self.title = self.title or self.get_title(soup)
