@@ -325,6 +325,12 @@ After running ``source ~/.bashrc`` to activate the alias, you can then use
 License: MIT
 
 If you find a problem or want to suggest a feature, please open an issue [on 
-Github][github-url]. You're helping to make this project better for everyone!
+Github][github-url]. You're helping to make this project better for everyone! 
+
+Thanks to all the 
+[contributors](https://github.com/GjjvdBurg/paper2remarkable/graphs/contributors) 
+who've helped to support the project.
+
+[![BuyMeACoffee](https://img.shields.io/badge/%E2%98%95-buymeacoffee-ffdd00)](https://www.buymeacoffee.com/GjjvdBurg)
 
 [github-url]: https://github.com/GjjvdBurg/paper2remarkable
