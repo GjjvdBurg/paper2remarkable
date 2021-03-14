@@ -73,12 +73,21 @@ class ScienceDirect(Provider):
         # is currently in the json payload of a script tag as:
         #
         # "pdfDownload": {
-        #   "linkType": "DOWNLOAD",
-        #     "linkToPdf":
-        #     "/science/article/pii/S0166354220302011/pdfft?md5=bd2a8d1cfbe3680f2d405b4a62642a15&pid=1-s2.0-S0166354220302011-main.pdf",
-        #     "isPdfFullText": false,
-        #     "fileName": "1-s2.0-S0166354220302011-main.pdf"
-        # },
+        #   'isPdfFullText': False,
+        #   'linkType': 'DOWNLOAD',
+        #   'urlMetadata': {
+        #           'path': 'science/article/pii',
+        #           'pdfExtension': '/pdfft',
+        #           'pii': 'S0166354220302011',
+        #           'queryParams': {'md5': 'bd2a8d1cfbe3680f2d405b4a62642a15',
+        #                           'pid': '1-s2.0-S0166354220302011-main.pdf'}
+        #           }
+        #   }
+        #
+        # We construct the url based on the urlMetaData. This leads to an
+        # intermediate page, which contains the actual url to the PDF in the
+        # noscript tag.
+
         scripts = soup.find_all("script", attrs={"data-iso-key": "_0"})
         if not scripts:
             raise URLResolutionError("ScienceDirect", url)
@@ -90,9 +99,14 @@ class ScienceDirect(Provider):
         if not "pdfDownload" in data:
             raise URLResolutionError("ScienceDirect", url)
         data = data["pdfDownload"]
-        if not "linkToPdf" in data:
+
+        if not "urlMetadata" in data:
             raise URLResolutionError("ScienceDirect", url)
-        link = data["linkToPdf"]
+        meta = data["urlMetadata"]
+
+        link = "{path}/{pii}/{pdfExtension}?md5{queryParams[md5]}&pid={queryParams[pid]}".format(
+            **meta
+        )
         tmp_url = urllib.parse.urljoin("https://sciencedirect.com/", link)
 
         # tmp_url gives a page with a ten second wait or a direct url, we need
