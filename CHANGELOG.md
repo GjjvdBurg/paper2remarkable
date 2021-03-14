@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.9.1
+
+* Bugfix for ScienceDirect Provider
+
 ## Version 0.9.0
 
 * Replace PyPDF2 with pikepdf (thanks to @Kazy 
