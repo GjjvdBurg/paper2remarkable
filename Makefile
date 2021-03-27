@@ -20,7 +20,7 @@ release: ## Make a release
 	python make_release.py
 
 
-install: ## Install for the current user using the default python command
+install: docs ## Install for the current user using the default python command
 	python setup.py build_ext --inplace
 	python setup.py install --user
 
