@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.9.2
+
+* Fix bug that broke blank pages functionality 
+  ([#98](https://github.com/GjjvdBurg/paper2remarkable/issues/98))
+* Bugfix for SemanticScholar provider
+
 ## Version 0.9.1
 
 * Bugfix for ScienceDirect Provider
