@@ -32,7 +32,7 @@ class URLResolutionError(Error):
     def __init__(self, provider, url, reason=None):
         self.provider = provider
         self.url = url
-        self.reason = None
+        self.reason = reason
 
     def __str__(self):
         msg = "ERROR: Couldn't figure out {provider} URLs from provided url: {url}".format(

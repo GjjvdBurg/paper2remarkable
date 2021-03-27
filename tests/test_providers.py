@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from pikepdf import Pdf
 
+from paper2remarkable.exceptions import URLResolutionError
 from paper2remarkable.providers import (
     ACL,
     ACM,
@@ -338,15 +339,26 @@ class TestProviders(unittest.TestCase):
 
     def test_semantic_scholar_1(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
-        url = "https://pdfs.semanticscholar.org/1b01/dea77e9cbf049b4ee8b68dc4d43529d06299.pdf"
-        exp = "Dong_et_al_-_TableSense_Spreadsheet_Table_Detection_With_Convolutional_Neural_Networks_2019.pdf"
-        filename = prov.run(url)
-        self.assertEqual(exp, os.path.basename(filename))
+        url = "https://www.semanticscholar.org/paper/TableSense%3A-Spreadsheet-Table-Detection-with-Neural-Dong-Liu/1b01dea77e9cbf049b4ee8b68dc4d43529d06299?p2df"
+        with self.assertRaises(URLResolutionError) as cm:
+            prov.run(url)
+        err = cm.exception
+        self.assertEqual(
+            err.reason,
+            "PDF url on SemanticScholar doesn't point to a pdf file",
+        )
 
     def test_semantic_scholar_2(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
         url = "https://www.semanticscholar.org/paper/Fast-Meta-Learning-for-Adaptive-Hierarchical-Design-Burg-Hero/90759dc4ab0ce8d3564044ef92a91080a4f3e55f"
         exp = "Burg_Hero_-_Fast_Meta-Learning_for_Adaptive_Hierarchical_Classifier_Design_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_semantic_scholar_3(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://www.semanticscholar.org/paper/A-historical-account-of-how-continental-drift-and-Meinhold-%C5%9Eeng%C3%B6r/e7be87319985445e3ef7addf1ebd10899b92441f"
+        exp = "Meinhold_Sengor_-_A_Historical_Account_of_How_Continental_Drift_and_Plate_Tectonics_Provided_the_Framework_for_Our_Current_Understanding_of_Palaeogeography_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
