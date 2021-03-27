@@ -11,6 +11,7 @@ import pdfplumber
 import shutil
 import tempfile
 import unittest
+
 from pikepdf import Pdf
 
 from paper2remarkable.exceptions import URLResolutionError
@@ -37,6 +38,7 @@ from paper2remarkable.providers import (
     TandFOnline,
 )
 from paper2remarkable.utils import download_url
+from _constants import TEST_FILE
 
 VERBOSE = False
 
@@ -159,9 +161,7 @@ class TestProviders(unittest.TestCase):
     def test_local(self):
         local_filename = "test.pdf"
         with open(local_filename, "w") as fp:
-            fp.write(
-                "%PDF-1.1\n%¿÷¢þ\n1 0 obj\n<< /Pages 2 0 R /Type /Catalog >>\nendobj\n2 0 obj\n<< /Count 1 /Kids [ 3 0 R ] /MediaBox [ 0 0 300 600 ] /Type /Pages >>\nendobj\n3 0 obj\n<< /Contents 4 0 R /Parent 2 0 R /Resources << /Font << /F1 << /BaseFont /Times-Roman /Subtype /Type1 /Type /Font >> >> >> /Type /Page >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT /F1 18 Tf 80 80 Td (Hello World 1) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000019 00000 n \n0000000067 00000 n \n0000000153 00000 n \n0000000306 00000 n \ntrailer << /Root 1 0 R /Size 5 /ID [<015d3b8119c73f2291496f4b9d03fe4f><015d3b8119c73f2291496f4b9d03fe4f>] >>\nstartxref\n399\n%%EOF"
-            )
+            fp.write(TEST_FILE)
         prov = LocalFile(upload=False, verbose=VERBOSE)
         filename = prov.run(local_filename)
         self.assertEqual("test_.pdf", os.path.basename(filename))

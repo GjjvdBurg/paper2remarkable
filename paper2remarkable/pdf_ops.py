@@ -44,16 +44,15 @@ def blank_pdf(filepath):
     """Add blank pages to PDF"""
     logger.info("Adding blank pages")
     pdf = Pdf.open(filepath)
-
-    previous_pages = pdf.pages
-    pdf.pages = []
-
-    for page in previous_pages:
-        pdf.pages.append(page)
-        pdf.add_blank_page()
-
+    # Note: creating a new file doesn't keep the table of contents, but it
+    # would anyway be incorrect when adding blank pages
+    dst = Pdf.new()
+    for page in pdf.pages:
+        dst.pages.append(page)
+        x0, y0, x1, y1 = page.MediaBox
+        dst.add_blank_page(page_size=(x1 - x0, y1 - y0))
     output_file = os.path.splitext(filepath)[0] + "-blank.pdf"
-    pdf.save(output_file)
+    dst.save(output_file)
     return output_file
 
 

@@ -55,6 +55,10 @@ echo -e "Run pre-commit"
 
 pre-commit run --all-files --show-diff-on-failure
 
+echo -e "Check if ReadabiliPy was installed with Node support"
+
+python -c 'from readabilipy.simple_json import have_node; print(f"Have node: {have_node()}")'
+
 echo -e "Run unit tests"
 
 green -vv -a ./tests
