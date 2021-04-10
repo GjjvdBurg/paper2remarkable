@@ -6,10 +6,15 @@ Author: G.J.J. van den Burg
 License: See LICENSE file
 Copyright: 2021, G.J.J. van den Burg
 
-
 """
 
-import subprocess
+import argparse
+import sys
+
+from rmapy.api import Client
+from rmapy.document import ZipDocument
+from rmapy.exceptions import ApiError, AuthError
+from rmapy.folder import Folder
 
 from .exceptions import RemarkableError
 from .log import Logger
@@ -18,69 +23,38 @@ from .log import Logger
 logger = Logger()
 
 
-def upload_to_remarkable_rmapi(
-    filepath, remarkable_dir="/", rmapi_path="rmapi"
-):
-    logger.info("Starting upload to reMarkable using rMapi")
-
-    # Create the reMarkable dir if it doesn't exist
-    remarkable_dir = remarkable_dir.rstrip("/")
-    if remarkable_dir:
-        parts = remarkable_dir.split("/")
-        rmdir = ""
-        while parts:
-            rmdir += "/" + parts.pop(0)
-            status = subprocess.call(
-                [rmapi_path, "mkdir", rmdir],
-                stdout=subprocess.DEVNULL,
-            )
-            if not status == 0:
-                raise RemarkableError(
-                    "Creating directory %s on reMarkable failed"
-                    % remarkable_dir
-                )
-
-    # Upload the file
-    status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir + "/"],
-        stdout=subprocess.DEVNULL,
+def authenticate_rmapy(token=None):
+    msg = (
+        "\n"
+        "The reMarkable needs to be authenticated before we can upload.\n"
+        "Please visit:\n\n"
+        "\thttps://my.remarkable.com/connect/desktop\n"
+        "\nand copy the one-time code for a desktop application.\n"
     )
-    if not status == 0:
-        raise RemarkableError(
-            "Uploading file %s to reMarkable failed" % filepath
-        )
-    logger.info("Upload successful.")
-
-
-def upload_to_remarkable_rmapy(filepath, remarkable_dir="/"):
-    from rmapy.api import Client
-    from rmapy.document import ZipDocument
-    from rmapy.folder import Folder
-    from rmapy.exceptions import ApiError, AuthError
-
     client = Client()
     if not client.is_auth():
-        print(
-            "\nThe reMarkable needs to be authenticated before we can upload."
-        )
-        print("Please visit:\n")
-        print("\thttps://my.remarkable.com/connect/desktop")
-        print("\nand copy the one-time code for a desktop application.\n")
-        code = input("Please enter the one-time code: ")
-        code = code.strip()
-        print()
+        if token is None:
+            print(msg)
+            token = input("Please enter the one-time code: ")
+            token = token.strip()
+            print()
         try:
-            client.register_device(code)
+            client.register_device(token)
         except AuthError:
             raise RemarkableError(
                 "Failed to authenticate the reMarkable client"
             )
-
     client.renew_token()
     if not client.is_auth():
         raise RemarkableError("Failed to authenticate the reMarkable client")
+    return client
 
-    logger.info("Starting upload to reMarkable using rmapy")
+
+def upload_to_remarkable(filepath, remarkable_dir="/"):
+    client = authenticate_rmapy()
+    logger.info("Starting upload to reMarkable")
+
+    is_folder = lambda x: isinstance(x, Folder)
 
     remarkable_dir = remarkable_dir.rstrip("/")
     if remarkable_dir:
@@ -93,9 +67,7 @@ def upload_to_remarkable_rmapy(filepath, remarkable_dir="/"):
                 continue
 
             # get the folders with the desired parent
-            folders = [
-                i for i in client.get_meta_items() if isinstance(i, Folder)
-            ]
+            folders = list(filter(is_folder, client.get_meta_items()))
             siblings = [f for f in folders if f.Parent == parent_id]
 
             # if the folder already exists, record its ID and continue
@@ -114,23 +86,19 @@ def upload_to_remarkable_rmapy(filepath, remarkable_dir="/"):
                 client.create_folder(new_folder)
             except ApiError:
                 raise RemarkableError(
-                    "Creating directory %s on reMarkable failed"
-                    % remarkable_dir
+                    f"Creating directory {remarkable_dir} on reMarkable failed"
                 )
             parent_id = new_folder.ID
 
         # upload target is the folder with the last recorded parent_id
         target = next(
-            (
-                i
-                for i in client.get_meta_items()
-                if isinstance(i, Folder) and i.ID == parent_id
-            ),
+            filter(lambda i: is_folder(i) and i.ID == parent_id),
+            client.get_meta_items(),
             None,
         )
         if target is None:
             raise RemarkableError(
-                "Creating directory %s on reMarkable failed" % remarkable_dir
+                f"Creating directory {remarkable_dir} on reMarkable failed"
             )
     else:
         target = Folder(ID="")
@@ -140,45 +108,19 @@ def upload_to_remarkable_rmapy(filepath, remarkable_dir="/"):
         client.upload(zip_doc=doc, to=target)
     except ApiError:
         raise RemarkableError(
-            "Uploading file %s to reMarkable failed" % filepath
+            f"Uploading file {filepath} to reMarkable failed"
         )
     logger.info("Upload successful.")
 
 
-def get_remarkable_backend(rmapi_path="rmapi"):
+def auth_cli():
+    """Command line interface to authenticate rmapy"""
+    parser = argparse.ArgumentParser("Authenticate the rmapy client")
+    parser.add_argument("token", help="Authentication token", nargs="?")
+    args = parser.parse_args()
     try:
-        status = subprocess.call(
-            [rmapi_path, "version"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-    except FileNotFoundError:
-        pass
-
-    if status == 0:
-        return "rmapi"
-
-    try:
-        import rmapy
-
-        assert rmapy
-
-        return "rmapy"
-    except ImportError:
-        pass
-
-    return None
-
-
-def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
-    backend = get_remarkable_backend(rmapi_path=rmapi_path)
-    if backend is None:
-        raise RemarkableError("Couldn't find a suitable reMarkable client.")
-    if backend == "rmapi":
-        upload_to_remarkable_rmapi(
-            filepath, remarkable_dir=remarkable_dir, rmapi_path=rmapi_path
-        )
-    elif backend == "rmapy":
-        upload_to_remarkable_rmapy(filepath, remarkable_dir=remarkable_dir)
-    else:
-        raise RemarkableError("Unknown reMarkable client: %s" % backend)
+        authenticate_rmapy(args.token)
+    except RemarkableError:
+        print("Authentication failed.", file=sys.stderr)
+        raise SystemExit(1)
+    print("Authentication successful.")

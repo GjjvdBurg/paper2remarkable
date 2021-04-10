@@ -7,8 +7,7 @@ core:
   experimental: true    # options: true, false
 
 # System settings are all optional, but can be used if executables are not on 
-# the PATH. Options in this section include: gs, pdftk, pdftoppm, qpdf, and 
-# rmapi.
+# the PATH. Options in this section include: gs, pdftk, pdftoppm, qpdf
 system:
   gs: /usr/bin/gs
 

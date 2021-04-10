@@ -106,11 +106,6 @@ def build_argument_parser():
         default=None,
     )
     parser.add_argument(
-        "--rmapi",
-        help="path to rmapi executable (default: rmapi)",
-        default=None,
-    )
-    parser.add_argument(
         "--css", help="path to custom CSS file for HTML output", default=None
     )
     parser.add_argument(
@@ -249,7 +244,6 @@ def merge_options(args, config=None):
     set_path(opts["system"], "pdftoppm", args.pdftoppm)
     set_path(opts["system"], "pdftk", args.pdftk)
     set_path(opts["system"], "qpdf", args.qpdf)
-    set_path(opts["system"], "rmapi", args.rmapi)
 
     if args.css and os.path.exists(args.css):
         with open(args.css, "r") as fp:
@@ -315,7 +309,6 @@ def main():
             crop=options["core"]["crop"],
             blank=options["core"]["blank"],
             remarkable_dir=args.remarkable_dir,
-            rmapi_path=options["system"]["rmapi"],
             pdftoppm_path=options["system"]["pdftoppm"],
             pdftk_path=options["system"]["pdftk"],
             qpdf_path=options["system"]["qpdf"],

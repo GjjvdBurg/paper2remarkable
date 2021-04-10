@@ -19,11 +19,11 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "pikepdf>=2.9.0",
     "beautifulsoup4>=4.8",
     "html2text>=2020.1.16",
     "markdown>=3.1.1",
     "pdfplumber>=0.5",
+    "pikepdf>=2.9.0",
     "pyyaml>=5.1",
     "readability-lxml>=0.7.1",
     "regex>=2018.11",
@@ -91,7 +91,12 @@ setup(
     data_files=[("man/man1", ["p2r.1"])],
     license=LICENSE,
     ext_modules=[],
-    entry_points={"console_scripts": ["p2r = paper2remarkable.__main__:main"]},
+    entry_points={
+        "console_scripts": [
+            "p2r = paper2remarkable.__main__:main",
+            "p2r-auth = paper2remarkable.remarkable:auth_cli",
+        ]
+    },
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers

@@ -107,9 +107,6 @@ the PATH variable.
 --qpdf=QPDF
       Path to qpdf executable (default: qpdf). Either pdftk or qpdf is needed.
 
---rmapi=RMAPI
-      Path to rmapi executable (default: rmapi).
-
 Developer options:
 
 -d, --debug
@@ -163,9 +160,8 @@ with the ``--config`` option to the script.
 The configuration file consists of three sections: ``core``, ``system``, and 
 ``html``. In the ``core`` section options for cropping, verbosity, and blank 
 pages can be added, among others. The ``system`` section allows setting paths 
-to executables such as ``rmapi``, ``pdftk``, etc.  Finally, the ``html`` 
-section allows you to provide custom CSS and font urls for formatting the 
-output of web articles.
+to executables such as ``pdftk`` etc. Finally, the ``html`` section allows you 
+to provide custom CSS and font urls for formatting the output of web articles.
 
 Options provided on the command line overwrite those in the configuration 
 file. So, for instance, if the configuration file has the setting ``crop: 
