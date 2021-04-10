@@ -17,6 +17,7 @@ from paper2remarkable.exceptions import (
     UnidentifiedSourceError,
 )
 from paper2remarkable.providers import (
+    ACL,
     ACM,
     Arxiv,
     CiteSeerX,
@@ -163,7 +164,7 @@ class TestUI(unittest.TestCase):
             (
                 NeurIPS,
                 "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
-                "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
+                "https://proceedings.neurips.cc/paper/2018/file/b534ba68236ba543ae44b22bd110a1d6-Paper.pdf",
             ),
             (
                 CiteSeerX,
@@ -194,6 +195,11 @@ class TestUI(unittest.TestCase):
                 Nature,
                 "https://www.nature.com/articles/s41599-019-0349-z",
                 "https://www.nature.com/articles/s41599-019-0349-z",
+            ),
+            (
+                ACL,
+                "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
+                "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
             ),
         ]
         for exp_prov, url, exp_url in tests:

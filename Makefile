@@ -20,13 +20,13 @@ release: ## Make a release
 	python make_release.py
 
 
-install: ## Install for the current user using the default python command
+install: docs ## Install for the current user using the default python command
 	python setup.py build_ext --inplace
 	python setup.py install --user
 
 
 test: venv ## Run unit tests
-	source $(VENV_DIR)/bin/activate && green -vv -s 1 -a ./tests
+	source $(VENV_DIR)/bin/activate && green -vv -s 1 -f -a ./tests
 
 
 clean: ## Clean build dist and egg directories left after install

@@ -8,13 +8,14 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-import PyPDF2
 import regex
 import requests
 import string
 import subprocess
 import time
 import unidecode
+
+from pikepdf import Pdf, PdfError
 
 from .log import Logger
 from .exceptions import FileTypeError, NoPDFToolError
@@ -45,15 +46,14 @@ def clean_string(s):
 def assert_file_is_pdf(filename):
     """Assert that a given file is a PDF file.
 
-    This is done by trying to open it using PyPDF2.
+    This is done by trying to open it using pikepdf.
     """
     try:
-        fp = open(filename, "rb")
-        pdf = PyPDF2.PdfFileReader(fp, strict=False)
-        fp.close()
+        pdf = Pdf.open(filename)
+        pdf.close()
         del pdf
         return True
-    except PyPDF2.utils.PdfReadError:
+    except PdfError:
         raise FileTypeError(filename, "pdf")
 
 

@@ -14,7 +14,7 @@ import bs4
 from ._base import Provider
 from ._info import Informer
 from ..exceptions import URLResolutionError
-from ..utils import get_page_with_retry
+from ..utils import get_page_with_retry, get_content_type_with_retry
 
 
 class SemanticScholarInformer(Informer):
@@ -30,7 +30,6 @@ class SemanticScholar(Provider):
     re_abs = (
         "https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
     )
-    re_pdf = "https?:\/\/pdfs.semanticscholar.org/[0-9a-f]{4}/[0-9a-f]{36}.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,12 +40,6 @@ class SemanticScholar(Provider):
         if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = self._get_pdf_url(abs_url)
-        elif re.match(self.re_pdf, url):
-            pdf_url = url
-            remainder = pdf_url.split("/")[-1][: -len(".pdf")]
-            first_four = pdf_url.split("/")[-2]
-            paper_id = first_four + remainder
-            abs_url = f"https://www.semanticscholar.org/paper/{paper_id}"
         else:
             raise URLResolutionError("SemanticScholar", url)
         return abs_url, pdf_url
@@ -54,12 +47,41 @@ class SemanticScholar(Provider):
     def _get_pdf_url(self, url):
         page = get_page_with_retry(url)
         soup = bs4.BeautifulSoup(page, "html.parser")
+
+        # First try to get the direct url to the PDF file from the HTML
+        a = soup.find(
+            "a",
+            {
+                "data-selenium-selector": "paper-link",
+                "data-heap-direct-pdf-link": "true",
+            },
+        )
+        if a:
+            return a["href"]
+
+        # Next try to get the url from the metadata (not always a pdf)
         meta = soup.find_all("meta", {"name": "citation_pdf_url"})
         if not meta:
-            raise URLResolutionError("SemanticScholar", url)
-        return meta[0]["content"]
+            raise URLResolutionError(
+                "SemanticScholar", url, reason="Page has no url to PDF file"
+            )
+        pdf_url = meta[0]["content"]
+
+        # Check the content type to check that the data will be a pdf
+        content_type = get_content_type_with_retry(pdf_url)
+        if content_type is None:
+            raise URLResolutionError(
+                "SemanticScholar",
+                url,
+                reason="Can't determine content type for pdf file",
+            )
+        if not content_type == "application/pdf":
+            raise URLResolutionError(
+                "SemanticScholar",
+                url,
+                reason="PDF url on SemanticScholar doesn't point to a pdf file",
+            )
+        return pdf_url
 
     def validate(src):
-        return re.match(SemanticScholar.re_abs, src) or re.match(
-            SemanticScholar.re_pdf, src
-        )
+        return re.match(SemanticScholar.re_abs, src)

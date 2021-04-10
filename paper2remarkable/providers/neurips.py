@@ -39,6 +39,9 @@ class NeurIPS(Provider):
         "https://papers.n(eur)?ips.cc/paper/\d{4}/file/[0-9a-f]{32}-Paper.pdf"
     )
 
+    re_abs_3 = "https://proceedings.n(eur)?ips.cc/paper/\d{4}/hash/[0-9a-f]{32}-Abstract.html"
+    re_pdf_3 = "https://proceedings.n(eur)?ips.cc/paper/\d{4}/file/[0-9a-f]{32}-Paper.pdf"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.informer = NeurIPSInformer()
@@ -51,7 +54,7 @@ class NeurIPS(Provider):
         elif re.match(self.re_pdf, url):
             abs_url = url.replace(".pdf", "")
             pdf_url = url
-        elif re.match(self.re_abs_2, url):
+        elif re.match(self.re_abs_2, url) or re.match(self.re_abs_3, url):
             self.informer.new_site = True
             abs_url = url
             pdf_url = (
@@ -59,7 +62,7 @@ class NeurIPS(Provider):
                 .replace("Abstract", "Paper")
                 .replace(".html", ".pdf")
             )
-        elif re.match(self.re_pdf_2, url):
+        elif re.match(self.re_pdf_2, url) or re.match(self.re_pdf_3, url):
             self.informer.new_site = True
             pdf_url = url
             abs_url = (
@@ -77,4 +80,6 @@ class NeurIPS(Provider):
             or re.fullmatch(NeurIPS.re_pdf, src)
             or re.fullmatch(NeurIPS.re_abs_2, src)
             or re.fullmatch(NeurIPS.re_pdf_2, src)
+            or re.fullmatch(NeurIPS.re_abs_3, src)
+            or re.fullmatch(NeurIPS.re_pdf_3, src)
         )

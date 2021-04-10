@@ -39,7 +39,7 @@ class CiteSeerX(Provider):
         self.informer = CiteSeerXInformer()
         self.server_delay = 30
 
-        # NOTE: This is here because of this:
+        # NOTE: The server delay is used because of this:
         # https://github.com/SeerLabs/CiteSeerX/blob/8a62545ffc904f2b41b4ecd30ce91900dc7790f4/src/java/edu/psu/citeseerx/webutils/SimpleDownloadLimitFilter.java#L136
         # The server does not allow hits to the same URL twice within a 30
         # second window. We need to hit the URL more than once to ensure it
@@ -47,7 +47,6 @@ class CiteSeerX(Provider):
         logger.info(
             "Waiting 30 seconds so we don't overload the CiteSeerX server."
         )
-        time.sleep(30)
 
     def _get_doi(self, url):
         m = re.match(self.re_abs, url) or re.match(self.re_pdf, url)

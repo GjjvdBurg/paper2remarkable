@@ -1,5 +1,32 @@
 # Changelog
 
+## Version 0.9.2
+
+* Fix bug that broke blank pages functionality 
+  ([#98](https://github.com/GjjvdBurg/paper2remarkable/issues/98))
+* Bugfix for SemanticScholar provider
+
+## Version 0.9.1
+
+* Bugfix for ScienceDirect Provider
+
+## Version 0.9.0
+
+* Replace PyPDF2 with pikepdf (thanks to @Kazy 
+  [#94](https://github.com/GjjvdBurg/paper2remarkable/pull/94))
+* Preserve ToC when present in the file (thanks to @Kazy, 
+  [#94](https://github.com/GjjvdBurg/paper2remarkable/pull/94))
+* Bump minimum Python version to 3.6
+* Remove unnecessary delay in CiteSeerX provider
+
+## Version 0.8.9
+
+* Add provider for ACLWeb
+
+## Version 0.8.8
+
+* Bugfix for NeurIPS provider
+
 ## Version 0.8.7
 
 * Fix issues with merging configuration settings and command line flags

@@ -12,7 +12,11 @@ import shutil
 import tempfile
 import unittest
 
+from pikepdf import Pdf
+
+from paper2remarkable.exceptions import URLResolutionError
 from paper2remarkable.providers import (
+    ACL,
     ACM,
     Arxiv,
     CVF,
@@ -33,6 +37,8 @@ from paper2remarkable.providers import (
     Springer,
     TandFOnline,
 )
+from paper2remarkable.utils import download_url
+from _constants import TEST_FILE
 
 VERBOSE = False
 
@@ -155,9 +161,7 @@ class TestProviders(unittest.TestCase):
     def test_local(self):
         local_filename = "test.pdf"
         with open(local_filename, "w") as fp:
-            fp.write(
-                "%PDF-1.1\n%¥±ë\n\n1 0 obj\n  << /Type /Catalog\n     /Pages 2 0 R\n  >>\nendobj\n\n2 0 obj\n  << /Type /Pages\n     /Kids [3 0 R]\n     /Count 1\n     /MediaBox [0 0 300 144]\n  >>\nendobj\n\n3 0 obj\n  <<  /Type /Page\n      /Parent 2 0 R\n      /Resources\n       << /Font\n           << /F1\n               << /Type /Font\n                  /Subtype /Type1\n                  /BaseFont /Times-Roman\n               >>\n           >>\n       >>\n      /Contents 4 0 R\n  >>\nendobj\n\n4 0 obj\n  << /Length 55 >>\nstream\n  BT\n    /F1 18 Tf\n    0 0 Td\n    (Hello World) Tj\n  ET\nendstream\nendobj\n\nxref\n0 5\n0000000000 65535 f \n0000000018 00000 n \n0000000077 00000 n \n0000000178 00000 n \n0000000457 00000 n \ntrailer\n  <<  /Root 1 0 R\n      /Size 5\n  >>\nstartxref\n565\n%%EOF"
-            )
+            fp.write(TEST_FILE)
         prov = LocalFile(upload=False, verbose=VERBOSE)
         filename = prov.run(local_filename)
         self.assertEqual("test_.pdf", os.path.basename(filename))
@@ -326,6 +330,7 @@ class TestProviders(unittest.TestCase):
         # this is a proxy test to check that all images are included
         self.assertEqual(4, len(pdfplumber.open(filename).pages))
 
+    @unittest.skip("Skipping html_5 test")
     def test_html_5(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://www.spiegel.de/panorama/london-tausende-rechtsextreme-demonstranten-wollen-statuen-schuetzen-a-2a1ed9b9-708a-40dc-a5ff-f312e97a60ca#"
@@ -335,15 +340,26 @@ class TestProviders(unittest.TestCase):
 
     def test_semantic_scholar_1(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
-        url = "https://pdfs.semanticscholar.org/1b01/dea77e9cbf049b4ee8b68dc4d43529d06299.pdf"
-        exp = "Dong_et_al_-_TableSense_Spreadsheet_Table_Detection_With_Convolutional_Neural_Networks_2019.pdf"
-        filename = prov.run(url)
-        self.assertEqual(exp, os.path.basename(filename))
+        url = "https://www.semanticscholar.org/paper/TableSense%3A-Spreadsheet-Table-Detection-with-Neural-Dong-Liu/1b01dea77e9cbf049b4ee8b68dc4d43529d06299?p2df"
+        with self.assertRaises(URLResolutionError) as cm:
+            prov.run(url)
+        err = cm.exception
+        self.assertEqual(
+            err.reason,
+            "PDF url on SemanticScholar doesn't point to a pdf file",
+        )
 
     def test_semantic_scholar_2(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
         url = "https://www.semanticscholar.org/paper/Fast-Meta-Learning-for-Adaptive-Hierarchical-Design-Burg-Hero/90759dc4ab0ce8d3564044ef92a91080a4f3e55f"
         exp = "Burg_Hero_-_Fast_Meta-Learning_for_Adaptive_Hierarchical_Classifier_Design_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_semantic_scholar_3(self):
+        prov = SemanticScholar(upload=False, verbose=VERBOSE)
+        url = "https://www.semanticscholar.org/paper/A-historical-account-of-how-continental-drift-and-Meinhold-%C5%9Eeng%C3%B6r/e7be87319985445e3ef7addf1ebd10899b92441f"
+        exp = "Meinhold_Sengor_-_A_Historical_Account_of_How_Continental_Drift_and_Plate_Tectonics_Provided_the_Framework_for_Our_Current_Understanding_of_Palaeogeography_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
@@ -413,6 +429,47 @@ class TestProviders(unittest.TestCase):
         exp = "Kristiansen_Wulff_-_Exponential_Estimates_of_Symplectic_Slow_Manifolds_2016.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_1(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/A88-1033/"
+        exp = "Newman_-_Combinatorial_Disambiguation_1988.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_2(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/2020.acl-main.79.pdf"
+        exp = "Zhong_et_al_-_Interpreting_Twitter_User_Geolocation_2020.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_acl_3(self):
+        prov = ACL(upload=False, verbose=VERBOSE)
+        url = "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf"
+        exp = (
+            "Burness_McMullin_-_Multi-Tiered_Strictly_Local_Functions_2020.pdf"
+        )
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_local_file_copy_toc(self):
+        """Make sure the table of content is kept after processing."""
+        local_filename = "test.pdf"
+        download_url("https://arxiv.org/pdf/1711.03512.pdf", local_filename)
+        prov = LocalFile(upload=False, verbose=VERBOSE)
+        filename = prov.run(local_filename)
+        with Pdf.open(filename) as pdf:
+            with pdf.open_outline() as outline:
+                assert len(outline.root) > 0
+
+    def test_arxiv_copy_toc(self):
+        """Make sure the table of content is kept after processing when using the arXiv provider."""
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        filename = prov.run("https://arxiv.org/abs/1711.03512")
+        with Pdf.open(filename) as pdf:
+            with pdf.open_outline() as outline:
+                assert len(outline.root) > 0
 
 
 if __name__ == "__main__":

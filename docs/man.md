@@ -125,6 +125,7 @@ the work. For the sources below the program is generally flexible with regards
 to whether a URL to the PDF or to the abstract page is provided.
 
 - arXiv
+- ACL Web
 - ACM Digital Library
 - CiteSeerX
 - CVF

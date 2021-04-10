@@ -30,6 +30,7 @@ papers easier (just use the `-n` flag).
 reMarkable from any of the following sources:
 
 * [arXiv](https://arxiv.org/)
+* [ACL Web](https://www.aclweb.org/anthology/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
 * [CiteSeerX](http://citeseerx.ist.psu.edu/index)
 * [CVF](https://openaccess.thecvf.com/menu)
@@ -156,10 +157,9 @@ page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
            [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
            [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
-           [-C CONFIG]
-           input [input ...]
+           [-C CONFIG] input [input ...]
 
-Paper2reMarkable version 0.8.6
+Paper2reMarkable version 0.9.1
 
 positional arguments:
   input                 One or more URLs to a paper or paths to local PDF
@@ -325,6 +325,12 @@ After running ``source ~/.bashrc`` to activate the alias, you can then use
 License: MIT
 
 If you find a problem or want to suggest a feature, please open an issue [on 
-Github][github-url]. You're helping to make this project better for everyone!
+Github][github-url]. You're helping to make this project better for everyone! 
+
+Thanks to all the 
+[contributors](https://github.com/GjjvdBurg/paper2remarkable/graphs/contributors) 
+who've helped to support the project.
+
+[![BuyMeACoffee](https://img.shields.io/badge/%E2%98%95-buymeacoffee-ffdd00)](https://www.buymeacoffee.com/GjjvdBurg)
 
 [github-url]: https://github.com/GjjvdBurg/paper2remarkable
