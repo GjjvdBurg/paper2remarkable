@@ -32,8 +32,8 @@ class TandFOnlineInformer(Informer):
 
 class TandFOnline(Provider):
 
-    re_abs = "^https?://\w+.tandfonline.com/doi/(full|abs)/(?P<doi>\d+\.\d+/\d+\.\d+\.\d+)"
-    re_pdf = "^https?://\w+.tandfonline.com/doi/(full|pdf)/(?P<doi>\d+\.\d+/\d+\.\d+\.\d+)"
+    re_abs = "^https?://\w+.tandfonline.com/doi/(full|abs)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
+    re_pdf = "^https?://\w+.tandfonline.com/doi/(full|pdf)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
