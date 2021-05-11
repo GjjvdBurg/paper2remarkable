@@ -17,7 +17,12 @@ from paper2remarkable.utils import get_page_with_retry
 
 
 class TestHTML(unittest.TestCase):
+    @unittest.skip("Broken test (other url needed)")
     def test_experimental_fix_lazy_loading(self):
+        # 2021-05-11 NOTE: This is the only URL I know where the experimental
+        # lazy loading fix was useful. It no longer works because Readability
+        # strips out the images for this site. If anyone knows of a test case
+        # where the experimental fix makes a difference, let me know.
         url = "https://www.seriouseats.com/2015/01/tea-for-everyone.html"
         prov = HTML(upload=False, experimental=True)
         page = get_page_with_retry(url, return_text=True)
