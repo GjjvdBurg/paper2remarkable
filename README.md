@@ -5,7 +5,7 @@
 [![Downloads](https://pepy.tech/badge/paper2remarkable)](https://pepy.tech/project/paper2remarkable)
 
 <p align="center">
-	<img src="paper2remarkable.png" height="400">
+  <img src=".github/illustration.png" height="300">
 </p>
 
 ``paper2remarkable`` is a command line program for quickly and easily 
