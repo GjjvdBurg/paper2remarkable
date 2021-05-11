@@ -297,6 +297,13 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    def test_tandfonline_4(self):
+        prov = TandFOnline(upload=False, verbose=VERBOSE)
+        url = "https://www.tandfonline.com/doi/full/10.1080/0015198X.2019.1675421"
+        exp = "Liberman_et_al_-_The_Tax_Benefits_of_Separating_Alpha_From_Beta_2019.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
     def test_html_1(self):
         prov = HTML(upload=False, verbose=VERBOSE)
         url = "https://hbr.org/2019/11/getting-your-team-to-do-more-than-meet-deadlines"
