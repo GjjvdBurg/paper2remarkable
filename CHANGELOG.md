@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.9.3
+
+* Bugfix for Taylor & Francis provider (thanks to @gwtaylor 
+  [#107](https://github.com/GjjvdBurg/paper2remarkable/pull/107))
+* Add illustration image to readme (thanks to @ReinierKoops 
+  [#106](https://github.com/GjjvdBurg/paper2remarkable/pull/106))
+
 ## Version 0.9.2
 
 * Fix bug that broke blank pages functionality 
