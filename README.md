@@ -4,6 +4,10 @@
 [![Build status](https://github.com/GjjvdBurg/paper2remarkable/workflows/build/badge.svg)](https://github.com/GjjvdBurg/paper2remarkable/actions)
 [![Downloads](https://pepy.tech/badge/paper2remarkable)](https://pepy.tech/project/paper2remarkable)
 
+<p align="center">
+  <img src=".github/illustration.png" height="300">
+</p>
+
 ``paper2remarkable`` is a command line program for quickly and easily 
 transferring an academic paper to your [reMarkable](https://remarkable.com/):
 
