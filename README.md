@@ -66,8 +66,7 @@ let me know!
 3. Crops the pdf to remove unnecessary borders
 4. Shrinks the pdf file to reduce the filesize
 5. Generates a nice filename based on author/title/year of the paper
-6. Uploads it to your reMarkable using 
-   [rMapi](https://github.com/juruen/rmapi).
+6. Uploads it to your reMarkable
 
 Optionally, you can:
 
@@ -107,16 +106,10 @@ The script requires the following external programs to be available:
   [pdftk-java](https://gitlab.com/pdftk-java/pdftk), whichever your package 
   manager provides.
 - [GhostScript](https://www.ghostscript.com/)
-- [rMAPI](https://github.com/juruen/rmapi)
 
 Specifically:
 
-1. First install [rMAPI](https://github.com/juruen/rmapi), using
-   ```
-   $ go get -u github.com/juruen/rmapi
-   ```
-
-2. Then install system dependencies:
+1. Install system dependencies:
    - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
    - **Ubuntu:** ``apt-get install pdftk ghostscript poppler-utils``. Replace 
      ``pdftk`` with ``qpdf`` if your distribution doesn't package ``pdftk``.
@@ -129,7 +122,7 @@ Specifically:
      instructions, so we welcome clarifications where needed. The Docker 
      instructions below may be more convenient on Windows.
 
-3. Finally, install ``paper2remarkable``:
+2. Next, install ``paper2remarkable``:
    ```
    $ pip install paper2remarkable
    ```
@@ -145,11 +138,10 @@ Specifically:
   [Readability.js](https://github.com/mozilla/readability) for HTML articles. 
   This is known to improve the output of certain web articles.
 
-If any of the dependencies (such as rmapi or ghostscript) are not available on 
-the ``PATH`` variable, you can supply them with the relevant options to the 
-script (for instance ``p2r --rmapi /path/to/rmapi``). If you run into trouble 
-with the installation, please let me know by opening an issue [on 
-Github][github-url].
+If any of the dependencies (such as ghostscript) are not available on the 
+``PATH`` variable, you can supply them with the relevant options to the script 
+(for instance ``p2r --gs /path/to/gs``). If you run into trouble with the 
+installation, please let me know by opening an issue [on Github][github-url].
 
 ## Usage
 
@@ -157,11 +149,16 @@ The full help of the script is as follows. Hopefully the various command line
 flags are self-explanatory, but if you'd like more information see the [man 
 page](docs/man.md) (``man p2r``) or open an issue [on GitHub][github-url].
 
+The first time you use the `p2r` command to upload to the reMarkable, you will 
+be prompted to authenticate your computer with a one-time code. This will 
+create the ``~/.rmapi`` file with authentication details. Alternatively, you 
+can run the ``p2r-auth`` program to do the authentication only.
+
 ```
 usage: p2r [-h] [-b] [-c] [-d] [-e] [-n] [-p REMARKABLE_DIR] [-r] [-k] [-v]
            [-V] [-f FILENAME] [--gs GS] [--pdftoppm PDFTOPPM] [--pdftk PDFTK]
-           [--qpdf QPDF] [--rmapi RMAPI] [--css CSS] [--font-urls FONT_URLS]
-           [-C CONFIG] input [input ...]
+           [--qpdf QPDF] [--css CSS] [--font-urls FONT_URLS] [-C CONFIG]
+           input [input ...]
 
 Paper2reMarkable version 0.9.1
 
@@ -190,7 +187,6 @@ optional arguments:
   --pdftoppm PDFTOPPM   path to pdftoppm executable (default: pdftoppm)
   --pdftk PDFTK         path to pdftk executable (default: pdftk)
   --qpdf QPDF           path to qpdf executable (default: qpdf)
-  --rmapi RMAPI         path to rmapi executable (default: rmapi)
   --css CSS             path to custom CSS file for HTML output
   --font-urls FONT_URLS
                         path to custom font urls file for HTML output
@@ -265,32 +261,24 @@ docker build -t p2r .
 
 ### Authorization
 
-``paper2remarkable`` uses [rMapi](https://github.com/juruen/rmapi) to sync 
+``paper2remarkable`` uses [rmapy](https://github.com/subutux/rmapy) to sync 
 documents to the reMarkable. The first time you run ``paper2remarkable`` you 
 will have to authenticate rMapi using a one-time code provided by reMarkable. 
-By default, rMapi uses the ``${HOME}/.rmapi`` file as a configuration file to 
-store the credentials, and so this is the location we will use in the commands 
-below. If you'd like to use a different location for the configuration (for 
-instance, ``${HOME}/.config/rmapi/rmapi.conf``), make sure to change the 
-commands below accordingly.
+By default, ``rmapy`` uses the ``${HOME}/.rmapi`` file as a configuration file 
+to store the credentials, and so this is the location we will use in the 
+commands below.
 
 If you already have a `~/.rmapi` file with the authentication details, you can 
-skip this section. Otherwise we'll create it and run ``rmapi`` in the docker 
-container for authentication:
+skip this section. Otherwise we'll create it and run ``p2r-auth`` in the 
+docker container for authentication:
 
 ```bash
 $ touch ${HOME}/.rmapi
-$ docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=rmapi p2r version
+$ docker run --rm -i -t -v "${HOME}/.rmapi:/home/user/.rmapi:rw" --entrypoint=p2r-auth p2r version
 ```
 
 This command will print a link where you can obtain a one-time code to 
-authenticate rMapi and afterwards print the rMapi version (the version number 
-may be different):
-
-```bash
-ReMarkable Cloud API Shell
-rmapi version: 0.0.12
-```
+authenticate rmapy.
 
 ### Usage
 

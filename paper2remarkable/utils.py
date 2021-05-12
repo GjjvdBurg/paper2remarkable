@@ -18,7 +18,7 @@ import unidecode
 from pikepdf import Pdf, PdfError
 
 from .log import Logger
-from .exceptions import FileTypeError, RemarkableError, NoPDFToolError
+from .exceptions import FileTypeError, NoPDFToolError
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -136,38 +136,6 @@ def follow_redirects(url):
         logger.warning("Max redirects reached. There may be a problem.")
     jar = jar or req.cookies
     return url, jar
-
-
-def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
-    logger.info("Starting upload to reMarkable")
-
-    # Create the reMarkable dir if it doesn't exist
-    remarkable_dir = remarkable_dir.rstrip("/")
-    if remarkable_dir:
-        parts = remarkable_dir.split("/")
-        rmdir = ""
-        while parts:
-            rmdir += "/" + parts.pop(0)
-            status = subprocess.call(
-                [rmapi_path, "mkdir", rmdir],
-                stdout=subprocess.DEVNULL,
-            )
-            if not status == 0:
-                raise RemarkableError(
-                    "Creating directory %s on reMarkable failed"
-                    % remarkable_dir
-                )
-
-    # Upload the file
-    status = subprocess.call(
-        [rmapi_path, "put", filepath, remarkable_dir + "/"],
-        stdout=subprocess.DEVNULL,
-    )
-    if not status == 0:
-        raise RemarkableError(
-            "Uploading file %s to reMarkable failed" % filepath
-        )
-    logger.info("Upload successful.")
 
 
 def is_url(string):

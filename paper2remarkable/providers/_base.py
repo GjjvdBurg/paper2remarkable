@@ -18,12 +18,12 @@ import time
 from ..exceptions import _CalledProcessError
 from ..log import Logger
 from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
+from ..remarkable import upload_to_remarkable
 from ..utils import (
     assert_file_is_pdf,
     check_pdftool,
     download_url,
     follow_redirects,
-    upload_to_remarkable,
 )
 from ._info import Informer
 
@@ -42,7 +42,6 @@ class Provider(metaclass=abc.ABCMeta):
         crop="left",
         blank=False,
         remarkable_dir="/",
-        rmapi_path="rmapi",
         pdftoppm_path="pdftoppm",
         pdftk_path="pdftk",
         qpdf_path="qpdf",
@@ -55,7 +54,6 @@ class Provider(metaclass=abc.ABCMeta):
         self.debug = debug
         self.experimental = experimental
         self.remarkable_dir = remarkable_dir
-        self.rmapi_path = rmapi_path
         self.pdftoppm_path = pdftoppm_path
         self.pdftk_path = pdftk_path
         self.qpdf_path = qpdf_path
@@ -231,7 +229,6 @@ class Provider(metaclass=abc.ABCMeta):
                 return upload_to_remarkable(
                     clean_filename,
                     remarkable_dir=self.remarkable_dir,
-                    rmapi_path=self.rmapi_path,
                 )
 
             target_path = os.path.join(self.initial_dir, clean_filename)

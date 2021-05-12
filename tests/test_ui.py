@@ -246,7 +246,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["verbose"], False)
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
-        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf"]:
             with self.subTest(s):
                 test_sys(s)
 
@@ -270,7 +270,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["verbose"], True)
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
-        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf"]:
             with self.subTest(s):
                 test_sys(s)
 
@@ -294,7 +294,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["verbose"], True)
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
-        for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
+        for s in ["gs", "pdftoppm", "pdftk", "qpdf"]:
             with self.subTest(s):
                 test_sys(s)
 
@@ -323,7 +323,7 @@ class TestUI(unittest.TestCase):
 
         self.assertEqual(opts["system"]["gs"], gs_path)
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
-        for s in ["pdftoppm", "pdftk", "qpdf", "rmapi"]:
+        for s in ["pdftoppm", "pdftk", "qpdf"]:
             with self.subTest(s):
                 test_sys(s)
 
@@ -358,7 +358,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["system"]["gs"], gs_path)
         self.assertEqual(opts["system"]["qpdf"], qpdf_path)
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
-        for s in ["pdftoppm", "pdftk", "rmapi"]:
+        for s in ["pdftoppm", "pdftk"]:
             with self.subTest(s):
                 test_sys(s)
 
