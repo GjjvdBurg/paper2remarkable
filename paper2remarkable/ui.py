@@ -280,6 +280,31 @@ def set_excepthook(debug):
     sys.excepthook = exception_handler
 
 
+def runner(inputs, filenames, options, remarkable_dir="/", debug=False):
+    if not len(inputs) == len(filenames):
+        raise ValueError("Number of inputs and filenames must be the same")
+    for cli_input, filename in zip(inputs, filenames):
+        provider, new_input, cookiejar = choose_provider(cli_input)
+        prov = provider(
+            verbose=options["core"]["verbose"],
+            upload=options["core"]["upload"],
+            debug=debug,
+            experimental=options["core"]["experimental"],
+            crop=options["core"]["crop"],
+            blank=options["core"]["blank"],
+            remarkable_dir=remarkable_dir,
+            rmapi_path=options["system"]["rmapi"],
+            pdftoppm_path=options["system"]["pdftoppm"],
+            pdftk_path=options["system"]["pdftk"],
+            qpdf_path=options["system"]["qpdf"],
+            gs_path=options["system"]["gs"],
+            css=options["html"]["css"],
+            font_urls=options["html"]["font_urls"],
+            cookiejar=cookiejar,
+        )
+        prov.run(new_input, filename=filename)
+
+
 def main():
     args = parse_args()
     set_excepthook(args.debug)
@@ -305,23 +330,4 @@ def main():
         [None] * len(args.input) if not args.filename else args.filename
     )
 
-    for cli_input, filename in zip(args.input, filenames):
-        provider, new_input, cookiejar = choose_provider(cli_input)
-        prov = provider(
-            verbose=options["core"]["verbose"],
-            upload=options["core"]["upload"],
-            debug=args.debug,
-            experimental=options["core"]["experimental"],
-            crop=options["core"]["crop"],
-            blank=options["core"]["blank"],
-            remarkable_dir=args.remarkable_dir,
-            rmapi_path=options["system"]["rmapi"],
-            pdftoppm_path=options["system"]["pdftoppm"],
-            pdftk_path=options["system"]["pdftk"],
-            qpdf_path=options["system"]["qpdf"],
-            gs_path=options["system"]["gs"],
-            css=options["html"]["css"],
-            font_urls=options["html"]["font_urls"],
-            cookiejar=cookiejar,
-        )
-        prov.run(new_input, filename=filename)
+    runner(args.input, filenames, options, debug=args.debug)

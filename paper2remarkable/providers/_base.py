@@ -20,6 +20,7 @@ from ..log import Logger
 from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
 from ..utils import (
     assert_file_is_pdf,
+    chdir,
     check_pdftool,
     download_url,
     follow_redirects,
@@ -211,33 +212,33 @@ class Provider(metaclass=abc.ABCMeta):
 
         self.initial_dir = os.getcwd()
         with tempfile.TemporaryDirectory(prefix="p2r_") as working_dir:
-            os.chdir(working_dir)
-            self.retrieve_pdf(pdf_url, tmp_filename)
+            with chdir(working_dir):
+                self.retrieve_pdf(pdf_url, tmp_filename)
 
-            assert_file_is_pdf(tmp_filename)
+                assert_file_is_pdf(tmp_filename)
 
-            intermediate_fname = tmp_filename
-            for opname, op in self.operations:
-                intermediate_fname = op(intermediate_fname)
+                intermediate_fname = tmp_filename
+                for opname, op in self.operations:
+                    intermediate_fname = op(intermediate_fname)
 
-            shutil.copy(intermediate_fname, clean_filename)
+                shutil.copy(intermediate_fname, clean_filename)
 
-            if self.debug:
-                print("Paused in debug mode in dir: %s" % working_dir)
-                print("Press enter to exit.")
-                return input()
+                if self.debug:
+                    print("Paused in debug mode in dir: %s" % working_dir)
+                    print("Press enter to exit.")
+                    return input()
 
-            if self.upload:
-                return upload_to_remarkable(
-                    clean_filename,
-                    remarkable_dir=self.remarkable_dir,
-                    rmapi_path=self.rmapi_path,
-                )
+                if self.upload:
+                    return upload_to_remarkable(
+                        clean_filename,
+                        remarkable_dir=self.remarkable_dir,
+                        rmapi_path=self.rmapi_path,
+                    )
 
-            target_path = os.path.join(self.initial_dir, clean_filename)
-            while os.path.exists(target_path):
-                base = os.path.splitext(target_path)[0]
-                target_path = base + "_.pdf"
-            shutil.move(clean_filename, target_path)
-        os.chdir(self.initial_dir)
+                target_path = os.path.join(self.initial_dir, clean_filename)
+                while os.path.exists(target_path):
+                    base = os.path.splitext(target_path)[0]
+                    target_path = base + "_.pdf"
+                shutil.move(clean_filename, target_path)
+
         return target_path
