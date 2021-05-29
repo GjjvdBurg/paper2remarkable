@@ -8,6 +8,7 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
+import os
 import regex
 import requests
 import string
@@ -203,3 +204,18 @@ def check_pdftool(pdftk_path, qpdf_path):
     if status == 0:
         return "qpdf"
     raise NoPDFToolError
+
+
+class chdir:
+    """Change directory in context and return to original on exit or failure"""
+
+    def __init__(self, target: str):
+        self._target = target
+        self._original_dir = None
+
+    def __enter__(self):
+        self._original_dir = os.getcwd()
+        os.chdir(self._target)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        os.chdir(self._original_dir)

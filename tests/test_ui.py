@@ -38,7 +38,9 @@ from paper2remarkable.ui import (
     build_argument_parser,
     choose_provider,
     merge_options,
+    runner,
 )
+from paper2remarkable.utils import chdir
 
 
 class TestUI(unittest.TestCase):
@@ -364,6 +366,94 @@ class TestUI(unittest.TestCase):
 
         self.assertEquals(opts["html"]["css"], "Hello, World!\n")
         self.assertEquals(opts["html"]["font_urls"], ["url_1", "url_2"])
+
+    def test_runner_1(self):
+        inputs = [
+            "https://arxiv.org/abs/1811.11242v1",
+        ]
+        filenames = [None]
+        options = {
+            "core": {
+                "blank": False,
+                "verbose": False,
+                "upload": False,
+                "experimental": False,
+                "crop": "none",
+            },
+            "system": {
+                "gs": "gs",
+                "pdftoppm": "pdftoppm",
+                "pdftk": "pdftk",
+                "qpdf": "qpdf",
+                "rmapi": "rmapi",
+            },
+            "html": {"css": None, "font_urls": None},
+        }
+
+        test_dir = tempfile.mkdtemp()
+        with chdir(test_dir):
+            runner(inputs, filenames, options)
+
+        pth = os.path.join(
+            test_dir,
+            "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf",
+        )
+        self.assertTrue(os.path.exists(pth))
+
+    def test_runner_2(self):
+        test_upload = False  # Enable to test uploading to reMarkable
+
+        if test_upload:
+            upload = True
+            rm_dir = "/p2r_test"
+        else:
+            upload = False
+            rm_dir = "/"
+
+        inputs = [
+            "https://arxiv.org/abs/1811.11242v1",
+            "https://www.jmlr.org/papers/volume17/14-526/14-526.pdf",
+        ]
+        filenames = [None, None]
+        options = {
+            "core": {
+                "blank": False,
+                "verbose": False,
+                "upload": upload,
+                "experimental": False,
+                "crop": "none",
+            },
+            "system": {
+                "gs": "gs",
+                "pdftoppm": "pdftoppm",
+                "pdftk": "pdftk",
+                "qpdf": "qpdf",
+                "rmapi": "rmapi",
+            },
+            "html": {"css": None, "font_urls": None},
+        }
+
+        test_dir = tempfile.mkdtemp()
+        with chdir(test_dir):
+            runner(inputs, filenames, options, remarkable_dir=rm_dir)
+
+        pth = os.path.join(
+            test_dir,
+            "Burg_Nazabal_Sutton_-_Wrangling_Messy_CSV_Files_by_Detecting_Row_and_Type_Patterns_2018.pdf",
+        )
+        if test_upload:
+            self.assertFalse(os.path.exists(pth))
+        else:
+            self.assertTrue(os.path.exists(pth))
+
+        pth = os.path.join(
+            test_dir,
+            "Burg_Groenen_-_GenSVM_a_Generalized_Multiclass_Support_Vector_Machine_2016.pdf",
+        )
+        if test_upload:
+            self.assertFalse(os.path.exists(pth))
+        else:
+            self.assertTrue(os.path.exists(pth))
 
 
 if __name__ == "__main__":
