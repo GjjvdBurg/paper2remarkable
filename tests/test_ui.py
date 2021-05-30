@@ -22,6 +22,7 @@ from paper2remarkable.providers import (
     Arxiv,
     CiteSeerX,
     CVF,
+    ECCC,
     HTML,
     JMLR,
     LocalFile,
@@ -202,6 +203,11 @@ class TestUI(unittest.TestCase):
                 ACL,
                 "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
                 "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
+            ),
+            (
+                ECCC,
+                "https://eccc.weizmann.ac.il/report/2019/006/",
+                "https://eccc.weizmann.ac.il/report/2019/006/",
             ),
         ]
         for exp_prov, url, exp_url in tests:

@@ -21,6 +21,7 @@ from paper2remarkable.providers import (
     Arxiv,
     CVF,
     CiteSeerX,
+    ECCC,
     HTML,
     JMLR,
     LocalFile,
@@ -477,6 +478,29 @@ class TestProviders(unittest.TestCase):
         with Pdf.open(filename) as pdf:
             with pdf.open_outline() as outline:
                 assert len(outline.root) > 0
+
+    def test_eccc_1(self):
+        prov = ECCC(upload=False, verbose=VERBOSE)
+        url = "https://eccc.weizmann.ac.il/report/2021/063/"
+        exp = "Chou_et_al_-_Approximability_of_All_Finite_CSPs_in_the_Dynamic_Streaming_Setting_2021.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_eccc_2(self):
+        prov = ECCC(upload=False, verbose=VERBOSE)
+        url = "https://eccc.weizmann.ac.il/report/2007/003/"
+        exp = "Cai_Lu_-_Bases_Collapse_in_Holographic_Algorithms_2007.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_eccc_3(self):
+        prov = ECCC(upload=False, verbose=VERBOSE)
+        url = "https://eccc.weizmann.ac.il/report/1998/052/download"
+        exp = (
+            "Hemkemeier_Vallentin_-_On_the_Decomposition_of_Lattices_1998.pdf"
+        )
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
 
 
 if __name__ == "__main__":
