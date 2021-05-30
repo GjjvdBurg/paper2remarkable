@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.9.4
+
+* Bugfix for uploading multiple files 
+  ([#110](https://github.com/GjjvdBurg/paper2remarkable/issues/110))
+* Add support for IACR ePrints 
+  ([#113](https://github.com/GjjvdBurg/paper2remarkable/pull/113))
+* Add support for ECCC reports 
+  ([114](https://github.com/GjjvdBurg/paper2remarkable/pull/114))
+
 ## Version 0.9.3
 
 * Bugfix for Taylor & Francis provider (thanks to @gwtaylor 
