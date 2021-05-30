@@ -24,6 +24,7 @@ from paper2remarkable.providers import (
     CVF,
     ECCC,
     HTML,
+    IACR,
     JMLR,
     LocalFile,
     Nature,
@@ -113,6 +114,16 @@ class TestUI(unittest.TestCase):
                 PdfUrl,
                 "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
                 "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
+            ),
+            (
+                IACR,
+                "https://eprint.iacr.org/1999/011",
+                "https://eprint.iacr.org/1999/011",
+            ),
+            (
+                IACR,
+                "https://eprint.iacr.org/2021/685.pdf",
+                "https://eprint.iacr.org/2021/685.pdf",
             ),
             (
                 JMLR,

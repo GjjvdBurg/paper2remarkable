@@ -7,6 +7,7 @@ from .citeseerx import CiteSeerX
 from .cvf import CVF
 from .eccc import ECCC
 from .html import HTML
+from .iacr import IACR
 from .jmlr import JMLR
 from .local import LocalFile
 from .nature import Nature
@@ -30,6 +31,7 @@ providers = [
     CiteSeerX,
     CVF,
     ECCC,
+    IACR,
     JMLR,
     Nature,
     NBER,

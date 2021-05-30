@@ -23,6 +23,7 @@ from paper2remarkable.providers import (
     CiteSeerX,
     ECCC,
     HTML,
+    IACR,
     JMLR,
     LocalFile,
     Nature,
@@ -499,6 +500,27 @@ class TestProviders(unittest.TestCase):
         exp = (
             "Hemkemeier_Vallentin_-_On_the_Decomposition_of_Lattices_1998.pdf"
         )
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_iacr_1(self):
+        prov = IACR(upload=False, verbose=VERBOSE)
+        url = "https://eprint.iacr.org/2021/489"
+        exp = "Xu_et_al_-_ROSE_Robust_Searchable_Encryption_With_Forward_and_Backward_Security_and_Practical_Performance_2021.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_iacr_2(self):
+        prov = IACR(upload=False, verbose=VERBOSE)
+        url = "https://eprint.iacr.org/2007/474.pdf"
+        exp = "Cochran_-_Notes_on_the_Wang_Et_Al._2_63_SHA-1_Differential_Path_2007.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_iacr_3(self):
+        prov = IACR(upload=False, verbose=VERBOSE)
+        url = "http://eprint.iacr.org/1996/008"
+        exp = "Naor_Wool_-_Access_Control_and_Signatures_via_Quorum_Secret_Sharing_1996.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
