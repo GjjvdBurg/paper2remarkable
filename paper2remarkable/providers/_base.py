@@ -142,13 +142,14 @@ class Provider(metaclass=abc.ABCMeta):
                 "%s failed to compress the PDF file." % self.pdftool
             )
 
-    def rewrite_pdf(self, in_pdf, out_pdf=None):
-        """Re-write the pdf using Ghostscript
+    def rewrite_pdf(self, in_file, out_pdf=None):
+        """Re-write the ps or pdf using Ghostscript
 
-        This helps avoid issues in dearxiv due to nested pdfs.
+        This helps avoid issues in dearxiv due to nested pdfs and enables
+        support for postscript files.
         """
         if out_pdf is None:
-            out_pdf = os.path.splitext(in_pdf)[0] + "-rewrite.pdf"
+            out_pdf = os.path.splitext(in_file)[0] + "-rewrite.pdf"
 
         status = subprocess.call(
             [
@@ -157,7 +158,7 @@ class Provider(metaclass=abc.ABCMeta):
                 "-dQUIET",
                 "-o",
                 out_pdf,
-                in_pdf,
+                in_file,
             ]
         )
         if not status == 0:
