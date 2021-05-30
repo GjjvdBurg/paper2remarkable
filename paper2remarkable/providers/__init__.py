@@ -6,6 +6,7 @@ from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
 from .cvf import CVF
 from .html import HTML
+from .iacr import IACR
 from .jmlr import JMLR
 from .local import LocalFile
 from .nature import Nature
@@ -28,6 +29,7 @@ providers = [
     Arxiv,
     CiteSeerX,
     CVF,
+    IACR,
     JMLR,
     Nature,
     NBER,

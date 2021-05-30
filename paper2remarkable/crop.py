@@ -180,7 +180,7 @@ class Cropper(object):
             filename,
         ]
 
-        im = subprocess.check_output(cmd)
+        im = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
         im = io.BytesIO(im)
 
         id_ = im.readline().rstrip(b"\n")
