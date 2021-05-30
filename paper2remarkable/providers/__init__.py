@@ -5,6 +5,7 @@ from .acm import ACM
 from .arxiv import Arxiv
 from .citeseerx import CiteSeerX
 from .cvf import CVF
+from .eccc import ECCC
 from .html import HTML
 from .iacr import IACR
 from .jmlr import JMLR
@@ -29,6 +30,7 @@ providers = [
     Arxiv,
     CiteSeerX,
     CVF,
+    ECCC,
     IACR,
     JMLR,
     Nature,
