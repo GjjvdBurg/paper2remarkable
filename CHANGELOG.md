@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.9.5
+
+* Bugfix for ACL provider
+* Bugfix for Semantic Scholar test case
+
 ## Version 0.9.4
 
 * Bugfix for uploading multiple files 
