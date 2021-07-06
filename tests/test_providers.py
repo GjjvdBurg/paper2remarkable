@@ -349,7 +349,7 @@ class TestProviders(unittest.TestCase):
 
     def test_semantic_scholar_1(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
-        url = "https://www.semanticscholar.org/paper/TableSense%3A-Spreadsheet-Table-Detection-with-Neural-Dong-Liu/1b01dea77e9cbf049b4ee8b68dc4d43529d06299?p2df"
+        url = "https://www.semanticscholar.org/paper/Logo-detection-using-weakly-supervised-saliency-map-Kumar-Keserwani/d468069b82fec0c4568478e58826fc372eb24acd"
         with self.assertRaises(URLResolutionError) as cm:
             prov.run(url)
         err = cm.exception
