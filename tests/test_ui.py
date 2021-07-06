@@ -213,7 +213,7 @@ class TestUI(unittest.TestCase):
             (
                 ACL,
                 "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
-                "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf",
+                "https://aclanthology.org/2020.sigmorphon-1.29v2.pdf",
             ),
             (
                 ECCC,
