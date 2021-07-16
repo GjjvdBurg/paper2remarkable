@@ -139,6 +139,13 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
+    def test_acm_3(self):
+        prov = ACM(upload=False, verbose=VERBOSE)
+        url = "https://dl.acm.org/doi/pdf/10.1145/3442188.3445922"
+        exp_filename = "Bender_et_al_-_On_the_Dangers_of_Stochastic_Parrots_Can_Language_Models_Be_Too_Big_2021.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
     def test_openreview(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
