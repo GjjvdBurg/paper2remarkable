@@ -20,7 +20,7 @@ class NatureInformer(Informer):
     meta_date_key = "citation_online_date"
 
     def _format_authors(self, soup_authors):
-        return super()._format_authors(soup_authors, sep=" ", idx=-1)
+        return super()._format_authors(soup_authors, sep=",", idx=0)
 
 
 class Nature(Provider):
