@@ -169,8 +169,6 @@ class Provider(metaclass=abc.ABCMeta):
 
     def uncompress_pdf(self, in_pdf, out_pdf):
         """ Uncompress a pdf file """
-
-        logger.info("Uncompressing with {self.pdftool} ...")
         if self.pdftool == "pdftk":
             status = subprocess.call(
                 [
