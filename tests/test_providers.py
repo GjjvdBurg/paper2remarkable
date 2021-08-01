@@ -10,6 +10,7 @@ import os
 import pdfplumber
 import shutil
 import tempfile
+import time
 import unittest
 
 from pikepdf import Pdf
@@ -113,6 +114,17 @@ class TestProviders(unittest.TestCase):
         exp_filename = "Salimans_et_al_-_PixelCNN_Improving_the_PixelCNN_With_Discretized_Logistic_Mixture_Likelihood_and_Other_Modifications_2017.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_arxiv_7(self):
+        prov = Arxiv(upload=False, verbose=VERBOSE)
+        url = "https://arxiv.org/abs/1808.10452"
+        exp_filename = "Read_et_al_-_The_Far-Infrared_Radio_Correlation_at_Low_Radio_Frequency_With_LOFAR_H-ATLAS_2018.pdf"
+        t0 = time.time()
+        filename = prov.run(url)
+        duration = time.time() - t0
+        self.assertEqual(exp_filename, os.path.basename(filename))
+        # Proxy test to make sure this file doesn't take too long (GH-#111)
+        self.assertLessEqual(duration, 5 * 60)
 
     def test_pmc(self):
         prov = PubMed(upload=False, verbose=VERBOSE)
