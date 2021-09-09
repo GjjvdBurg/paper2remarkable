@@ -108,25 +108,26 @@ class ScienceDirect(Provider):
         page = get_page_with_retry(tmp_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
         script = soup.find_all("script")[5]
+        script_text = script.decode()
 
         # Extract the embedded information from the script
         phrase_1 = 'i.subtle.digest("SHA-256",e("'
         try:
-            rem = script.text[script.text.index(phrase_1) + len(phrase_1) :]
+            rem = script_text[script_text.index(phrase_1) + len(phrase_1) :]
             token = rem[: rem.index('"')]
         except ValueError:
             raise URLResolutionError("ScienceDirect", url)
 
         phrase_2 = 'i.subtle.encrypt(c,t,e("'
         try:
-            rem = script.text[script.text.index(phrase_2) + len(phrase_2) :]
+            rem = script_text[script_text.index(phrase_2) + len(phrase_2) :]
             data = rem[: rem.index('"')]
         except ValueError:
             raise URLResolutionError("ScienceDirect", url)
 
         phrase_3 = 'window.location="'
         try:
-            rem = script.text[script.text.index(phrase_3) + len(phrase_3) :]
+            rem = script_text[script_text.index(phrase_3) + len(phrase_3) :]
             location = rem[: rem.index('",r()')]
         except ValueError:
             raise URLResolutionError("ScienceDirect", url)

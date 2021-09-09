@@ -49,7 +49,7 @@ pip install pre-commit
 
 echo -e "Install package"
 
-pip install -e .[test]
+pip install --upgrade --upgrade-strategy eager -e .[test]
 
 echo -e "Run pre-commit"
 
