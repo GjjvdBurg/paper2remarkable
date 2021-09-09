@@ -47,7 +47,7 @@ class NeurIPS(Provider):
         self.informer = NeurIPSInformer()
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract url from a OpenReview url """
+        """Get the pdf and abstract url from a OpenReview url"""
         if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = url + ".pdf"

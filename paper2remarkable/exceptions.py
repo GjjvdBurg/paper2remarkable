@@ -90,7 +90,7 @@ class RemarkableError(Error):
 
 
 class _CalledProcessError(Error):
-    """Exception raised when subprocesses fail.  """
+    """Exception raised when subprocesses fail."""
 
     def __init__(self, message):
         self.message = message
@@ -118,7 +118,7 @@ class NoPDFToolError(Error):
 
 
 class UnidentifiedSourceError(Error):
-    """Exception raised when the input is neither a local file nor a url """
+    """Exception raised when the input is neither a local file nor a url"""
 
     def __str__(self):
         msg = (
@@ -130,7 +130,7 @@ class UnidentifiedSourceError(Error):
 
 
 class InvalidURLError(Error):
-    """Exception raised when no provider can handle a url source """
+    """Exception raised when no provider can handle a url source"""
 
     def __str__(self):
         msg = (

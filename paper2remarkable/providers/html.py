@@ -97,7 +97,7 @@ class ImgProcessor(markdown.treeprocessors.Treeprocessor):
         super().__init__(*args, **kwargs)
 
     def run(self, root):
-        """ Ensure all img src urls are absolute """
+        """Ensure all img src urls are absolute"""
         for img in root.iter("img"):
             img.attrib["src"] = urllib.parse.urljoin(
                 self._base_url, img.attrib["src"]

@@ -41,7 +41,7 @@ class PubMed(Provider):
         self.informer = PubMedInformer()
 
     def get_abs_pdf_urls(self, url):
-        """Get the pdf and html url from a given PMC url """
+        """Get the pdf and html url from a given PMC url"""
         if re.match(self.re_pdf, url):
             idx = url.index("pdf")
             abs_url = url[: idx - 1]

@@ -63,7 +63,7 @@ def assert_file_is_pdf(filename):
 
 
 def download_url(url, filename, cookiejar=None):
-    """Download the content of an url and save it to a filename """
+    """Download the content of an url and save it to a filename"""
     logger.info("Downloading file at url: %s" % url)
     content = get_page_with_retry(url, cookiejar=cookiejar)
     with open(filename, "wb") as fid:

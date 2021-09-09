@@ -44,7 +44,7 @@ class Arxiv(Provider):
         self.operations.insert(0, ("dearxiv", self.dearxiv))
 
     def get_abs_pdf_urls(self, url):
-        """Get the pdf and abs url from any given arXiv url """
+        """Get the pdf and abs url from any given arXiv url"""
         if "?" in url:
             url = url[: url.index("?")]
         if re.match(self.re_abs_1, url) or re.match(self.re_abs_2, url):
@@ -58,7 +58,7 @@ class Arxiv(Provider):
         return abs_url, pdf_url
 
     def validate(src):
-        """Check if the url is to an arXiv page. """
+        """Check if the url is to an arXiv page."""
         return (
             re.match(Arxiv.re_abs_1, src)
             or re.match(Arxiv.re_pdf_1, src)

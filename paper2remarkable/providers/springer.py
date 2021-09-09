@@ -63,7 +63,7 @@ class Springer(Provider):
         raise URLResolutionError("Springer", pdf_url)
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract urls from a Springer url """
+        """Get the pdf and abstract urls from a Springer url"""
         if re.match(self.re_abs_1, url):
             abs_url = url
             pdf_url = url.replace("article", "content/pdf")

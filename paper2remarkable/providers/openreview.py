@@ -65,7 +65,7 @@ class OpenReview(Provider):
         self.informer = OpenReviewInformer()
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract url from a OpenReview url """
+        """Get the pdf and abstract url from a OpenReview url"""
         if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = url.replace("forum", "pdf")
@@ -77,7 +77,7 @@ class OpenReview(Provider):
         return abs_url, pdf_url
 
     def validate(src):
-        """ Check if the url is a valid OpenReview url. """
+        """Check if the url is a valid OpenReview url."""
         return re.match(OpenReview.re_abs, src) or re.match(
             OpenReview.re_pdf, src
         )

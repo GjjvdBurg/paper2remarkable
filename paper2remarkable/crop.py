@@ -111,7 +111,7 @@ class Cropper(object):
         )
 
     def export_page(self, page_idx):
-        """Helper function that exports a single page given by index """
+        """Helper function that exports a single page given by index"""
         page = self.reader.pages[page_idx]
 
         writer = Pdf.new()
@@ -127,7 +127,7 @@ class Cropper(object):
         return tmpfname
 
     def process_page(self, page_idx, bbox_func, *args, **kwargs):
-        """Process a single page and add it to the writer """
+        """Process a single page and add it to the writer"""
         tmpfname = self.export_page(page_idx)
         bbox = bbox_func(tmpfname, *args, **kwargs)
         self.reader.pages[page_idx].CropBox = bbox
@@ -171,7 +171,7 @@ class Cropper(object):
         return left, right, top, bottom, W, H
 
     def get_raw_bbox_pdftoppm(self, filename, resolution=72):
-        """Get the basic bounding box using pdftoppm """
+        """Get the basic bounding box using pdftoppm"""
         cmd = [
             self.pdftoppm_path,
             "-r",

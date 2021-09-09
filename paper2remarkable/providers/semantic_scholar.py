@@ -38,7 +38,7 @@ class SemanticScholar(Provider):
         self.informer = SemanticScholarInformer()
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract urls from a SemanticScholar url """
+        """Get the pdf and abstract urls from a SemanticScholar url"""
         if re.match(self.re_abs, url):
             abs_url = url
             pdf_url = self._get_pdf_url(abs_url)

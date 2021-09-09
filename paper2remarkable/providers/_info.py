@@ -109,7 +109,7 @@ class Informer:
         return soup_date.split("/")[0]
 
     def get_year(self, soup):
-        """ Retrieve the contents of the meta_date_key field and format it """
+        """Retrieve the contents of the meta_date_key field and format it"""
         meta = soup.find_all("meta", {"name": self.meta_date_key})
         if not meta:
             return ""
