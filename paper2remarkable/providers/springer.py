@@ -10,12 +10,13 @@ Copyright: 2019, G.J.J. van den Burg
 
 import re
 import urllib
+
 import requests
 
-from ._base import Provider
-from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..utils import HEADERS
+from ._base import Provider
+from ._info import Informer
 
 
 class SpringerInformer(Informer):
@@ -62,7 +63,7 @@ class Springer(Provider):
         raise URLResolutionError("Springer", pdf_url)
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract urls from a Springer url """
+        """Get the pdf and abstract urls from a Springer url"""
         if re.match(self.re_abs_1, url):
             abs_url = url
             pdf_url = url.replace("article", "content/pdf")

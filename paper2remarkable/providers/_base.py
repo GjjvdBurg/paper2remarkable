@@ -17,22 +17,22 @@ import time
 
 from ..exceptions import _CalledProcessError
 from ..log import Logger
-from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
-from ..utils import (
-    assert_file_is_pdf,
-    chdir,
-    check_pdftool,
-    download_url,
-    follow_redirects,
-    upload_to_remarkable,
-)
+from ..pdf_ops import blank_pdf
+from ..pdf_ops import prepare_pdf
+from ..pdf_ops import shrink_pdf
+from ..utils import assert_file_is_pdf
+from ..utils import chdir
+from ..utils import check_pdftool
+from ..utils import download_url
+from ..utils import follow_redirects
+from ..utils import upload_to_remarkable
 from ._info import Informer
 
 logger = Logger()
 
 
 class Provider(metaclass=abc.ABCMeta):
-    """ ABC for providers of pdf sources """
+    """ABC for providers of pdf sources"""
 
     def __init__(
         self,
@@ -95,11 +95,11 @@ class Provider(metaclass=abc.ABCMeta):
     @staticmethod
     @abc.abstractmethod
     def validate(src):
-        """ Validate whether ``src`` is appropriate for this provider """
+        """Validate whether ``src`` is appropriate for this provider"""
 
     @abc.abstractmethod
     def get_abs_pdf_urls(self, src):
-        """ Get the url for the HTML page and the PDF file """
+        """Get the url for the HTML page and the PDF file"""
 
     # Wrappers for pdf operations that have additional arguments
     def crop_pdf(self, filepath):
@@ -117,12 +117,12 @@ class Provider(metaclass=abc.ABCMeta):
         return shrink_pdf(filepath, gs_path=self.gs_path)
 
     def retrieve_pdf(self, pdf_url, filename):
-        """ Download pdf from src and save to filename """
+        """Download pdf from src and save to filename"""
         # This must exist so that the LocalFile provider can overwrite it
         download_url(pdf_url, filename, cookiejar=self.cookiejar)
 
     def compress_pdf(self, in_pdf, out_pdf):
-        """ Compress a pdf file, returns subprocess status """
+        """Compress a pdf file, returns subprocess status"""
         if self.pdftool == "pdftk":
             status = subprocess.call(
                 [self.pdftk_path, in_pdf, "output", out_pdf, "compress"]
@@ -168,7 +168,7 @@ class Provider(metaclass=abc.ABCMeta):
         return out_pdf
 
     def uncompress_pdf(self, in_pdf, out_pdf):
-        """ Uncompress a pdf file """
+        """Uncompress a pdf file"""
         if self.pdftool == "pdftk":
             status = subprocess.call(
                 [

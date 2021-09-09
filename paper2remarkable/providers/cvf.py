@@ -10,11 +10,10 @@ Copyright: 2020, G.J.J. van den Burg
 
 import re
 
-from ._base import Provider
-from ._info import Informer
-
 from ..exceptions import URLResolutionError
 from ..log import Logger
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 

@@ -6,7 +6,6 @@ import tempfile
 import unittest
 
 from paper2remarkable.exceptions import NoPDFToolError
-
 from paper2remarkable.utils import chdir
 from paper2remarkable.utils import check_pdftool
 

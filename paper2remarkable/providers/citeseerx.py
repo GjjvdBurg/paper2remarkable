@@ -11,10 +11,10 @@ Copyright: 2019, G.J.J. van den Burg
 import re
 import time
 
-from ._base import Provider
-from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..log import Logger
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 
@@ -57,7 +57,7 @@ class CiteSeerX(Provider):
         )
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract url from a OpenReview url """
+        """Get the pdf and abstract url from a OpenReview url"""
         if re.match(self.re_abs, url):
             abs_url = url
             doi = self._get_doi(abs_url)

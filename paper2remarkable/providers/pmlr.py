@@ -10,9 +10,9 @@ Copyright: 2019, G.J.J. van den Burg
 
 import re
 
+from ..exceptions import URLResolutionError
 from ._base import Provider
 from ._info import Informer
-from ..exceptions import URLResolutionError
 
 
 class PMLRInformer(Informer):
@@ -36,7 +36,7 @@ class PMLR(Provider):
         self.informer = PMLRInformer()
 
     def get_abs_pdf_urls(self, url):
-        """ Get the pdf and abstract url from a OpenReview url """
+        """Get the pdf and abstract url from a OpenReview url"""
         if re.match(self.re_abs_1, url):
             abs_url = url
             pdf_url = url.replace(".html", ".pdf")

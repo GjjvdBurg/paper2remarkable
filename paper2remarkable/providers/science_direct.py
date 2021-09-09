@@ -8,21 +8,22 @@ Copyright: 2020, G.J.J. van den Burg
 
 """
 
-import re
-import bs4
-import urllib
 import json
+import re
+import urllib
+
+import bs4
 
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad
 
-from ._base import Provider
-from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..log import Logger
 from ..utils import get_page_with_retry
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 

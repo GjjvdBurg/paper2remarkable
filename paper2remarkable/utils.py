@@ -9,17 +9,21 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import os
-import regex
-import requests
 import string
 import subprocess
 import time
+
+import regex
+import requests
 import unidecode
 
-from pikepdf import Pdf, PdfError
+from pikepdf import Pdf
+from pikepdf import PdfError
 
+from .exceptions import FileTypeError
+from .exceptions import NoPDFToolError
+from .exceptions import RemarkableError
 from .log import Logger
-from .exceptions import FileTypeError, RemarkableError, NoPDFToolError
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -59,7 +63,7 @@ def assert_file_is_pdf(filename):
 
 
 def download_url(url, filename, cookiejar=None):
-    """Download the content of an url and save it to a filename """
+    """Download the content of an url and save it to a filename"""
     logger.info("Downloading file at url: %s" % url)
     content = get_page_with_retry(url, cookiejar=cookiejar)
     with open(filename, "wb") as fid:

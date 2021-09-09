@@ -13,11 +13,9 @@ import shutil
 import tempfile
 import unittest
 
-from paper2remarkable.providers.arxiv import (
-    DEARXIV_TEXT_REGEX,
-    DEARXIV_URI_REGEX,
-    Arxiv,
-)
+from paper2remarkable.providers.arxiv import DEARXIV_TEXT_REGEX
+from paper2remarkable.providers.arxiv import DEARXIV_URI_REGEX
+from paper2remarkable.providers.arxiv import Arxiv
 
 
 class TestArxiv(unittest.TestCase):

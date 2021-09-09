@@ -8,16 +8,17 @@ Copyright: 2019, G.J.J. van den Burg
 
 """
 
-import bs4
 import os
 import re
 import urllib.parse
 
-from ._info import Informer
-from ._base import Provider
+import bs4
+
 from ..exceptions import URLResolutionError
 from ..log import Logger
 from ..utils import get_page_with_retry
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 

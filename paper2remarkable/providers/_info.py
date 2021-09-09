@@ -3,12 +3,13 @@
 """Functionality for retrieving paper info
 """
 
+import bs4
 import titlecase
 import unidecode
-import bs4
 
-from ..utils import clean_string, get_page_with_retry
 from ..log import Logger
+from ..utils import clean_string
+from ..utils import get_page_with_retry
 
 logger = Logger()
 
@@ -108,7 +109,7 @@ class Informer:
         return soup_date.split("/")[0]
 
     def get_year(self, soup):
-        """ Retrieve the contents of the meta_date_key field and format it """
+        """Retrieve the contents of the meta_date_key field and format it"""
         meta = soup.find_all("meta", {"name": self.meta_date_key})
         if not meta:
             return ""

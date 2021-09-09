@@ -12,10 +12,11 @@ Date: 2019-07-23
 
 """
 
-import colorama
 import os
 import sys
 import tempfile
+
+import colorama
 
 
 def colored(msg, color=None, style=None):

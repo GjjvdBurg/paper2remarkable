@@ -8,11 +8,10 @@ import shutil
 import tempfile
 import unittest
 
+from _constants import TEST_FILE
 from pikepdf import Pdf
 
 from paper2remarkable.providers import LocalFile
-
-from _constants import TEST_FILE
 
 
 class PdfOpsTestCase(unittest.TestCase):
