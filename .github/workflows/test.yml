@@ -14,12 +14,16 @@ jobs:
   p2r-test:
     name: Unit tests for paper2remarkable
     runs-on: [ 'ubuntu-latest' ]
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
+        py: [ '3.6', '3.9' ]
 
     steps:
-      - name: Install Python 3.6
+      - name: Install Python ${{ matrix.py }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: ${{ matrix.py }}
 
       - name: Checkout code
         uses: actions/checkout@v2
