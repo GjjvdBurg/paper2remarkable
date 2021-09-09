@@ -8,8 +8,9 @@ This file is part of paper2remarkable.
 """
 
 import os
-import pdfplumber
 import unittest
+
+import pdfplumber
 
 from paper2remarkable.providers.html import HTML
 from paper2remarkable.providers.html import make_readable

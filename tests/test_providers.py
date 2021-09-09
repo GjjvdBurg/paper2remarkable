@@ -7,40 +7,39 @@ __author__ = "G.J.J. van den Burg"
 
 import hashlib
 import os
-import pdfplumber
 import shutil
 import tempfile
 import unittest
 
+import pdfplumber
+
+from _constants import TEST_FILE
 from pikepdf import Pdf
 
 from paper2remarkable.exceptions import URLResolutionError
-from paper2remarkable.providers import (
-    ACL,
-    ACM,
-    Arxiv,
-    CVF,
-    CiteSeerX,
-    ECCC,
-    HTML,
-    IACR,
-    JMLR,
-    LocalFile,
-    Nature,
-    NBER,
-    NeurIPS,
-    OpenReview,
-    PMLR,
-    PdfUrl,
-    PubMed,
-    SagePub,
-    ScienceDirect,
-    SemanticScholar,
-    Springer,
-    TandFOnline,
-)
+from paper2remarkable.providers import ACL
+from paper2remarkable.providers import ACM
+from paper2remarkable.providers import CVF
+from paper2remarkable.providers import ECCC
+from paper2remarkable.providers import HTML
+from paper2remarkable.providers import IACR
+from paper2remarkable.providers import JMLR
+from paper2remarkable.providers import NBER
+from paper2remarkable.providers import PMLR
+from paper2remarkable.providers import Arxiv
+from paper2remarkable.providers import CiteSeerX
+from paper2remarkable.providers import LocalFile
+from paper2remarkable.providers import Nature
+from paper2remarkable.providers import NeurIPS
+from paper2remarkable.providers import OpenReview
+from paper2remarkable.providers import PdfUrl
+from paper2remarkable.providers import PubMed
+from paper2remarkable.providers import SagePub
+from paper2remarkable.providers import ScienceDirect
+from paper2remarkable.providers import SemanticScholar
+from paper2remarkable.providers import Springer
+from paper2remarkable.providers import TandFOnline
 from paper2remarkable.utils import download_url
-from _constants import TEST_FILE
 
 VERBOSE = False
 

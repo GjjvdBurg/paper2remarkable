@@ -17,15 +17,15 @@ import time
 
 from ..exceptions import _CalledProcessError
 from ..log import Logger
-from ..pdf_ops import prepare_pdf, blank_pdf, shrink_pdf
-from ..utils import (
-    assert_file_is_pdf,
-    chdir,
-    check_pdftool,
-    download_url,
-    follow_redirects,
-    upload_to_remarkable,
-)
+from ..pdf_ops import blank_pdf
+from ..pdf_ops import prepare_pdf
+from ..pdf_ops import shrink_pdf
+from ..utils import assert_file_is_pdf
+from ..utils import chdir
+from ..utils import check_pdftool
+from ..utils import download_url
+from ..utils import follow_redirects
+from ..utils import upload_to_remarkable
 from ._info import Informer
 
 logger = Logger()

@@ -8,13 +8,14 @@ Copyright: 2021, G.J.J. van den Burg
 
 """
 
-import bs4
 import re
 
-from ._info import Informer
-from ._base import Provider
+import bs4
+
 from ..exceptions import URLResolutionError
 from ..log import Logger
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 

@@ -10,13 +10,12 @@ Copyright: 2019, G.J.J. van den Burg
 
 import urllib
 
-from ._base import Provider
-from ._info import Informer
-
 from .. import GITHUB_URL
 from ..exceptions import FilenameMissingError
 from ..log import Logger
 from ..utils import get_content_type_with_retry
+from ._base import Provider
+from ._info import Informer
 
 logger = Logger()
 

@@ -12,13 +12,17 @@ import argparse
 import copy
 import os
 import sys
+
 import yaml
 
-from . import __version__, GITHUB_URL
-
-from .exceptions import UnidentifiedSourceError, InvalidURLError
-from .providers import providers, LocalFile
-from .utils import follow_redirects, is_url
+from . import GITHUB_URL
+from . import __version__
+from .exceptions import InvalidURLError
+from .exceptions import UnidentifiedSourceError
+from .providers import LocalFile
+from .providers import providers
+from .utils import follow_redirects
+from .utils import is_url
 
 
 def build_argument_parser():

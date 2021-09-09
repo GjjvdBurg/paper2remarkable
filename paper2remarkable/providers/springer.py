@@ -10,12 +10,13 @@ Copyright: 2019, G.J.J. van den Burg
 
 import re
 import urllib
+
 import requests
 
-from ._base import Provider
-from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..utils import HEADERS
+from ._base import Provider
+from ._info import Informer
 
 
 class SpringerInformer(Informer):

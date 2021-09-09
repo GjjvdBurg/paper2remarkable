@@ -12,36 +12,30 @@ import shutil
 import tempfile
 import unittest
 
-from paper2remarkable.exceptions import (
-    InvalidURLError,
-    UnidentifiedSourceError,
-)
-from paper2remarkable.providers import (
-    ACL,
-    ACM,
-    Arxiv,
-    CiteSeerX,
-    CVF,
-    ECCC,
-    HTML,
-    IACR,
-    JMLR,
-    LocalFile,
-    Nature,
-    NBER,
-    NeurIPS,
-    OpenReview,
-    PMLR,
-    PdfUrl,
-    PubMed,
-    Springer,
-)
-from paper2remarkable.ui import (
-    build_argument_parser,
-    choose_provider,
-    merge_options,
-    runner,
-)
+from paper2remarkable.exceptions import InvalidURLError
+from paper2remarkable.exceptions import UnidentifiedSourceError
+from paper2remarkable.providers import ACL
+from paper2remarkable.providers import ACM
+from paper2remarkable.providers import CVF
+from paper2remarkable.providers import ECCC
+from paper2remarkable.providers import HTML
+from paper2remarkable.providers import IACR
+from paper2remarkable.providers import JMLR
+from paper2remarkable.providers import NBER
+from paper2remarkable.providers import PMLR
+from paper2remarkable.providers import Arxiv
+from paper2remarkable.providers import CiteSeerX
+from paper2remarkable.providers import LocalFile
+from paper2remarkable.providers import Nature
+from paper2remarkable.providers import NeurIPS
+from paper2remarkable.providers import OpenReview
+from paper2remarkable.providers import PdfUrl
+from paper2remarkable.providers import PubMed
+from paper2remarkable.providers import Springer
+from paper2remarkable.ui import build_argument_parser
+from paper2remarkable.ui import choose_provider
+from paper2remarkable.ui import merge_options
+from paper2remarkable.ui import runner
 from paper2remarkable.utils import chdir
 
 

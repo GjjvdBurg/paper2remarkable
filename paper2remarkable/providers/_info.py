@@ -3,12 +3,13 @@
 """Functionality for retrieving paper info
 """
 
+import bs4
 import titlecase
 import unidecode
-import bs4
 
-from ..utils import clean_string, get_page_with_retry
 from ..log import Logger
+from ..utils import clean_string
+from ..utils import get_page_with_retry
 
 logger = Logger()
 

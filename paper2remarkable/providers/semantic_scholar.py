@@ -9,12 +9,14 @@ Copyright: 2020, G.J.J. van den Burg
 """
 
 import re
+
 import bs4
 
+from ..exceptions import URLResolutionError
+from ..utils import get_content_type_with_retry
+from ..utils import get_page_with_retry
 from ._base import Provider
 from ._info import Informer
-from ..exceptions import URLResolutionError
-from ..utils import get_page_with_retry, get_content_type_with_retry
 
 
 class SemanticScholarInformer(Informer):

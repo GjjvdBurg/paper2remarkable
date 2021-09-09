@@ -10,8 +10,9 @@ Copyright: 2019, G.J.J. van den Burg
 
 import io
 import os
-import pdfplumber
 import subprocess
+
+import pdfplumber
 
 from pikepdf import Pdf
 

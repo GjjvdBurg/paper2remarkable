@@ -11,24 +11,22 @@ Copyright: 2020, G.J.J. van den Burg
 
 """
 
+import re
+import urllib
+
 import html2text
 import markdown
-import re
 import readability
 import titlecase
 import unidecode
-import urllib
 import weasyprint
 
+from ..log import Logger
+from ..utils import clean_string
+from ..utils import get_content_type_with_retry
+from ..utils import get_page_with_retry
 from ._base import Provider
 from ._info import Informer
-
-from ..utils import (
-    clean_string,
-    get_page_with_retry,
-    get_content_type_with_retry,
-)
-from ..log import Logger
 
 logger = Logger()
 

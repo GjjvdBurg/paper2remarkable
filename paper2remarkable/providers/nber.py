@@ -12,9 +12,9 @@ Copyright: 2020, G.J.J. van den Burg
 
 import re
 
+from ..exceptions import URLResolutionError
 from ._base import Provider
 from ._info import Informer
-from ..exceptions import URLResolutionError
 
 
 class NBERInformer(Informer):
