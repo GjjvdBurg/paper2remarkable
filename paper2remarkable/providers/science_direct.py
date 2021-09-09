@@ -13,11 +13,16 @@ import bs4
 import urllib
 import json
 
+from Crypto import Random
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
+from Crypto.Util.Padding import pad
+
 from ._base import Provider
 from ._info import Informer
 from ..exceptions import URLResolutionError
 from ..log import Logger
-from ..utils import get_page_with_retry, follow_redirects
+from ..utils import get_page_with_retry
 
 logger = Logger()
 
@@ -70,24 +75,9 @@ class ScienceDirect(Provider):
         soup = bs4.BeautifulSoup(page, "html.parser")
 
         # For open access (and maybe behind institution?) the full text pdf url
-        # is currently in the json payload of a script tag as:
-        #
-        # "pdfDownload": {
-        #   'isPdfFullText': False,
-        #   'linkType': 'DOWNLOAD',
-        #   'urlMetadata': {
-        #           'path': 'science/article/pii',
-        #           'pdfExtension': '/pdfft',
-        #           'pii': 'S0166354220302011',
-        #           'queryParams': {'md5': 'bd2a8d1cfbe3680f2d405b4a62642a15',
-        #                           'pid': '1-s2.0-S0166354220302011-main.pdf'}
-        #           }
-        #   }
-        #
-        # We construct the url based on the urlMetaData. This leads to an
-        # intermediate page, which contains the actual url to the PDF in the
-        # noscript tag.
+        # is retrieved by mimicking the authentication dance in Python.
 
+        # Extract article metadata from the page
         scripts = soup.find_all("script", attrs={"data-iso-key": "_0"})
         if not scripts:
             raise URLResolutionError("ScienceDirect", url)
@@ -95,23 +85,63 @@ class ScienceDirect(Provider):
         data = json.loads(json_data)
         if not "article" in data:
             raise URLResolutionError("ScienceDirect", url)
+
         data = data["article"]
         if not "pdfDownload" in data:
             raise URLResolutionError("ScienceDirect", url)
+
         data = data["pdfDownload"]
 
         if not "urlMetadata" in data:
             raise URLResolutionError("ScienceDirect", url)
         meta = data["urlMetadata"]
 
+        # construct a temporary url to an intermediate page
         link = "{path}/{pii}/{pdfExtension}?md5{queryParams[md5]}&pid={queryParams[pid]}".format(
             **meta
         )
         tmp_url = urllib.parse.urljoin("https://sciencedirect.com/", link)
 
-        # tmp_url gives a page with a ten second wait or a direct url, we need
-        # the direct url
+        # Open the temp url, this lands us on a page that requires Javascript
+        # to do an authentication dance
         page = get_page_with_retry(tmp_url)
+        soup = bs4.BeautifulSoup(page, "html.parser")
+        script = soup.find_all("script")[5]
+
+        # Extract the embedded information from the script
+        phrase_1 = 'i.subtle.digest("SHA-256",e("'
+        try:
+            rem = script.text[script.text.index(phrase_1) + len(phrase_1) :]
+            token = rem[: rem.index('"')]
+        except ValueError:
+            raise URLResolutionError("ScienceDirect", url)
+
+        phrase_2 = 'i.subtle.encrypt(c,t,e("'
+        try:
+            rem = script.text[script.text.index(phrase_2) + len(phrase_2) :]
+            data = rem[: rem.index('"')]
+        except ValueError:
+            raise URLResolutionError("ScienceDirect", url)
+
+        phrase_3 = 'window.location="'
+        try:
+            rem = script.text[script.text.index(phrase_3) + len(phrase_3) :]
+            location = rem[: rem.index('",r()')]
+        except ValueError:
+            raise URLResolutionError("ScienceDirect", url)
+
+        location = location.replace('"+e+"', "{e}")
+        location = location.replace('"+t+"', "{t}")
+
+        # Perform the authentication dance in Python
+        e, t = self.sd_run(token, data)
+        tmp_url2 = urllib.parse.urljoin(
+            "https://www.sciencedirect.com", location.format(e=e, t=t)
+        )
+
+        # tmp_url2 gives a page with a ten second wait or a direct url, we need
+        # the direct url
+        page = get_page_with_retry(tmp_url2)
         soup = bs4.BeautifulSoup(page, "html.parser")
         noscript = soup.find_all("noscript")
         if not noscript:
@@ -126,3 +156,33 @@ class ScienceDirect(Provider):
         return re.match(ScienceDirect.re_abs, src) or re.match(
             ScienceDirect.re_pdf, src
         )
+
+    def sd_e(self, e):
+        n = []
+        for o in range(len(e)):
+            n.append(ord(e[o]))
+        return n
+
+    def sd_t(self, o):
+        t = ""
+        n = "0123456789abcdef"
+        for r in range(len(o)):
+            i = o[r]
+            t += n[i >> 4] + n[15 & i]
+        return t
+
+    def sd_run(self, token, data):
+        # token is the string that is passed to sha-256
+        # data is the string that is passed to encrypt
+        a = Random.new().read(16)
+        d = self.sd_t(a)
+
+        h = SHA256.new()
+        h.update(bytearray(self.sd_e(token)))
+        key = list(h.digest())
+
+        aes = AES.new(bytearray(key), AES.MODE_CBC, iv=a)
+        msg = bytearray(self.sd_e(data))
+        ct_bytes = aes.encrypt(pad(msg, AES.block_size))
+        ct_uint8 = list(ct_bytes)
+        return d, self.sd_t(ct_uint8)
