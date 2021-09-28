@@ -102,6 +102,9 @@ $ p2r -v https://arxiv.org/abs/1811.11242
 
 ## Installation
 
+*For ArchLinux, paper2remarkable can be installed through the [Arch User 
+Repository](https://aur.archlinux.org/packages/paper2remarkable/).*
+
 The script requires the following external programs to be available:
 
 - [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), 
