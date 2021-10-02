@@ -112,7 +112,7 @@ class ScienceDirect(Provider):
         )
         if script is None:
             raise URLResolutionError(
-                "ScienceDirect", url, reason="Can't find script elemennt"
+                "ScienceDirect", url, reason="Can't find script element"
             )
         script_text = script.decode()
 
