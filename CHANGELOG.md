@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.9.9
+
+* Robustify ScienceDirect provider
+
 ## Version 0.9.8
 
 * Code improvement for ScienceDirect provider
