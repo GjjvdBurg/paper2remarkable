@@ -107,30 +107,42 @@ class ScienceDirect(Provider):
         # to do an authentication dance
         page = get_page_with_retry(tmp_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
-        script = soup.find_all("script")[5]
+        script = soup.find(
+            lambda tag: tag.name == "script" and "subtle.encrypt" in tag.text
+        )
+        if script is None:
+            raise URLResolutionError(
+                "ScienceDirect", url, reason="Can't find script element"
+            )
         script_text = script.decode()
 
         # Extract the embedded information from the script
-        phrase_1 = 'i.subtle.digest("SHA-256",e("'
+        phrase_1 = 'subtle.digest("SHA-256",'
+        offset_1 = len(phrase_1) + 3
         try:
-            rem = script_text[script_text.index(phrase_1) + len(phrase_1) :]
+            rem = script_text[script_text.index(phrase_1) + offset_1 :]
             token = rem[: rem.index('"')]
-        except ValueError:
-            raise URLResolutionError("ScienceDirect", url)
+        except ValueError as err:
+            raise URLResolutionError(
+                "ScienceDirect", url, reason="Can't find encryption token"
+            ) from err
 
-        phrase_2 = 'i.subtle.encrypt(c,t,e("'
+        phrase_2 = "subtle.encrypt("
+        offset_2 = len(phrase_2) + 7
         try:
-            rem = script_text[script_text.index(phrase_2) + len(phrase_2) :]
+            rem = script_text[script_text.index(phrase_2) + offset_2 :]
             data = rem[: rem.index('"')]
-        except ValueError:
-            raise URLResolutionError("ScienceDirect", url)
+        except ValueError as err:
+            raise URLResolutionError(
+                "ScienceDirect", url, reason="Can't find encryption data"
+            ) from err
 
         phrase_3 = 'window.location="'
         try:
             rem = script_text[script_text.index(phrase_3) + len(phrase_3) :]
-            location = rem[: rem.index('",r()')]
-        except ValueError:
-            raise URLResolutionError("ScienceDirect", url)
+            location = rem[: rem.index("}") - len('",r()')]
+        except ValueError as err:
+            raise URLResolutionError("ScienceDirect", url) from err
 
         location = location.replace('"+e+"', "{e}")
         location = location.replace('"+t+"', "{t}")
