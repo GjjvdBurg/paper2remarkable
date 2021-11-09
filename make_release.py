@@ -12,6 +12,7 @@ Date: 2019-07-23
 
 """
 
+import abc
 import os
 import sys
 import tempfile
@@ -19,7 +20,7 @@ import tempfile
 import colorama
 
 
-def colored(msg, color=None, style=None):
+def color_text(msg, color=None, style=None):
     colors = {
         "red": colorama.Fore.RED,
         "green": colorama.Fore.GREEN,
@@ -38,12 +39,12 @@ def colored(msg, color=None, style=None):
     return f"{pre}{msg}{post}"
 
 
-def cprint(msg, color=None, style=None):
-    print(colored(msg, color=color, style=style))
+def color_print(msg, color=None, style=None):
+    print(color_text(msg, color=color, style=style))
 
 
 def wait_for_enter():
-    input(colored("\nPress Enter to continue", style="dim"))
+    input(color_text("\nPress Enter to continue", style="dim"))
     print()
 
 
@@ -62,7 +63,7 @@ def get_package_version(pkgname):
     return ctx["__version__"]
 
 
-class Step:
+class Step(metaclass=abc.ABCMeta):
     def pre(self, context):
         pass
 
@@ -75,53 +76,54 @@ class Step:
             self.action(context)
             self.post(context)
         except KeyboardInterrupt:
-            cprint("\nInterrupted.", color="red")
+            color_print("\nInterrupted.", color="red")
             raise SystemExit(1)
 
     def instruct(self, msg):
-        cprint(msg, color="green")
+        color_print(msg, color="green")
 
-    def print_run(self, msg):
-        cprint("Run:", color="cyan", style="bright")
-        self.print_cmd(msg)
+    def print_command(self, msg):
+        color_print("Run:", color="cyan", style="bright")
+        color_print("\t" + msg, color="cyan", style="bright")
 
-    def print_cmd(self, msg):
-        cprint("\t" + msg, color="cyan", style="bright")
-
-    def do_cmd(self, cmd):
-        cprint(f"Going to run: {cmd}", color="magenta", style="bright")
+    def print_and_execute(self, cmd):
+        color_print(f"Going to run: {cmd}", color="magenta", style="bright")
         wait_for_enter()
         os.system(cmd)
+
+    @abc.abstractmethod
+    def action(self, context):
+        """Action to perform for the step"""
 
 
 class GitToMaster(Step):
     def action(self, context):
         self.instruct("Make sure you're on master and changes are merged in")
-        self.print_run("git checkout master")
+        self.print_command("git checkout master")
 
 
 class UpdateChangelog(Step):
     def action(self, context):
         self.instruct(f"Update change log for version {context['version']}")
-        self.print_run("vi CHANGELOG.md")
+        self.print_command("vi CHANGELOG.md")
 
 
 class UpdateReadme(Step):
     def action(self, context):
-        self.instruct(f"Update readme if necessary")
-        self.print_run("vi README.md")
+        self.instruct("Update readme if necessary")
+        self.print_command("vi README.md")
 
 
 class RunTests(Step):
     def action(self, context):
         self.instruct("Run the unit tests")
-        self.print_run("make test")
+        self.print_command("make test")
 
 
 class BumpVersionPackage(Step):
     def action(self, context):
-        self.instruct(f"Update __version__.py with new version")
-        self.do_cmd(f"vi {context['pkgname']}/__version__.py")
+        self.instruct("Update __version__.py with new version")
+        self.print_and_execute(f"vi {context['pkgname']}/__version__.py")
 
     def post(self, context):
         wait_for_enter()
@@ -134,22 +136,22 @@ class BumpVersionPackage(Step):
 
 class MakeClean(Step):
     def action(self, context):
-        self.do_cmd("make clean")
+        self.print_and_execute("make clean")
 
 
 class MakeDocs(Step):
     def action(self, context):
-        self.do_cmd("make docs")
+        self.print_and_execute("make docs")
 
 
 class MakeDist(Step):
     def action(self, context):
-        self.do_cmd("make dist")
+        self.print_and_execute("make dist")
 
 
 class PushToTestPyPI(Step):
     def action(self, context):
-        self.do_cmd(
+        self.print_and_execute(
             "twine upload --repository-url https://test.pypi.org/legacy/ dist/*"
         )
 
@@ -157,7 +159,7 @@ class PushToTestPyPI(Step):
 class InstallFromTestPyPI(Step):
     def action(self, context):
         tmpvenv = tempfile.mkdtemp(prefix="p2r_venv_")
-        self.do_cmd(
+        self.print_and_execute(
             f"python -m venv {tmpvenv} && source {tmpvenv}/bin/activate && "
             "pip install --no-cache-dir --index-url "
             "https://test.pypi.org/simple/ "
@@ -172,33 +174,35 @@ class TestPackage(Step):
         self.instruct(
             f"Ensure that the following command gives version {context['version']}"
         )
-        self.do_cmd(f"source {context['tmpvenv']}/bin/activate && p2r -V")
+        self.print_and_execute(
+            f"source {context['tmpvenv']}/bin/activate && p2r -V"
+        )
 
 
 class RemoveVenv(Step):
     def action(self, context):
-        self.do_cmd(f"rm -rf {context['tmpvenv']}")
+        self.print_and_execute(f"rm -rf {context['tmpvenv']}")
 
 
 class GitTagVersion(Step):
     def action(self, context):
-        self.do_cmd(f"git tag v{context['version']}")
+        self.print_and_execute(f"git tag v{context['version']}")
 
 
 class GitAdd(Step):
     def action(self, context):
         self.instruct("Add everything to git and commit")
-        self.print_run("git gui")
+        self.print_command("git gui")
 
 
 class PushToPyPI(Step):
     def action(self, context):
-        self.do_cmd("twine upload dist/*")
+        self.print_and_execute("twine upload dist/*")
 
 
 class PushToGitHub(Step):
     def action(self, context):
-        self.do_cmd("git push -u --tags origin master")
+        self.print_and_execute("git push -u --tags origin master")
 
 
 class WaitForTravis(Step):
@@ -252,7 +256,7 @@ def main(target=None):
             continue
         skip = False
         step.run(context)
-    cprint("\nDone!", color="yellow", style="bright")
+    color_print("\nDone!", color="yellow", style="bright")
 
 
 if __name__ == "__main__":
