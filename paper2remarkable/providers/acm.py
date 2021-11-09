@@ -27,8 +27,7 @@ class ACMInformer(Informer):
 
     def get_authors(self, soup):
         authors = [
-            span.find("a").text
-            for span in soup.find_all("span", {"class": "auth-name"})
+            a["title"] for a in soup.find_all("a", {"class": "author-name"})
         ]
         return self._format_authors(authors)
 
