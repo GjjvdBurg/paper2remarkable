@@ -21,7 +21,6 @@ from .sagepub import SagePub
 from .science_direct import ScienceDirect
 from .semantic_scholar import SemanticScholar
 from .springer import Springer
-from .tandfonline import TandFOnline
 
 # NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
@@ -43,7 +42,6 @@ providers = [
     ScienceDirect,
     Springer,
     SemanticScholar,
-    TandFOnline,
     LocalFile,
     PdfUrl,
     HTML,
