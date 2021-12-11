@@ -435,8 +435,8 @@ class TestProviders(unittest.TestCase):
 
     def test_sciencedirect_2(self):
         prov = ScienceDirect(upload=False, verbose=VERBOSE)
-        url = "https://www.sciencedirect.com/science/article/pii/S0047235220302543"
-        exp = "Bolger_Lytle_Bolger_-_What_Matters_in_Citizen_Satisfaction_With_Police_a_Meta-Analysis_2021.pdf"
+        url = "https://www.sciencedirect.com/science/article/pii/S2352152X2101001X"
+        exp = "Mussi_et_al_-_A_Voltage_Dynamic-Based_State_of_Charge_Estimation_Method_for_Batteries_Storage_Systems_2021.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
