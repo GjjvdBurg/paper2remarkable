@@ -134,7 +134,8 @@ def follow_redirects(url):
             break
         if not "Location" in req.headers:
             break
-        url = req.headers["Location"]
+        new_url = req.headers["Location"]
+        url = requests.compat.urljoin(url, new_url)
         jar.update(req.cookies)
         it += 1
     if it == 100:
