@@ -13,6 +13,7 @@ import string
 import subprocess
 import time
 
+import cloudscraper
 import regex
 import requests
 import unidecode
@@ -20,6 +21,7 @@ import unidecode
 from pikepdf import Pdf
 from pikepdf import PdfError
 
+from .exceptions import BlockedByCloudFlareError
 from .exceptions import FileTypeError
 from .exceptions import NoPDFToolError
 from .exceptions import RemarkableError
@@ -70,6 +72,20 @@ def download_url(url, filename, cookiejar=None):
         fid.write(content)
 
 
+def get_page_with_cloudscraper(url, return_text=False):
+    scraper = cloudscraper.create_scraper()
+    res = scraper.get(url)
+    if not res.ok and res.headers.get("server", "") == "cloudflare":
+        logger.warning(
+            "(%i/%i) Error getting url %s. Retrying in 5 seconds."
+            % (count, tries, url)
+        )
+        raise BlockedByCloudFlareError(url)
+    if return_text:
+        return res.text
+    return res.content
+
+
 def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
     count = 0
     jar = {} if cookiejar is None else cookiejar
@@ -80,6 +96,11 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
             res = requests.get(url, headers=HEADERS, cookies=jar)
         except requests.exceptions.ConnectionError:
             error = True
+        if (
+            res.status_code == 503
+            and res.headers.get("server", "") == "cloudflare"
+        ):
+            return get_page_with_cloudscraper(url, return_text=return_text)
         if error or not res.ok:
             logger.warning(
                 "(%i/%i) Error getting url %s. Retrying in 5 seconds."
