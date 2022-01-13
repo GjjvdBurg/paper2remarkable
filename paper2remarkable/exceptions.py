@@ -139,3 +139,16 @@ class InvalidURLError(Error):
         )
         msg += GH_MSG
         return msg
+
+
+class BlockedByCloudFlareError(Error):
+    def __init__(self, url):
+        self.url = url
+
+    def __str__(self):
+        msg = (
+            "ERROR: Couldn't open the following url:\n"
+            f"\t{self.url}\n"
+            "as paper2remarkable gets blocked by CloudFlare.\n"
+        )
+        return msg
