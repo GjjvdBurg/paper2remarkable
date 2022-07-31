@@ -177,12 +177,12 @@ class TestUI(unittest.TestCase):
             (
                 CiteSeerX,
                 "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548",
-                "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548",
+                "https://citeseerx.ist.psu.edu:443/viewdoc/summary?doi=10.1.1.89.6548",
             ),
             (
                 CiteSeerX,
                 "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
-                "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
+                "https://citeseerx.ist.psu.edu:443/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
             ),
             (
                 HTML,
