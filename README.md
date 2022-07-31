@@ -47,7 +47,6 @@ reMarkable from any of the following sources:
 * [OpenReview](https://openreview.net/)
 * [PMLR](http://proceedings.mlr.press/)
 * [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/)
-* [ScienceDirect](https://www.sciencedirect.com/)
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
 * A generic URL to a PDF file
