@@ -34,7 +34,7 @@ $(OUTPUT_DIR)/$(PACKAGE).1: man.rst | output-dir
 	$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(OUTPUT_DIR)
 
 man.rst: man.md venv
-	source $(VENV_DIR)/bin/activate && m2r man.md
+	source $(VENV_DIR)/bin/activate && m2r2 man.md
 
 output-dir:
 	mkdir -p $(OUTPUT_DIR)
@@ -56,7 +56,7 @@ venv: $(VENV_DIR)/bin/activate
 
 $(VENV_DIR)/bin/activate:
 	test -d $(VENV_DIR) || python -m venv $(VENV_DIR)
-	source $(VENV_DIR)/bin/activate && pip install m2r
+	source $(VENV_DIR)/bin/activate && pip install m2r2
 	touch $(VENV_DIR)/bin/activate
 
 clean_venv:

@@ -107,7 +107,7 @@ class TestUI(unittest.TestCase):
             (
                 PdfUrl,
                 "http://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
-                "http://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
+                "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
             ),
             (
                 IACR,
@@ -177,12 +177,12 @@ class TestUI(unittest.TestCase):
             (
                 CiteSeerX,
                 "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548",
-                "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548",
+                "https://citeseerx.ist.psu.edu:443/viewdoc/summary?doi=10.1.1.89.6548",
             ),
             (
                 CiteSeerX,
                 "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
-                "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
+                "https://citeseerx.ist.psu.edu:443/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
             ),
             (
                 HTML,

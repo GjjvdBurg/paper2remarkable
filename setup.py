@@ -21,7 +21,6 @@ VERSION = None
 # What packages are required for this module to be executed?
 REQUIRED = [
     "beautifulsoup4>=4.8",
-    "cloudscraper>=1.2.58",
     "html2text>=2020.1.16",
     "markdown>=3.1.1",
     "pdfplumber>=0.5",

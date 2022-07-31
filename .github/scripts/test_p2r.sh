@@ -19,15 +19,15 @@ NODE_VERSION="v12.18.1"
 NVM_VERSION="v0.36.0"
 
 echo "Setting up environment"
-echo -e "\tUpdating system ..."
+echo "::group::Updating system ..."
 
 sudo apt-get update
 
-echo -e "\tInstalling system dependencies for paper2remarkable"
+echo "::group::Installing system dependencies for paper2remarkable"
 
 sudo apt-get install ghostscript pdftk poppler-utils qpdf
 
-echo -e "\tInstalling nvm ..."
+echo "::group::Installing nvm ..."
 
 sudo apt-get install build-essential libssl-dev -y
 
@@ -35,30 +35,30 @@ curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh
 
 source ~/.nvm/nvm.sh
 
-echo -e "\tInstalling node version ${NODE_VERSION}"
+echo "::group::Installing node version ${NODE_VERSION}"
 
 nvm install ${NODE_VERSION}
 
-echo -e "\tActivating node version ${NODE_VERSION}"
+echo "::group::Activating node version ${NODE_VERSION}"
 
 nvm use ${NODE_VERSION}
 
-echo -e "Installing pre-commit"
+echo "::group::Installing pre-commit"
 
 pip install pre-commit
 
-echo -e "Install package"
+echo "::group::Install package"
 
 pip install --upgrade --upgrade-strategy eager -e .[test]
 
-echo -e "Run pre-commit"
+echo "::group::Run pre-commit"
 
 pre-commit run --all-files --show-diff-on-failure
 
-echo -e "Check if ReadabiliPy was installed with Node support"
+echo "::group::Check if ReadabiliPy was installed with Node support"
 
 python -c 'from readabilipy.simple_json import have_node; print(f"Have node: {have_node()}")'
 
-echo -e "Run unit tests"
+echo "::group::Run unit tests"
 
 green -vv -a ./tests

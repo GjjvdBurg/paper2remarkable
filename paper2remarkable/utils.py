@@ -13,7 +13,6 @@ import string
 import subprocess
 import time
 
-import cloudscraper
 import regex
 import requests
 import unidecode
@@ -72,20 +71,6 @@ def download_url(url, filename, cookiejar=None):
         fid.write(content)
 
 
-def get_page_with_cloudscraper(url, return_text=False):
-    scraper = cloudscraper.create_scraper()
-    res = scraper.get(url)
-    if not res.ok and res.headers.get("server", "") == "cloudflare":
-        logger.warning(
-            "(%i/%i) Error getting url %s. Retrying in 5 seconds."
-            % (count, tries, url)
-        )
-        raise BlockedByCloudFlareError(url)
-    if return_text:
-        return res.text
-    return res.content
-
-
 def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
     count = 0
     jar = {} if cookiejar is None else cookiejar
@@ -100,7 +85,7 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
             res.status_code == 503
             and res.headers.get("server", "") == "cloudflare"
         ):
-            return get_page_with_cloudscraper(url, return_text=return_text)
+            raise BlockedByCloudFlareError(url)
         if error or not res.ok:
             logger.warning(
                 "(%i/%i) Error getting url %s. Retrying in 5 seconds."

@@ -148,7 +148,7 @@ class TestProviders(unittest.TestCase):
     def test_openreview(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
-        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2019.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
@@ -161,7 +161,7 @@ class TestProviders(unittest.TestCase):
 
     def test_springer_2(self):
         prov = Springer(upload=False, verbose=VERBOSE)
-        url = "https://link.springer.com/content/pdf/10.1007%2F11681878_14.pdf"
+        url = "https://link.springer.com/content/pdf/10.1007/11681878_14.pdf"
         exp_filename = "Dwork_et_al_-_Calibrating_Noise_to_Sensitivity_in_Private_Data_Analysis_2006.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
@@ -284,6 +284,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_1(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1385466"
@@ -291,6 +292,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_2(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/pdf/10.1080/03610918.2017.1408826?needAccess=true"
@@ -298,6 +300,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_3(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://amstat.tandfonline.com/doi/pdf/10.1080/01621459.2017.1385466?needAccess=true"
@@ -305,6 +308,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_4(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/full/10.1080/0015198X.2019.1675421"
@@ -379,6 +383,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("SagePub has been disabled due to CloudFlare blocking")
     def test_sagepub_1(self):
         prov = SagePub(upload=False, verbose=VERBOSE)
         url = "https://journals.sagepub.com/doi/full/10.1177/0306312714535679"
@@ -386,6 +391,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("SagePub has been disabled due to CloudFlare blocking")
     def test_sagepub_2(self):
         prov = SagePub(upload=False, verbose=VERBOSE)
         url = "https://journals.sagepub.com/doi/pdf/10.1177/1352458517694432"
@@ -425,6 +431,9 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip(
+        "ScienceDirect has been disabled due to CloudFlare blocking"
+    )
     def test_sciencedirect_1(self):
         prov = ScienceDirect(upload=False, verbose=VERBOSE)
         url = "https://www.sciencedirect.com/science/article/pii/S0166354220302011"
@@ -432,6 +441,9 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip(
+        "ScienceDirect has been disabled due to CloudFlare blocking"
+    )
     def test_sciencedirect_2(self):
         prov = ScienceDirect(upload=False, verbose=VERBOSE)
         url = "https://www.sciencedirect.com/science/article/pii/S2352152X2101001X"
@@ -439,6 +451,9 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip(
+        "ScienceDirect has been disabled due to CloudFlare blocking"
+    )
     def test_sciencedirect_3(self):
         prov = ScienceDirect(upload=False, verbose=VERBOSE)
         url = r"https://pdf.sciencedirectassets.com/272398/1-s2.0-S0022039616X00095/1-s2.0-S0022039616001029/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQCRRFGFc7b02V86pkMeqytyBK%2BR8I%2BfdsIpYbjfXSpIBwIhAORxDxLYdr4EoSyn1P7wlhG%2F1RnX8tIG0IRGOidKKm69KrQDCDAQAxoMMDU5MDAzNTQ2ODY1IgwzsYwSRMjSfdr4cbUqkQOPUxG702LEv3POe5ESC9FBVVHGeUF%2BB46FTtWqkhHgjkRIpuoFiavu1cuBWHQ9FwCZjcocan56LfXiySYBfl259MC8ieSYor9FKZLBaAhDCEblkiTdW2%2Fk4nfogp6fwWVdckC8gGVbu3wQ9Mdh%2FE91ZEix%2FIftmJ6IpAZkm0l0AFFt%2BngI7geWoZDeku5iImEUw6JJPgFz5Yw9cKa%2FuGM3hi29JsuI30qzBqZC9nGRCIx%2FLYeiDfF1v0QjFLmT%2FE5xpaNxMt%2FoWLiazRcconSQCCax6%2Bw9SR4NvWg2illOrLMEPuRYacIFRNhV9zj7Y06Bf%2BfG%2FTQxXdnDLH0VMkUWx%2BgjwRAqSvIb0JRg9q5gErPB1cZLCuCd3ybFSmtj7aQmfl7uhMAjQwnCcN6fhtlVK6Xb3Us7YglDaHekzf8RDv9stbxBWFGMPVmDUXHWOsUo89LY%2F9IbtQTs5Uu3ieMGePUVMY4ox3FPYAb5jWjaOFqs54LqfQ5nqjkLMiAY%2F11zCVyOAoPiDnDs6Wjuj52iszCtuc%2F9BTrqATkmIC%2Bu2w6MEow0zbPVAaqNF%2BjUh8Tv%2BWTInq9G3Q4PXIqL3CNNiISPDvuUggRwWGJDgXtr0C%2B4Gtv1bfs3BGHHgWOD261c6O0LHQuP11BLN8GCr7bFO1hjVAqHhC06vyhGQRmRzN32CPwo8pUM2gWw9xXGUioUiSJ%2FgRpDaszsW4Yr8Wm7L9Q7jAOYxEf7WLxPwAWO69o8JbJoouxwL4qeTEGMJ5IpUk3x3xPQIlawOlqY%2FHi0s4E1DE4ZMjH21hc3PrQ%2FiwI%2BTqY9Rg5sjLCBJ4vRCiqb3dpOWLsR5LFOTySXWoqIdO7b9Q%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20201117T155020Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTY7OS7PK7A%2F20201117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=03abad117208b684a1a4ca2ffdcbe5b9a40a19e6c841c609e299315a2f2234ce&hash=24f71da9f05f6835c9797841d1462d11eea85c49e9655dde043ed9f748edf17e&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0022039616001029&tid=spdf-6b78a4fa-826e-4267-8ce6-43c814fa51b2&sid=776192553463724f1a4b56613fcf5e514b72gxrqb&type=client"
@@ -512,8 +527,8 @@ class TestProviders(unittest.TestCase):
 
     def test_iacr_1(self):
         prov = IACR(upload=False, verbose=VERBOSE)
-        url = "https://eprint.iacr.org/2021/489"
-        exp = "Xu_et_al_-_ROSE_Robust_Searchable_Encryption_With_Forward_and_Backward_Security_and_Practical_Performance_2021.pdf"
+        url = "https://eprint.iacr.org/2021/490"
+        exp = "Liu_Wang_Zheng_-_Optimizing_Bootstrapping_and_Evaluating_Large_FHE_Gates_in_the_LWE-based_GSW-FHE_2021.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 

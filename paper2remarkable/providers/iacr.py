@@ -31,28 +31,30 @@ class IACRInformer(Informer):
                 "Couldn't determine title information, maybe provide the desired filename using '--filename'?"
             )
             return ""
-        return title[0].get_text().split("-", maxsplit=1)[-1]
+        return title[0].get_text()
 
     def get_authors(self, soup):
-        i = soup.find_all("i")
-        if not i:
+        p = soup.find_all("p", {"class": "fst-italic"})
+        if not p:
             logger.warning(
                 "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
             )
             return ""
-        authors = i[0].get_text()
-        authors = authors.replace("  ", " ")
-        authors = authors.split(" and ")
-        return self._format_authors(authors, sep=" ", idx=-1)
+        text = p[0].text
+        authors = text.strip()
+        authors = authors.replace(", and ", ", ")
+        authors = authors.replace(" and ", ", ")
+        author_names = authors.split(",")
+        return self._format_authors(author_names, sep=" ", idx=-1)
 
     def get_year(self, soup):
-        h2 = soup.find_all("h2")
-        if not h2:
+        h4 = soup.find("main").find_all("h4")
+        if not h4:
             logger.warning(
                 "Couldn't determine year information, maybe provide the desired filename using '--filename'?"
             )
             return ""
-        text = h2[0].get_text()
+        text = h4[0].get_text()
         report = text.split(":", maxsplit=1)[-1]
         year_num = report.strip().split(" ")[1]
         year = year_num.split("/")[0]
@@ -73,16 +75,19 @@ class IACR(Provider):
         page = get_page_with_retry(abs_url)
         soup = bs4.BeautifulSoup(page, "html.parser")
 
-        bb = soup.find_all("b")
-        b = next((b for b in bb if "Available format" in b.get_text()), None)
-        if b is None:
+        dts = soup.find_all("dt")
+        dt = next(
+            (dt for dt in dts if "Available format" in dt.get_text()), None
+        )
+        if dt is None:
             # Fallback
             return abs_url + ".pdf"
-        aa = b.find_next_siblings("a")
+        dd = dt.find_next_sibling("dd")
+        aa = dd.find_all("a")
         a = next((a for a in aa if "PDF" in a.get_text()), None)
         if not a is None:
             return urllib.parse.urljoin(abs_url, a.get("href"))
-        a = next((a for a in aa if "Postscript (PS)" in a.get_text()), None)
+        a = next((a for a in aa if "PS" in a.get_text()), None)
         if not a is None:
             return urllib.parse.urljoin(abs_url, a.get("href"))
         # Fallback

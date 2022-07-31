@@ -4,3 +4,5 @@ dist/*
 build/*
 *.pyc
 */__pycache__/
+aux/
+old/
