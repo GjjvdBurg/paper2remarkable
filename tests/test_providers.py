@@ -148,7 +148,7 @@ class TestProviders(unittest.TestCase):
     def test_openreview(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
-        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2019.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
