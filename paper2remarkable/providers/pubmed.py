@@ -17,11 +17,10 @@ from ._info import Informer
 
 class PubMedInformer(Informer):
 
-    meta_author_key = "citation_authors"
+    meta_author_key = "citation_author"
 
     def _format_authors(self, soup_authors):
-        op = lambda x: x[0].split(",")
-        return super()._format_authors(soup_authors, sep=" ", idx=-1, op=op)
+        return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
     def _format_year(self, soup_date):
         if re.match("\w+\ \d{4}", soup_date):
