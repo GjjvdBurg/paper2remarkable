@@ -107,7 +107,7 @@ class TestUI(unittest.TestCase):
             (
                 PdfUrl,
                 "http://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
-                "http://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
+                "https://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
             ),
             (
                 IACR,
