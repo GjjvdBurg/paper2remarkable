@@ -512,8 +512,8 @@ class TestProviders(unittest.TestCase):
 
     def test_iacr_1(self):
         prov = IACR(upload=False, verbose=VERBOSE)
-        url = "https://eprint.iacr.org/2021/489"
-        exp = "Xu_et_al_-_ROSE_Robust_Searchable_Encryption_With_Forward_and_Backward_Security_and_Practical_Performance_2021.pdf"
+        url = "https://eprint.iacr.org/2021/490"
+        exp = "Liu_Wang_Zheng_-_Optimizing_Bootstrapping_and_Evaluating_Large_FHE_Gates_in_the_LWE-based_GSW-FHE_2021.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
