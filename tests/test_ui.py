@@ -257,6 +257,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["experimental"], False)
         self.assertEqual(opts["core"]["upload"], True)
         self.assertEqual(opts["core"]["verbose"], False)
+        self.assertEqual(opts["core"]["remarkable_dir"], "/")
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
         for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
@@ -281,6 +282,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["experimental"], False)
         self.assertEqual(opts["core"]["upload"], False)
         self.assertEqual(opts["core"]["verbose"], True)
+        self.assertEqual(opts["core"]["remarkable_dir"], "/")
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
         for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
@@ -305,6 +307,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["experimental"], False)
         self.assertEqual(opts["core"]["upload"], False)
         self.assertEqual(opts["core"]["verbose"], True)
+        self.assertEqual(opts["core"]["remarkable_dir"], "/")
 
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
         for s in ["gs", "pdftoppm", "pdftk", "qpdf", "rmapi"]:
@@ -321,7 +324,11 @@ class TestUI(unittest.TestCase):
         args = parser.parse_args(["-n", "-c", source])
         gs_path = "/path/to/gs"
         config = {
-            "core": {"upload": False, "verbose": True},
+            "core": {
+                "upload": False,
+                "verbose": True,
+                "remarkable_dir": "/Tools",
+            },
             "system": {"gs": gs_path},
         }
 
@@ -333,6 +340,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["experimental"], False)
         self.assertEqual(opts["core"]["upload"], False)
         self.assertEqual(opts["core"]["verbose"], True)
+        self.assertEqual(opts["core"]["remarkable_dir"], "/Tools")
 
         self.assertEqual(opts["system"]["gs"], gs_path)
         test_sys = lambda s: self.assertEqual(opts["system"][s], s)
@@ -347,7 +355,7 @@ class TestUI(unittest.TestCase):
         source = "/tmp/local.pdf"  # doesn't need to exist
 
         parser = build_argument_parser()
-        args = parser.parse_args(["-n", "-c", source])
+        args = parser.parse_args(["-n", "-p", "/Tools", "-c", source])
         gs_path = "/path/to/gs"
         qpdf_path = "/path/to/qpdf"
         config = {
@@ -367,6 +375,7 @@ class TestUI(unittest.TestCase):
         self.assertEqual(opts["core"]["experimental"], False)
         self.assertEqual(opts["core"]["upload"], False)
         self.assertEqual(opts["core"]["verbose"], True)
+        self.assertEqual(opts["core"]["remarkable_dir"], "/Tools")
 
         self.assertEqual(opts["system"]["gs"], gs_path)
         self.assertEqual(opts["system"]["qpdf"], qpdf_path)
@@ -390,6 +399,7 @@ class TestUI(unittest.TestCase):
                 "upload": False,
                 "experimental": False,
                 "crop": "none",
+                "remarkable_dir": "/",
             },
             "system": {
                 "gs": "gs",
@@ -433,6 +443,7 @@ class TestUI(unittest.TestCase):
                 "upload": upload,
                 "experimental": False,
                 "crop": "none",
+                "remarkable_dir": rm_dir,
             },
             "system": {
                 "gs": "gs",
@@ -446,7 +457,7 @@ class TestUI(unittest.TestCase):
 
         test_dir = tempfile.mkdtemp()
         with chdir(test_dir):
-            runner(inputs, filenames, options, remarkable_dir=rm_dir)
+            runner(inputs, filenames, options)
 
         pth = os.path.join(
             test_dir,
