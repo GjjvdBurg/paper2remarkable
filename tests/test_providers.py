@@ -284,6 +284,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_1(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1385466"
@@ -291,6 +292,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_2(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/pdf/10.1080/03610918.2017.1408826?needAccess=true"
@@ -298,6 +300,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_3(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://amstat.tandfonline.com/doi/pdf/10.1080/01621459.2017.1385466?needAccess=true"
@@ -305,6 +308,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("T&F Online has been disabled due to CloudFlare blocking")
     def test_tandfonline_4(self):
         prov = TandFOnline(upload=False, verbose=VERBOSE)
         url = "https://www.tandfonline.com/doi/full/10.1080/0015198X.2019.1675421"
@@ -379,6 +383,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("SagePub has been disabled due to CloudFlare blocking")
     def test_sagepub_1(self):
         prov = SagePub(upload=False, verbose=VERBOSE)
         url = "https://journals.sagepub.com/doi/full/10.1177/0306312714535679"
@@ -386,6 +391,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("SagePub has been disabled due to CloudFlare blocking")
     def test_sagepub_2(self):
         prov = SagePub(upload=False, verbose=VERBOSE)
         url = "https://journals.sagepub.com/doi/pdf/10.1177/1352458517694432"
