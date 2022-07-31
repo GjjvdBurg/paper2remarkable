@@ -39,7 +39,6 @@ providers = [
     OpenReview,
     PMLR,
     PubMed,
-    ScienceDirect,
     Springer,
     SemanticScholar,
     LocalFile,
