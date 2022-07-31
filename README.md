@@ -47,11 +47,8 @@ reMarkable from any of the following sources:
 * [OpenReview](https://openreview.net/)
 * [PMLR](http://proceedings.mlr.press/)
 * [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/)
-* [SagePub](https://journals.sagepub.com/)
-* [ScienceDirect](https://www.sciencedirect.com/)
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
-* [Taylor & Francis](https://www.tandfonline.com/)
 * A generic URL to a PDF file
 * A local PDF file
 * Any article on a website
