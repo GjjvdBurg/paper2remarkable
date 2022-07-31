@@ -161,7 +161,7 @@ class TestProviders(unittest.TestCase):
 
     def test_springer_2(self):
         prov = Springer(upload=False, verbose=VERBOSE)
-        url = "https://link.springer.com/content/pdf/10.1007%2F11681878_14.pdf"
+        url = "https://link.springer.com/content/pdf/10.1007/11681878_14.pdf"
         exp_filename = "Dwork_et_al_-_Calibrating_Noise_to_Sensitivity_in_Private_Data_Analysis_2006.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
