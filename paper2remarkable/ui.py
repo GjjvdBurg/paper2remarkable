@@ -64,7 +64,6 @@ def build_argument_parser():
         "--remarkable-path",
         help="directory on reMarkable to put the file (created if missing, default: /)",
         dest="remarkable_dir",
-        default="/",
     )
     parser.add_argument(
         "-r",
@@ -249,6 +248,11 @@ def merge_options(args, config=None):
     elif not "crop" in opts["core"]:
         opts["core"]["crop"] = "left"
 
+    if args.remarkable_dir is not None:
+        opts["core"]["remarkable_dir"] = args.remarkable_dir
+    elif not "remarkable_dir" in opts["core"]:
+        opts["core"]["remarkable_dir"] = "/"
+
     set_path(opts["system"], "gs", args.gs)
     set_path(opts["system"], "pdftoppm", args.pdftoppm)
     set_path(opts["system"], "pdftk", args.pdftk)
@@ -284,7 +288,7 @@ def set_excepthook(debug):
     sys.excepthook = exception_handler
 
 
-def runner(inputs, filenames, options, remarkable_dir="/", debug=False):
+def runner(inputs, filenames, options, debug=False):
     if not len(inputs) == len(filenames):
         raise ValueError("Number of inputs and filenames must be the same")
     for cli_input, filename in zip(inputs, filenames):
@@ -296,7 +300,7 @@ def runner(inputs, filenames, options, remarkable_dir="/", debug=False):
             experimental=options["core"]["experimental"],
             crop=options["core"]["crop"],
             blank=options["core"]["blank"],
-            remarkable_dir=remarkable_dir,
+            remarkable_dir=options["core"]["remarkable_dir"],
             rmapi_path=options["system"]["rmapi"],
             pdftoppm_path=options["system"]["pdftoppm"],
             pdftk_path=options["system"]["pdftk"],

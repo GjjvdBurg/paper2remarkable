@@ -5,6 +5,7 @@ core:
   upload: true          # options: true, false
   verbose: true         # options: true, false
   experimental: true    # options: true, false
+  remarkable_dir: "/"   # options: directory on the remarkable to place the files
 
 # System settings are all optional, but can be used if executables are not on 
 # the PATH. Options in this section include: gs, pdftk, pdftoppm, qpdf, and 
