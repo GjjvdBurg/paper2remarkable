@@ -4,7 +4,7 @@ ENV GOPATH /go
 ENV PATH ${GOPATH}/bin:/usr/local/go/bin:$PATH
 ENV RMAPIREPO github.com/juruen/rmapi
 
-RUN go get -u ${RMAPIREPO}
+RUN git clone https://${RMAPIREPO} && cd rmapi && go install
 
 
 FROM python:3.7-slim-buster
