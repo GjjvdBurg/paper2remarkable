@@ -479,7 +479,7 @@ class TestProviders(unittest.TestCase):
         prov = ACL(upload=False, verbose=VERBOSE)
         url = "https://www.aclweb.org/anthology/2020.sigmorphon-1.29v2.pdf"
         exp = (
-            "Burness_McMullin_-_Multi-Tiered_Strictly_Local_Functions_2020.pdf"
+            "Burness_Mcmullin_-_Multi-Tiered_Strictly_Local_Functions_2020.pdf"
         )
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
