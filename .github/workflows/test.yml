@@ -16,7 +16,7 @@ jobs:
     runs-on: [ 'ubuntu-latest' ]
     strategy:
       matrix:
-        py: [ '3.7', '3.11' ] # minimum required and latest stable
+        py: [ '3.8', '3.11' ]
 
     steps:
       - name: Install Python ${{ matrix.py }}
