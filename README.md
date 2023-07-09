@@ -211,8 +211,7 @@ For HTML sources (i.e. web articles) you can specify custom styling using the
 provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0a09e4b173c87850c6ddee/paper2remarkable/providers/html.py#L36) 
 can serve as a starting point.
 
-Local PDF or Postscript files can be supplied too, using ``p2r 
-/path/to/file.pdf``.
+Local PDF or Postscript files can be supplied too, using ``p2r /path/to/file.pdf``.
 
 A configuration file can be used to provide commonly-used command line 
 options. By default the configuration file at ``~/.paper2remarkable.yml`` is 
