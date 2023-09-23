@@ -244,7 +244,10 @@ class TestProviders(unittest.TestCase):
 
     def test_neurips_1(self):
         prov = NeurIPS(upload=False, verbose=VERBOSE)
-        url = "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf"
+        # NOTE: This test has been changed because the old url is not
+        # redirected (anymore?). Using the new url instead.
+        # url = "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf"
+        url = "https://proceedings.neurips.cc/paper_files/paper/1990/hash/89f0fd5c927d466d6ec9a21b9ac34ffa-Abstract.html"
         exp = "Platt_-_Leaning_by_Combining_Memorization_and_Gradient_Descent_1990.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
