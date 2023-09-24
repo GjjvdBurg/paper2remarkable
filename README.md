@@ -50,7 +50,7 @@ reMarkable from any of the following sources:
 * [SemanticScholar](https://www.semanticscholar.org/)
 * [SpringerLink](https://link.springer.com/)
 * A generic URL to a PDF file
-* A local PDF file
+* A local PDF or Postscript file
 * Any article on a website
 
 The program aims to be flexible to the exact source URL, so for many of the 
@@ -113,10 +113,8 @@ The script requires the following external programs to be available:
 
 Specifically:
 
-1. First install [rMAPI](https://github.com/juruen/rmapi), using
-   ```
-   $ go get -u github.com/juruen/rmapi
-   ```
+1. First install [rMAPI](https://github.com/juruen/rmapi), using the 
+   instructions available here: https://github.com/juruen/rmapi#install
 
 2. Then install system dependencies:
    - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
@@ -212,6 +210,8 @@ For HTML sources (i.e. web articles) you can specify custom styling using the
 ``--css`` and ``--font-urls`` options. The default style in the [HTML 
 provider](https://github.com/GjjvdBurg/paper2remarkable/blob/a6e50d07748c842f1f0a09e4b173c87850c6ddee/paper2remarkable/providers/html.py#L36) 
 can serve as a starting point.
+
+Local PDF or Postscript files can be supplied too, using ``p2r /path/to/file.pdf``.
 
 A configuration file can be used to provide commonly-used command line 
 options. By default the configuration file at ``~/.paper2remarkable.yml`` is 
