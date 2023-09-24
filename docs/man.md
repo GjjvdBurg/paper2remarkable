@@ -127,7 +127,6 @@ to whether a URL to the PDF or to the abstract page is provided.
 - arXiv
 - ACL Web
 - ACM Digital Library
-- CiteSeerX
 - CVF
 - ECCC
 - IACR
