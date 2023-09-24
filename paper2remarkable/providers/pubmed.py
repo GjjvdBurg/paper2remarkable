@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class PubMedInformer(Informer):
-
     meta_date_key = "citation_publication_date"
     meta_author_key = "citation_author"
 
@@ -25,7 +24,6 @@ class PubMedInformer(Informer):
 
 
 class PubMed(Provider):
-
     re_abs = "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?"
     re_pdf = (
         "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf"

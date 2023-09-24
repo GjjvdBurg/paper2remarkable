@@ -20,7 +20,6 @@ from ._info import Informer
 
 
 class SpringerInformer(Informer):
-
     meta_date_key = None
 
     def _format_authors(self, soup_authors):
@@ -36,7 +35,6 @@ class SpringerInformer(Informer):
 
 
 class Springer(Provider):
-
     re_abs_1 = "https?:\/\/link.springer.com\/article\/10\.\d{4}\/[a-z0-9\-]+"
     re_abs_2 = "https?:\/\/link.springer.com\/chapter\/10\.\d{4}\/[a-z0-9\-]+"
     re_pdf = "https?:\/\/link\.springer\.com\/content\/pdf\/10\.\d{4}(%2F|\/)[a-z0-9\-\_]+\.pdf"

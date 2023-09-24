@@ -62,7 +62,6 @@ class IACRInformer(Informer):
 
 
 class IACR(Provider):
-
     re_abs = "https?://eprint.iacr.org/\d{4}/\d+$"
     re_pdf = "https?://eprint.iacr.org/\d{4}/\d+\.pdf$"
     re_ps = "https?://eprint.iacr.org/\d{4}/\d+\.ps$"

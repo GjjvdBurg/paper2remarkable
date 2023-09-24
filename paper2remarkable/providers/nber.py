@@ -18,7 +18,6 @@ from ._info import Informer
 
 
 class NBERInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors, sep=" ", idx=0, op=None):
@@ -26,7 +25,6 @@ class NBERInformer(Informer):
 
 
 class NBER(Provider):
-
     re_abs = "https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)$"
     re_pdf = "https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)\.pdf$"
 

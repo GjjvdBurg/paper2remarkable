@@ -18,7 +18,6 @@ from ._info import Informer
 
 
 class JMLRInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors):
@@ -29,7 +28,6 @@ class JMLRInformer(Informer):
 
 
 class JMLR(Provider):
-
     re_abs_1 = "https?://(www\.)?jmlr\.org/papers/v(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3}).html$"
     re_pdf_1 = "https?://(www\.)?jmlr\.org/papers/volume(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3})/(?P=pid).pdf$"
 

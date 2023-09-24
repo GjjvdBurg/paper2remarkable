@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class PMLRInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors):
@@ -24,7 +23,6 @@ class PMLRInformer(Informer):
 
 
 class PMLR(Provider):
-
     re_abs_1 = "https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.html"
     re_pdf_1 = "https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.pdf"
 

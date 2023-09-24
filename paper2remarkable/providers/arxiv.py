@@ -29,7 +29,6 @@ class ArxivInformer(Informer):
 
 
 class Arxiv(Provider):
-
     re_abs_1 = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
     re_pdf_1 = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
 

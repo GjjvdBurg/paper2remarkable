@@ -20,7 +20,6 @@ logger = Logger()
 
 
 class CiteSeerXInformer(Informer):
-
     meta_author_key = "citation_authors"
     meta_date_key = "citation_year"
 
@@ -30,7 +29,6 @@ class CiteSeerXInformer(Informer):
 
 
 class CiteSeerX(Provider):
-
     re_abs = "^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/summary\?doi=(?P<doi>[0-9\.]+)"
     re_pdf = "^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/download(\;jsessionid=[A-Z0-9]+)?\?doi=(?P<doi>[0-9\.]+)&rep=rep1&type=pdf"
 

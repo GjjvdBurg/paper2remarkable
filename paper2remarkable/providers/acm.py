@@ -43,7 +43,6 @@ class ACMInformer(Informer):
 
 
 class ACM(Provider):
-
     re_abs = "^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
     re_pdf = "^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)(\?download=true)?"
 
