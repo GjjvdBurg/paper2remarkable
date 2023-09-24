@@ -64,7 +64,6 @@ class ECCCInformer(Informer):
 
 
 class ECCC(Provider):
-
     re_abs = "https?://eccc.weizmann.ac.il/report/\d{4}/\d+/?$"
     re_pdf = "https?://eccc.weizmann.ac.il/report/\d{4}/\d+/download/?$"
 

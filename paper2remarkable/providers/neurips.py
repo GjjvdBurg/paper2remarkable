@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class NeurIPSInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def __init__(self, *args, **kwargs):
@@ -30,17 +29,11 @@ class NeurIPSInformer(Informer):
 
 
 class NeurIPS(Provider):
+    re_abs = r"^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+$"
+    re_pdf = r"^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+.pdf$"
 
-    re_abs = "^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+$"
-    re_pdf = "^https?://papers.n(eur)?ips.cc/paper/[\d\w\-]+.pdf$"
-
-    re_abs_2 = "https://papers.n(eur)?ips.cc/paper/\d{4}/hash/[0-9a-f]{32}-Abstract.html"
-    re_pdf_2 = (
-        "https://papers.n(eur)?ips.cc/paper/\d{4}/file/[0-9a-f]{32}-Paper.pdf"
-    )
-
-    re_abs_3 = "https://proceedings.n(eur)?ips.cc/paper/\d{4}/hash/[0-9a-f]{32}-Abstract.html"
-    re_pdf_3 = "https://proceedings.n(eur)?ips.cc/paper/\d{4}/file/[0-9a-f]{32}-Paper.pdf"
+    re_abs_2 = r"https://(proceedings|papers).n(eur)?ips.cc/(paper_files/)?paper/\d{4}/hash/[0-9a-f]{32}-Abstract.html"
+    re_pdf_2 = r"https://(proceedings|papers).n(eur)?ips.cc/(paper_files/)?paper/\d{4}/file/[0-9a-f]{32}-Paper.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -54,19 +47,19 @@ class NeurIPS(Provider):
         elif re.match(self.re_pdf, url):
             abs_url = url.replace(".pdf", "")
             pdf_url = url
-        elif re.match(self.re_abs_2, url) or re.match(self.re_abs_3, url):
+        elif re.match(self.re_abs_2, url):
             self.informer.new_site = True
             abs_url = url
             pdf_url = (
-                url.replace("hash", "file")
+                url.replace("/hash/", "/file/")
                 .replace("Abstract", "Paper")
                 .replace(".html", ".pdf")
             )
-        elif re.match(self.re_pdf_2, url) or re.match(self.re_pdf_3, url):
+        elif re.match(self.re_pdf_2, url):
             self.informer.new_site = True
             pdf_url = url
             abs_url = (
-                url.replace("file", "hash")
+                url.replace("/file/", "/hash/")
                 .replace("Paper", "Abstract")
                 .replace(".pdf", ".html")
             )
@@ -74,12 +67,11 @@ class NeurIPS(Provider):
             raise URLResolutionError("NeurIPS", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return (
             re.fullmatch(NeurIPS.re_abs, src)
             or re.fullmatch(NeurIPS.re_pdf, src)
             or re.fullmatch(NeurIPS.re_abs_2, src)
             or re.fullmatch(NeurIPS.re_pdf_2, src)
-            or re.fullmatch(NeurIPS.re_abs_3, src)
-            or re.fullmatch(NeurIPS.re_pdf_3, src)
         )

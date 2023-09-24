@@ -20,7 +20,6 @@ logger = Logger()
 
 
 class OpenReviewInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def get_authors(self, soup):
@@ -56,7 +55,6 @@ class OpenReviewInformer(Informer):
 
 
 class OpenReview(Provider):
-
     re_abs = "https?://openreview.net/forum\?id=[A-Za-z0-9]+"
     re_pdf = "https?://openreview.net/pdf\?id=[A-Za-z0-9]+"
 

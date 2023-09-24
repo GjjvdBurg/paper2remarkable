@@ -29,7 +29,6 @@ logger = Logger()
 
 
 class ScienceDirectInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def get_authors(self, soup):
@@ -44,7 +43,6 @@ class ScienceDirectInformer(Informer):
 
 
 class ScienceDirect(Provider):
-
     re_abs = (
         "https?:\/\/www.sciencedirect.com/science/article/pii/[A-Za-z0-9]+"
     )

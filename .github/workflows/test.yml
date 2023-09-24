@@ -16,7 +16,7 @@ jobs:
     runs-on: [ 'ubuntu-latest' ]
     strategy:
       matrix:
-        py: [ '3.8', '3.11' ]
+        py: [ '3.8', '3.11' ] # minimum required and latest stable
 
     steps:
       - name: Install Python ${{ matrix.py }}
@@ -27,12 +27,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run unit test script
-        run: ./.github/scripts/test_p2r.sh
-        shell: bash
+      # NOTE: Keep versions in sync with .pre-commit-config.yaml
 
       - name: Run code quality tests (black)
         uses: psf/black@stable
+        with:
+          version: "23.3.0"
 
       - name: Run code quality tests (isort)
         uses: jamescurtin/isort-action@master
+        with:
+          isortVersion: "5.12.0"
+
+      - name: Run unit test script
+        run: ./.github/scripts/test_p2r.sh
+        shell: bash

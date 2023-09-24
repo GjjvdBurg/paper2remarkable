@@ -19,12 +19,10 @@ logger = Logger()
 
 
 class CVFInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
 
 class CVF(Provider):
-
     re_abs = "^https?://openaccess.thecvf.com/content_([\w\d]+)/html/([\w\d\_\-]+).html$"
     re_pdf = "^https?://openaccess.thecvf.com/content_([\w\d]+)/papers/([\w\d\_\-]+).pdf$"
 

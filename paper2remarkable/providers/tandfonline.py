@@ -31,7 +31,6 @@ class TandFOnlineInformer(Informer):
 
 
 class TandFOnline(Provider):
-
     re_abs = "^https?://\w+.tandfonline.com/doi/(full|abs)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
     re_pdf = "^https?://\w+.tandfonline.com/doi/(full|pdf)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
 

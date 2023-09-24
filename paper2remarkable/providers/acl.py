@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class ACLInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors):
@@ -24,7 +23,6 @@ class ACLInformer(Informer):
 
 
 class ACL(Provider):
-
     re_abs_1 = "^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]+)"
     re_abs_2 = "^https://(www.)?aclanthology.org/(?P<key>[0-9a-zA-Z\.\-]+)"
     re_pdf_1 = "^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]*?)(v\d+)?.pdf"

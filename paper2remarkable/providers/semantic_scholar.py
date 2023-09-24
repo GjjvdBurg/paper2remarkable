@@ -20,7 +20,6 @@ from ._info import Informer
 
 
 class SemanticScholarInformer(Informer):
-
     meta_date_key = "citation_publication_date"
 
     def _format_authors(self, soup_authors):
@@ -28,7 +27,6 @@ class SemanticScholarInformer(Informer):
 
 
 class SemanticScholar(Provider):
-
     re_abs = (
         "https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
     )

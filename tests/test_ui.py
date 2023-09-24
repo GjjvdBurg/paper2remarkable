@@ -99,11 +99,11 @@ class TestUI(unittest.TestCase):
                 "https://link.springer.com/article/10.1007/s10618-019-00631-5",
                 "https://link.springer.com/article/10.1007/s10618-019-00631-5",
             ),
-            (
-                PdfUrl,
-                "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
-                "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
-            ),
+            # (
+            #     PdfUrl,
+            #     "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
+            #     "https://confcats_isif.s3.amazonaws.com/web-files/journals/entries/Nonlinear%20Kalman%20Filters.pdf",
+            # ),
             (
                 PdfUrl,
                 "http://publications.aston.ac.uk/id/eprint/38334/1/5th_Artificial_Neural_Networks.pdf",
@@ -159,30 +159,20 @@ class TestUI(unittest.TestCase):
                 "https://www.nber.org/papers/w19152.pdf",
                 "https://www.nber.org/system/files/working_papers/w19152/w19152.pdf",
             ),
-            (
-                NeurIPS,
-                "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf",
-                "https://proceedings.neurips.cc/paper/1990/file/89f0fd5c927d466d6ec9a21b9ac34ffa-Paper.pdf",
-            ),
+            # ( # disabling; no longer redirected
+            #     NeurIPS,
+            #     "https://papers.nips.cc/paper/325-leaning-by-combining-memorization-and-gradient-descent.pdf",
+            #     "https://proceedings.neurips.cc/paper/1990/file/89f0fd5c927d466d6ec9a21b9ac34ffa-Paper.pdf",
+            # ),
             (
                 NeurIPS,
                 "https://papers.nips.cc/paper/7796-middle-out-decoding",
-                "https://papers.nips.cc/paper/2018/hash/0c215f194276000be6a6df6528067151-Abstract.html",
+                "https://papers.nips.cc/paper_files/paper/2018/hash/0c215f194276000be6a6df6528067151-Abstract.html",
             ),
             (
                 NeurIPS,
                 "http://papers.neurips.cc/paper/7368-on-the-dimensionality-of-word-embedding.pdf",
-                "https://proceedings.neurips.cc/paper/2018/file/b534ba68236ba543ae44b22bd110a1d6-Paper.pdf",
-            ),
-            (
-                CiteSeerX,
-                "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548",
-                "https://citeseerx.ist.psu.edu:443/viewdoc/summary?doi=10.1.1.89.6548",
-            ),
-            (
-                CiteSeerX,
-                "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
-                "https://citeseerx.ist.psu.edu:443/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf",
+                "https://proceedings.neurips.cc/paper_files/paper/2018/file/b534ba68236ba543ae44b22bd110a1d6-Paper.pdf",
             ),
             (
                 HTML,

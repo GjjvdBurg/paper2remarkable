@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class SagePubInformer(Informer):
-
     meta_author_key = "dc.Creator"
     meta_title_key = "dc.Title"
     meta_date_key = "dc.Date"
@@ -29,7 +28,6 @@ class SagePubInformer(Informer):
 
 
 class SagePub(Provider):
-
     re_abs = "https?:\/\/journals\.sagepub\.com\/doi\/full\/\d{2}\.\d{4}\/\d+"
     re_pdf = "https?:\/\/journals\.sagepub\.com\/doi\/pdf\/\d{2}\.\d{4}\/\d+"
 

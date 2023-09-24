@@ -16,7 +16,6 @@ from ._info import Informer
 
 
 class NatureInformer(Informer):
-
     meta_date_key = "citation_online_date"
 
     def _format_authors(self, soup_authors):
@@ -24,7 +23,6 @@ class NatureInformer(Informer):
 
 
 class Nature(Provider):
-
     re_abs = "^https://www.nature.com/articles/s[a-z0-9\-]+$"
     re_pdf = "^https://www.nature.com/articles/s[a-z0-9\-]+\.pdf$"
 
