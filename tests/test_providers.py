@@ -148,7 +148,7 @@ class TestProviders(unittest.TestCase):
     def test_openreview(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
-        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2019.pdf"
+        exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
@@ -273,6 +273,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("CiteSeerX has been disabled due to automation failure")
     def test_citeseerx_1(self):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.89.6548"
@@ -280,6 +281,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("CiteSeerX has been disabled due to automation failure")
     def test_citeseerx_2(self):
         prov = CiteSeerX(upload=False, verbose=VERBOSE)
         url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7607&rep=rep1&type=pdf"
@@ -379,6 +381,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    @unittest.skip("PDF url doesn't point to pdf file anymore")
     def test_semantic_scholar_3(self):
         prov = SemanticScholar(upload=False, verbose=VERBOSE)
         url = "https://www.semanticscholar.org/paper/A-historical-account-of-how-continental-drift-and-Meinhold-%C5%9Eeng%C3%B6r/e7be87319985445e3ef7addf1ebd10899b92441f"

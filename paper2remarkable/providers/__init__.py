@@ -3,7 +3,7 @@
 from .acl import ACL
 from .acm import ACM
 from .arxiv import Arxiv
-from .citeseerx import CiteSeerX
+
 from .cvf import CVF
 from .eccc import ECCC
 from .html import HTML
@@ -17,18 +17,25 @@ from .openreview import OpenReview
 from .pdf_url import PdfUrl
 from .pmlr import PMLR
 from .pubmed import PubMed
-from .sagepub import SagePub
-from .science_direct import ScienceDirect
 from .semantic_scholar import SemanticScholar
 from .springer import Springer
+
+from .citeseerx import CiteSeerX  # disabled, incomplete html doc received
+
+# The following providers are no longer functional due to Cloudflare blocking
+# automated access, and have therefore been removed from the list of providers
+# below.
+from .sagepub import SagePub
+from .science_direct import ScienceDirect
 from .tandfonline import TandFOnline
+
+
 
 # NOTE: Order matters here, PdfUrl and HTML should be last
 providers = [
     ACL,
     ACM,
     Arxiv,
-    CiteSeerX,
     CVF,
     ECCC,
     IACR,

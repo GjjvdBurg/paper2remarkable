@@ -74,6 +74,4 @@ class NeurIPS(Provider):
             or re.fullmatch(NeurIPS.re_pdf, src)
             or re.fullmatch(NeurIPS.re_abs_2, src)
             or re.fullmatch(NeurIPS.re_pdf_2, src)
-            or re.fullmatch(NeurIPS.re_abs_3, src)
-            or re.fullmatch(NeurIPS.re_pdf_3, src)
         )
