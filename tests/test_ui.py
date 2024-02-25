@@ -62,7 +62,7 @@ class TestUI(unittest.TestCase):
             (
                 Arxiv,
                 "http://arxiv.org/abs/arXiv:1908.03213",
-                "https://arxiv.org/abs/1908.03213",
+                "http://arxiv.org/abs/1908.03213",
             ),
             (
                 Arxiv,
