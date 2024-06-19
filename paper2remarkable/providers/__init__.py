@@ -5,6 +5,7 @@ from .acm import ACM
 from .arxiv import Arxiv
 from .citeseerx import CiteSeerX  # disabled, incomplete html doc received
 from .cvf import CVF
+from .diva import DiVA
 from .eccc import ECCC
 from .html import HTML
 from .iacr import IACR
@@ -33,6 +34,7 @@ providers = [
     ACM,
     Arxiv,
     CVF,
+    DiVA,
     ECCC,
     IACR,
     JMLR,
