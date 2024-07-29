@@ -565,7 +565,7 @@ class TestProviders(unittest.TestCase):
         # Testing absolute URLs and sanitization of filenames
         prov = DiVA(upload=False, verbose=VERBOSE)
         url = "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
-        exp = "Alhussein_-_Privacy_by_Design_Internet_of_Things_managing_privacy_2018.pdf"
+        exp = "Alhussein_-_Privacy_by_Design_Amp_Internet_of_Things_Managing_Privacy_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
     

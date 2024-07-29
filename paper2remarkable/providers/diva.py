@@ -47,7 +47,6 @@ class DiVA(Provider):
         soup = bs4.BeautifulSoup(page, "html.parser")
 
         pdf_url = soup.find("meta", {"name": "citation_pdf_url"})
-        print(pdf_url)
         if pdf_url is None:
             logger.warning(
                 "Couldn't find the fulltext URL"
