@@ -152,3 +152,18 @@ class BlockedByCloudFlareError(Error):
             "as paper2remarkable gets blocked by CloudFlare.\n"
         )
         return msg
+
+class FulltextMissingError(Error):
+    """Exception raised when the fulltext PDF can't be found."""
+
+    def __init__(self, provider, url):
+        self.provider = provider
+        self.url = url
+
+    def __str__(self):
+        msg = (
+            "ERROR: Couldn't find the fulltext PDF for the following url:\n"
+            f"\t{self.provider}\n"
+            f"\t{self.url}\n"
+        )
+        return msg 

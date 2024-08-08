@@ -37,6 +37,7 @@ reMarkable from any of the following sources:
 * [ACL Web](https://www.aclweb.org/anthology/)
 * [ACM Digital Library](https://dl.acm.org/dl.cfm)
 * [CVF](https://openaccess.thecvf.com/menu)
+* [DiVA](https://diva-portal.org/)
 * [ECCC](https://eccc.weizmann.ac.il/reports/menu/)
 * [IACR](https://eprint.iacr.org/)
 * [JMLR](http://jmlr.org)

@@ -22,8 +22,9 @@ VERSION = None
 REQUIRED = [
     "beautifulsoup4>=4.8",
     "html2text>=2020.1.16",
+    "lxml_html_clean>=0.1.1",
     "markdown>=3.1.1",
-    "pdfplumber>=0.5",
+    "pdfplumber>=0.11",
     "pikepdf>=2.9.0",
     "pycryptodome",
     "pyyaml>=5.1",

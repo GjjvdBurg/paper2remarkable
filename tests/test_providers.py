@@ -16,10 +16,11 @@ import pdfplumber
 from _constants import TEST_FILE
 from pikepdf import Pdf
 
-from paper2remarkable.exceptions import URLResolutionError
+from paper2remarkable.exceptions import URLResolutionError, FulltextMissingError
 from paper2remarkable.providers import ACL
 from paper2remarkable.providers import ACM
 from paper2remarkable.providers import CVF
+from paper2remarkable.providers import DiVA
 from paper2remarkable.providers import ECCC
 from paper2remarkable.providers import HTML
 from paper2remarkable.providers import IACR
@@ -552,6 +553,27 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
 
+    def test_diva_1(self):
+        # Testing redirections from Kungliga biblioteket
+        prov = DiVA(upload=False, verbose=VERBOSE)
+        url = "https://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-318796"
+        exp = "Lidayova_-_Fast_Methods_for_Vascular_Segmentation_Based_on_Approximate_Skeleton_Detection_2017.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+
+    def test_diva_2(self):
+        # Testing absolute URLs and sanitization of filenames
+        prov = DiVA(upload=False, verbose=VERBOSE)
+        url = "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
+        exp = "Alhussein_-_Privacy_by_Design_Amp_Internet_of_Things_Managing_Privacy_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp, os.path.basename(filename))
+    
+    def test_diva_3(self):
+        # Testing older entries without available fulltext
+        prov = DiVA(upload=False, verbose=VERBOSE)
+        url = "https://uu.diva-portal.org/smash/record.jsf?pid=diva2%3A59234"
+        self.assertRaises(FulltextMissingError, prov.run, url)
 
 if __name__ == "__main__":
     unittest.main()
