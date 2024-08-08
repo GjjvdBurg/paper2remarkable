@@ -20,7 +20,7 @@ logger = Logger()
 
 
 class OpenReviewInformer(Informer):
-    meta_date_key = "citation_publication_date"
+    meta_date_key = "citation_online_date"
 
     def get_authors(self, soup):
         # Get the authors for OpenReview by parsing the JSON payload
@@ -55,8 +55,8 @@ class OpenReviewInformer(Informer):
 
 
 class OpenReview(Provider):
-    re_abs = "https?://openreview.net/forum\?id=[A-Za-z0-9]+"
-    re_pdf = "https?://openreview.net/pdf\?id=[A-Za-z0-9]+"
+    re_abs = r"https?://openreview.net/forum\?id=[A-Za-z0-9]+"
+    re_pdf = r"https?://openreview.net/pdf\?id=[A-Za-z0-9]+"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,6 +74,7 @@ class OpenReview(Provider):
             raise URLResolutionError("OpenReview", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         """Check if the url is a valid OpenReview url."""
         return re.match(OpenReview.re_abs, src) or re.match(

@@ -28,7 +28,8 @@ class IACRInformer(Informer):
         title = soup.find_all("title")
         if not title:
             logger.warning(
-                "Couldn't determine title information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine title information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         return title[0].get_text()
@@ -37,7 +38,8 @@ class IACRInformer(Informer):
         p = soup.find_all("p", {"class": "fst-italic"})
         if not p:
             logger.warning(
-                "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine author information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         text = p[0].text
@@ -51,7 +53,8 @@ class IACRInformer(Informer):
         h4 = soup.find("main").find_all("h4")
         if not h4:
             logger.warning(
-                "Couldn't determine year information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine year information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         text = h4[0].get_text()
@@ -62,9 +65,9 @@ class IACRInformer(Informer):
 
 
 class IACR(Provider):
-    re_abs = "https?://eprint.iacr.org/\d{4}/\d+$"
-    re_pdf = "https?://eprint.iacr.org/\d{4}/\d+\.pdf$"
-    re_ps = "https?://eprint.iacr.org/\d{4}/\d+\.ps$"
+    re_abs = r"https?://eprint.iacr.org/\d{4}/\d+$"
+    re_pdf = r"https?://eprint.iacr.org/\d{4}/\d+\.pdf$"
+    re_ps = r"https?://eprint.iacr.org/\d{4}/\d+\.ps$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,12 +86,28 @@ class IACR(Provider):
             return abs_url + ".pdf"
         dd = dt.find_next_sibling("dd")
         aa = dd.find_all("a")
-        a = next((a for a in aa if "PDF" in a.get_text()), None)
-        if not a is None:
-            return urllib.parse.urljoin(abs_url, a.get("href"))
-        a = next((a for a in aa if "PS" in a.get_text()), None)
-        if not a is None:
-            return urllib.parse.urljoin(abs_url, a.get("href"))
+        pdf_tag = next(
+            (
+                a
+                for a in aa
+                if "PDF" in a.get_text()
+                and a.get("href").lower().endswith(".pdf")
+            ),
+            None,
+        )
+        if pdf_tag is not None:
+            return urllib.parse.urljoin(abs_url, pdf_tag.get("href"))
+        ps_tag = next(
+            (
+                a
+                for a in aa
+                if "PS" in a.get_text()
+                and a.get("href").lower().endswith(".ps")
+            ),
+            None,
+        )
+        if ps_tag is not None:
+            return urllib.parse.urljoin(abs_url, ps_tag.get("href"))
         # Fallback
         return abs_url + ".pdf"
 
@@ -112,5 +131,6 @@ class IACR(Provider):
         super().retrieve_pdf(pdf_url, tmpfilename)
         self.rewrite_pdf(tmpfilename, out_pdf=filename)
 
+    @staticmethod
     def validate(src):
         return re.match(IACR.re_abs, src) or re.match(IACR.re_pdf, src)

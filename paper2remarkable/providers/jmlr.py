@@ -28,11 +28,11 @@ class JMLRInformer(Informer):
 
 
 class JMLR(Provider):
-    re_abs_1 = "https?://(www\.)?jmlr\.org/papers/v(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3}).html$"
-    re_pdf_1 = "https?://(www\.)?jmlr\.org/papers/volume(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3})/(?P=pid).pdf$"
+    re_abs_1 = r"https?://(www\.)?jmlr\.org/papers/v(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3}).html$"
+    re_pdf_1 = r"https?://(www\.)?jmlr\.org/papers/volume(?P<vol>\d+)/(?P<pid>\d{2}\-\d{3})/(?P=pid).pdf$"
 
-    re_abs_2 = "https?://(www\.)?jmlr\.org/papers/v(?P<vol>\d+)/(?P<pid>\w+\d{2}\w).html$"
-    re_pdf_2 = "https?://(www\.)?jmlr\.org/papers/volume(?P<vol>\d+)/(?P<pid>\w+\d{2}\w)/(?P=pid).pdf$"
+    re_abs_2 = r"https?://(www\.)?jmlr\.org/papers/v(?P<vol>\d+)/(?P<pid>\w+\d{2}\w).html$"
+    re_pdf_2 = r"https?://(www\.)?jmlr\.org/papers/volume(?P<vol>\d+)/(?P<pid>\w+\d{2}\w)/(?P=pid).pdf$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,6 +64,7 @@ class JMLR(Provider):
             raise URLResolutionError("JMLR", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return (
             re.match(JMLR.re_abs_1, src)

@@ -27,9 +27,7 @@ class SemanticScholarInformer(Informer):
 
 
 class SemanticScholar(Provider):
-    re_abs = (
-        "https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
-    )
+    re_abs = r"https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

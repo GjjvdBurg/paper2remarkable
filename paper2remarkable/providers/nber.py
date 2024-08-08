@@ -25,10 +25,9 @@ class NBERInformer(Informer):
 
 
 class NBER(Provider):
-    re_abs = "https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)$"
-    re_pdf = "https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)\.pdf$"
-
-    re_pdf_2 = "https://www.nber.org/system/files/working_papers/(?P<ref>[a-z0-9]+)/(?P=ref).pdf"
+    re_abs = r"https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)$"
+    re_pdf = r"https?://www\.nber\.org/papers/(?P<ref>[a-z0-9]+)\.pdf$"
+    re_pdf_2 = r"https://www.nber.org/system/files/working_papers/(?P<ref>[a-z0-9]+)/(?P=ref).pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,6 +56,7 @@ class NBER(Provider):
             raise URLResolutionError("NBER", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return (
             re.match(NBER.re_abs, src)

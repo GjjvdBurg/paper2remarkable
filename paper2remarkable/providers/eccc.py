@@ -64,8 +64,8 @@ class ECCCInformer(Informer):
 
 
 class ECCC(Provider):
-    re_abs = "https?://eccc.weizmann.ac.il/report/\d{4}/\d+/?$"
-    re_pdf = "https?://eccc.weizmann.ac.il/report/\d{4}/\d+/download/?$"
+    re_abs = r"https?://eccc.weizmann.ac.il/report/\d{4}/\d+/?$"
+    re_pdf = r"https?://eccc.weizmann.ac.il/report/\d{4}/\d+/download/?$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,5 +82,6 @@ class ECCC(Provider):
             raise URLResolutionError("ECCC", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(ECCC.re_abs, src) or re.match(ECCC.re_pdf, src)

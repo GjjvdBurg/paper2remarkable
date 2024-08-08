@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = "G.J.J. van den Burg"
-
 """Tests"""
 
 import hashlib
@@ -146,10 +144,17 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
-    def test_openreview(self):
+    def test_openreview_1(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
         exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_openreview_2(self):
+        prov = OpenReview(upload=False, verbose=VERBOSE)
+        url = "https://openreview.net/pdf?id=PlGSgjFK2oJ"
+        exp_filename = "Burg_Williams_-_On_Memorization_in_Probabilistic_Deep_Generative_Models_2021.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 

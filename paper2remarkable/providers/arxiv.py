@@ -29,11 +29,11 @@ class ArxivInformer(Informer):
 
 
 class Arxiv(Provider):
-    re_abs_1 = "https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
-    re_pdf_1 = "https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?\.pdf"
+    re_abs_1 = r"https?://arxiv.org/abs/\d{4}\.\d{4,5}(v\d+)?"
+    re_pdf_1 = r"https?://arxiv.org/pdf/\d{4}\.\d{4,5}(v\d+)?(\.pdf)?"
 
-    re_abs_2 = "https?://arxiv.org/abs/[\w\-]+/\d{7}(v\d+)?"
-    re_pdf_2 = "https?://arxiv.org/pdf/[\w\-]+/\d{7}(v\d+)?.pdf"
+    re_abs_2 = r"https?://arxiv.org/abs/[\w\-]+/\d{7}(v\d+)?"
+    re_pdf_2 = r"https?://arxiv.org/pdf/[\w\-]+/\d{7}(v\d+)?(\.pdf)?"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,12 +50,15 @@ class Arxiv(Provider):
             abs_url = url
             pdf_url = url.replace("abs", "pdf") + ".pdf"
         elif re.match(self.re_pdf_1, url) or re.match(self.re_pdf_2, url):
-            abs_url = url[:-4].replace("pdf", "abs")
+            if url.endswith(".pdf"):
+                url = url[:-4]
+            abs_url = url.replace("pdf", "abs")
             pdf_url = url
         else:
             raise URLResolutionError("arXiv", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         """Check if the url is to an arXiv page."""
         return (
