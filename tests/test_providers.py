@@ -14,11 +14,11 @@ import pdfplumber
 from _constants import TEST_FILE
 from pikepdf import Pdf
 
-from paper2remarkable.exceptions import URLResolutionError, FulltextMissingError
+from paper2remarkable.exceptions import FulltextMissingError
+from paper2remarkable.exceptions import URLResolutionError
 from paper2remarkable.providers import ACL
 from paper2remarkable.providers import ACM
 from paper2remarkable.providers import CVF
-from paper2remarkable.providers import DiVA
 from paper2remarkable.providers import ECCC
 from paper2remarkable.providers import HTML
 from paper2remarkable.providers import IACR
@@ -27,6 +27,7 @@ from paper2remarkable.providers import NBER
 from paper2remarkable.providers import PMLR
 from paper2remarkable.providers import Arxiv
 from paper2remarkable.providers import CiteSeerX
+from paper2remarkable.providers import DiVA
 from paper2remarkable.providers import LocalFile
 from paper2remarkable.providers import Nature
 from paper2remarkable.providers import NeurIPS
@@ -569,16 +570,19 @@ class TestProviders(unittest.TestCase):
     def test_diva_2(self):
         # Testing absolute URLs and sanitization of filenames
         prov = DiVA(upload=False, verbose=VERBOSE)
-        url = "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
+        url = (
+            "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
+        )
         exp = "Alhussein_-_Privacy_by_Design_Amp_Internet_of_Things_Managing_Privacy_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
-    
+
     def test_diva_3(self):
         # Testing older entries without available fulltext
         prov = DiVA(upload=False, verbose=VERBOSE)
         url = "https://uu.diva-portal.org/smash/record.jsf?pid=diva2%3A59234"
         self.assertRaises(FulltextMissingError, prov.run, url)
+
 
 if __name__ == "__main__":
     unittest.main()

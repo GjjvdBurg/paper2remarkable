@@ -12,7 +12,8 @@ import re
 
 import bs4
 
-from ..exceptions import URLResolutionError, FulltextMissingError
+from ..exceptions import FulltextMissingError
+from ..exceptions import URLResolutionError
 from ..log import Logger
 from ..utils import get_page_with_retry
 from ._base import Provider
