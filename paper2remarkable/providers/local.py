@@ -30,6 +30,7 @@ class LocalFile(Provider):
         # pdf_url.
         return url, url
 
+    @staticmethod
     def validate(src):
         return os.path.exists(src)
 

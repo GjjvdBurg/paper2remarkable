@@ -81,5 +81,6 @@ class SemanticScholar(Provider):
             )
         return pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(SemanticScholar.re_abs, src)

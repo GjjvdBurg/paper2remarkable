@@ -145,8 +145,8 @@ class HTML(Provider):
         # placeholder and the data-src attribute contains the url to the actual
         # image. Note that results may differ between readability and
         # Readability.JS
-        regex = '<img src="(?P<src>.*?)" (?P<rest1>.*) data-src="(?P<datasrc>.*?)" (?P<rest2>.*?)>'
-        sub = '<img src="\g<datasrc>" \g<rest1> \g<rest2>>'
+        regex = r'<img src="(?P<src>.*?)" (?P<rest1>.*) data-src="(?P<datasrc>.*?)" (?P<rest2>.*?)>'
+        sub = r'<img src="\g<datasrc>" \g<rest1> \g<rest2>>'
 
         article, nsub = re.subn(regex, sub, article, flags=re.MULTILINE)
         if nsub:
@@ -203,6 +203,7 @@ class HTML(Provider):
         style = weasyprint.CSS(string=css)
         html.write_pdf(filename, stylesheets=[style] + font_urls)
 
+    @staticmethod
     def validate(src):
         # first check if it is a valid url
         parsed = urllib.parse.urlparse(src)

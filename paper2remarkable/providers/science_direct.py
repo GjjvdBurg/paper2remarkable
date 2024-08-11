@@ -164,6 +164,7 @@ class ScienceDirect(Provider):
         pdf_url = a[0].get("href")
         return pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(ScienceDirect.re_abs, src) or re.match(
             ScienceDirect.re_pdf, src

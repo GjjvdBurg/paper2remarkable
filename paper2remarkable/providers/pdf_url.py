@@ -56,6 +56,7 @@ class PdfUrl(Provider):
     def get_abs_pdf_urls(self, url):
         return (url, url)
 
+    @staticmethod
     def validate(src):
         # first check if it is a valid url
         parsed = urllib.parse.urlparse(src)

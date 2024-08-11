@@ -59,6 +59,7 @@ class ACL(Provider):
 
         raise URLResolutionError("ACL", url)
 
+    @staticmethod
     def validate(src):
         return (
             re.match(ACL.re_pdf_1, src)

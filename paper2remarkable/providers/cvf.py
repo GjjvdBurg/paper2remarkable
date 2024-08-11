@@ -23,8 +23,8 @@ class CVFInformer(Informer):
 
 
 class CVF(Provider):
-    re_abs = "^https?://openaccess.thecvf.com/content_([\w\d]+)/html/([\w\d\_\-]+).html$"
-    re_pdf = "^https?://openaccess.thecvf.com/content_([\w\d]+)/papers/([\w\d\_\-]+).pdf$"
+    re_abs = r"^https?://openaccess.thecvf.com/content_([\w\d]+)/html/([\w\d\_\-]+).html$"
+    re_pdf = r"^https?://openaccess.thecvf.com/content_([\w\d]+)/papers/([\w\d\_\-]+).pdf$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,6 +43,7 @@ class CVF(Provider):
             raise URLResolutionError("CVF", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         m = re.match(CVF.re_abs, src) or re.match(CVF.re_pdf, src)
-        return not m is None
+        return m is not None

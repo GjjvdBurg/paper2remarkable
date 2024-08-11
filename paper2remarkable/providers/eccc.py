@@ -31,7 +31,8 @@ class ECCCInformer(Informer):
         h4 = divsoup.find("h4")
         if not h4:
             logger.warning(
-                "Couldn't determine title information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine title information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         return h4.get_text().strip()
@@ -43,7 +44,8 @@ class ECCCInformer(Informer):
         )
         if not aa:
             logger.warning(
-                "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine author information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         authors = [a.get_text() for a in aa]
@@ -56,7 +58,8 @@ class ECCCInformer(Informer):
         )
         if line is None:
             logger.warning(
-                "Couldn't determine year information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine year information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         year = line.strip().split(" ")[3]  # bit lazy

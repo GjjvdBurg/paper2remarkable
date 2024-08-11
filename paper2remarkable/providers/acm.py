@@ -43,8 +43,8 @@ class ACMInformer(Informer):
 
 
 class ACM(Provider):
-    re_abs = "^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
-    re_pdf = "^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)(\?download=true)?"
+    re_abs = r"^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
+    re_pdf = r"^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)(\?download=true)?"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -71,6 +71,7 @@ class ACM(Provider):
             raise URLResolutionError("ACM", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         m = re.match(ACM.re_abs, src) or re.match(ACM.re_pdf, src)
-        return not m is None
+        return m is not None
