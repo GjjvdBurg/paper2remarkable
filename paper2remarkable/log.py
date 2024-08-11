@@ -41,7 +41,7 @@ class Logger(metaclass=Singleton):
     def _log(self, msg, mode, end="\n", add_prefix=True):
         if not self.enabled:
             return
-        if not mode in ("info", "warn"):
+        if mode not in ("info", "warn"):
             raise ValueError("Unknown logging mode: %s" % mode)
         file = sys.stdout if mode == "info" else sys.stderr
         if add_prefix:

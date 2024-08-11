@@ -35,8 +35,9 @@ class URLResolutionError(Error):
         self.reason = reason
 
     def __str__(self):
-        msg = "ERROR: Couldn't figure out {provider} URLs from provided url: {url}".format(
-            provider=self.provider, url=self.url
+        msg = (
+            f"ERROR: Couldn't figure out {self.provider} URLs from provided "
+            f"url: {self.url}"
         )
         if self.reason:
             msg += "\nReason: {reason}".format(reason=self.reason)
@@ -53,8 +54,9 @@ class FilenameMissingError(Error):
         self.reason = reason
 
     def __str__(self):
-        msg = "ERROR: Couldn't determine a filename from {url} for provider {provider}".format(
-            provider=self.provider, url=self.url
+        msg = (
+            f"ERROR: Couldn't determine a filename from {self.url} for "
+            f"provider {self.provider}"
         )
         if self.reason:
             msg += "\nReason: {reason}".format(reason=self.reason)
@@ -153,6 +155,7 @@ class BlockedByCloudFlareError(Error):
         )
         return msg
 
+
 class FulltextMissingError(Error):
     """Exception raised when the fulltext PDF can't be found."""
 
@@ -166,4 +169,4 @@ class FulltextMissingError(Error):
             f"\t{self.provider}\n"
             f"\t{self.url}\n"
         )
-        return msg 
+        return msg
