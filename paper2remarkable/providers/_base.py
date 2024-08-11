@@ -156,6 +156,8 @@ class Provider(metaclass=abc.ABCMeta):
                 self.gs_path,
                 "-sDEVICE=pdfwrite",
                 "-dQUIET",
+                "-dWriteXRefStm=false",
+                "-dWriteObjStms=false",
                 "-o",
                 out_pdf,
                 in_file,

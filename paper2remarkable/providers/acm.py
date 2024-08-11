@@ -22,20 +22,21 @@ class ACMInformer(Informer):
     meta_author_key = "citation_authors"
 
     def get_title(self, soup):
-        target = soup.find("h1", {"class": "citation__title"})
+        target = soup.find("div", {"class": "core-publication-title"})
         return target.text
 
     def get_authors(self, soup):
         authors = [
-            a["title"] for a in soup.find_all("a", {"class": "author-name"})
+            author_block.find("span", {"property": "familyName"}).text
+            for author_block in soup.find_all("span", {"property": "author"})
         ]
-        return self._format_authors(authors)
+        return authors
 
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
     def get_year(self, soup):
-        date = soup.find("span", {"class": "epub-section__date"})
+        date = soup.find("span", {"class": "core-date-published"})
         return self._format_year(date.text)
 
     def _format_year(self, soup_date):

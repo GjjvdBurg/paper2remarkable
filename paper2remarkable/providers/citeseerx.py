@@ -23,8 +23,9 @@ class CiteSeerXInformer(Informer):
     meta_date_key = "citation_year"
 
     def _format_authors(self, soup_authors):
-        op = lambda x: x[0].split(",")
-        return super()._format_authors(soup_authors, sep=" ", idx=-1, op=op)
+        return super()._format_authors(
+            soup_authors, sep=" ", idx=-1, op=lambda x: x[0].split(",")
+        )
 
 
 class CiteSeerX(Provider):
