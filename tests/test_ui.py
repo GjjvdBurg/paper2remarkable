@@ -72,7 +72,7 @@ class TestUI(unittest.TestCase):
             (
                 Arxiv,
                 "https://arxiv.org/pdf/physics/0605197v1.pdf",
-                "https://arxiv.org/pdf/physics/0605197v1.pdf",
+                "http://arxiv.org/pdf/physics/0605197v1",
             ),
             (
                 PubMed,
@@ -374,8 +374,8 @@ class TestUI(unittest.TestCase):
             with self.subTest(s):
                 test_sys(s)
 
-        self.assertEquals(opts["html"]["css"], "Hello, World!\n")
-        self.assertEquals(opts["html"]["font_urls"], ["url_1", "url_2"])
+        self.assertEqual(opts["html"]["css"], "Hello, World!\n")
+        self.assertEqual(opts["html"]["font_urls"], ["url_1", "url_2"])
 
     def test_runner_1(self):
         inputs = [

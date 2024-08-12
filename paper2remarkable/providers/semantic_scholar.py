@@ -27,9 +27,7 @@ class SemanticScholarInformer(Informer):
 
 
 class SemanticScholar(Provider):
-    re_abs = (
-        "https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
-    )
+    re_abs = r"https?:\/\/www.semanticscholar.org/paper/[A-Za-z0-9%\-]+/[0-9a-f]{40}"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,12 +58,18 @@ class SemanticScholar(Provider):
             return a["href"]
 
         # Next try to get the url from the metadata (not always a pdf)
-        meta = soup.find_all("meta", {"name": "citation_pdf_url"})
-        if not meta:
+        meta_1 = soup.find_all("meta", {"property": "citation_pdf_url"})
+        meta_2 = soup.find_all("meta", {"name": "citation_pdf_url"})
+
+        if not (meta_1 or meta_2):
             raise URLResolutionError(
                 "SemanticScholar", url, reason="Page has no url to PDF file"
             )
-        pdf_url = meta[0]["content"]
+
+        if meta_1:
+            pdf_url = meta_1[0]["content"]
+        else:
+            pdf_url = meta_2[0]["content"]
 
         # Check the content type to check that the data will be a pdf
         content_type = get_content_type_with_retry(pdf_url)
@@ -83,5 +87,6 @@ class SemanticScholar(Provider):
             )
         return pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(SemanticScholar.re_abs, src)

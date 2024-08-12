@@ -23,11 +23,11 @@ class PMLRInformer(Informer):
 
 
 class PMLR(Provider):
-    re_abs_1 = "https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.html"
-    re_pdf_1 = "https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.pdf"
+    re_abs_1 = r"https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.html"
+    re_pdf_1 = r"https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+.pdf"
 
-    re_abs_2 = "https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+\w?.html"
-    re_pdf_2 = "https?://proceedings.mlr.press/v\d+/(?P<ref>[\w\-\w]+\d+\w?)/(?P=ref).pdf"
+    re_abs_2 = r"https?://proceedings.mlr.press/v\d+/[\w\-\w]+\d+\w?.html"
+    re_pdf_2 = r"https?://proceedings.mlr.press/v\d+/(?P<ref>[\w\-\w]+\d+\w?)/(?P=ref).pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,6 +57,7 @@ class PMLR(Provider):
             raise URLResolutionError("PMLR", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return (
             re.fullmatch(PMLR.re_abs_1, src)

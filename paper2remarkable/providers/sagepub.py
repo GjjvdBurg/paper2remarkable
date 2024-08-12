@@ -28,8 +28,8 @@ class SagePubInformer(Informer):
 
 
 class SagePub(Provider):
-    re_abs = "https?:\/\/journals\.sagepub\.com\/doi\/full\/\d{2}\.\d{4}\/\d+"
-    re_pdf = "https?:\/\/journals\.sagepub\.com\/doi\/pdf\/\d{2}\.\d{4}\/\d+"
+    re_abs = r"https?:\/\/journals\.sagepub\.com\/doi\/full\/\d{2}\.\d{4}\/\d+"
+    re_pdf = r"https?:\/\/journals\.sagepub\.com\/doi\/pdf\/\d{2}\.\d{4}\/\d+"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,5 +46,6 @@ class SagePub(Provider):
             raise URLResolutionError("SagePub", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(SagePub.re_abs, src) or re.match(SagePub.re_pdf, src)

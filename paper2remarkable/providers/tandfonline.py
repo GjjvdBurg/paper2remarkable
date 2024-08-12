@@ -31,8 +31,8 @@ class TandFOnlineInformer(Informer):
 
 
 class TandFOnline(Provider):
-    re_abs = "^https?://\w+.tandfonline.com/doi/(full|abs)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
-    re_pdf = "^https?://\w+.tandfonline.com/doi/(full|pdf)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
+    re_abs = r"^https?://\w+.tandfonline.com/doi/(full|abs)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
+    re_pdf = r"^https?://\w+.tandfonline.com/doi/(full|pdf)/(?P<doi>\d+\.\d+/\w+\.\w+\.\w+)"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,8 +66,9 @@ class TandFOnline(Provider):
             raise URLResolutionError("TandFOnline", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         m = re.match(TandFOnline.re_abs, src) or re.match(
             TandFOnline.re_pdf, src
         )
-        return not m is None
+        return m is not None

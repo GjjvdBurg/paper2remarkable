@@ -56,6 +56,13 @@ def blank_pdf(filepath):
     return output_file
 
 
+def _filesize_string(size: int) -> str:
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
+        if size < 1024:
+            return f"{size:.2f} {unit}"
+        size /= 1024
+
+
 def shrink_pdf(filepath, gs_path="gs"):
     """Shrink the PDF file size using Ghostscript"""
     logger.info("Shrinking pdf file ...")
@@ -79,8 +86,14 @@ def shrink_pdf(filepath, gs_path="gs"):
     if not status == 0:
         logger.warning("Failed to shrink the pdf file")
         return filepath
+
     size_after = os.path.getsize(output_file)
     if size_after > size_before:
-        logger.info("Shrinking has no effect for this file, using original.")
+        size_str = _filesize_string(size_before)
+        logger.info(
+            f"Shrinking has no effect for this file, using original ({size_str})."
+        )
         return filepath
+    size_str = _filesize_string(size_after)
+    logger.info(f"Shrinking brought filesize down to {size_str}")
     return output_file

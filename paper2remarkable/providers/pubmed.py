@@ -24,9 +24,9 @@ class PubMedInformer(Informer):
 
 
 class PubMed(Provider):
-    re_abs = "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?"
+    re_abs = r"https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?"
     re_pdf = (
-        "https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf"
+        r"https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf"
     )
 
     def __init__(self, *args, **kwargs):
@@ -46,5 +46,6 @@ class PubMed(Provider):
             raise URLResolutionError("PMC", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(PubMed.re_abs, src) or re.match(PubMed.re_pdf, src)

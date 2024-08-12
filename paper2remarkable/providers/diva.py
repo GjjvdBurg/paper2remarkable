@@ -8,13 +8,12 @@ Copyright: 2019, 2024, G.J.J. van den Burg, Johan Holmberg
 
 """
 
-import os
 import re
-import urllib.parse
 
 import bs4
 
-from ..exceptions import URLResolutionError, FulltextMissingError
+from ..exceptions import FulltextMissingError
+from ..exceptions import URLResolutionError
 from ..log import Logger
 from ..utils import get_page_with_retry
 from ._base import Provider
@@ -25,18 +24,23 @@ logger = Logger()
 
 class DiVAInformer(Informer):
     def get_year(self, soup):
-        year = soup.find("meta", {"name": "citation_publication_date"}).get("content")
+        year = soup.find("meta", {"name": "citation_publication_date"}).get(
+            "content"
+        )
         if not year:
             logger.warning(
-                "Couldn't determine year information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine year information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         return year
 
 
 class DiVA(Provider):
-    re_abs = "^https?://[a-z]+.diva-portal.org/smash/record.jsf"
-    re_pdf = "^https?://[a-z]+.diva-portal.org/smash/get/diva2:[0-9]+/FULLTEXT"
+    re_abs = r"^https?://[a-z]+.diva-portal.org/smash/record.jsf"
+    re_pdf = (
+        r"^https?://[a-z]+.diva-portal.org/smash/get/diva2:[0-9]+/FULLTEXT"
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,16 +52,16 @@ class DiVA(Provider):
 
         pdf_url = soup.find("meta", {"name": "citation_pdf_url"})
         if pdf_url is None:
-            logger.warning(
-                "Couldn't find the fulltext URL"
-            )
+            logger.warning("Couldn't find the fulltext URL")
             raise FulltextMissingError("DiVA", abs_url)
-        
+
         return pdf_url.get("content")
 
     def _get_abs_url(self, pdf_url):
         diva_id = re.findall("diva2:[0-9]+", pdf_url)[0].split(":")[1]
-        url_candiate = re.findall("https?://[a-z]+.diva-portal.org/smash/", pdf_url)[0]
+        url_candiate = re.findall(
+            "https?://[a-z]+.diva-portal.org/smash/", pdf_url
+        )[0]
         url_candiate += "record.jsf?pid=diva2%3A" + diva_id
         return url_candiate
 
@@ -72,5 +76,6 @@ class DiVA(Provider):
             raise URLResolutionError("DiVA", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(DiVA.re_abs, src) or re.match(DiVA.re_pdf, src)

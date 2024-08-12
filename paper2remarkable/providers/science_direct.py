@@ -35,7 +35,8 @@ class ScienceDirectInformer(Informer):
         surname_tags = soup.find_all("span", attrs={"class": "text surname"})
         if not surname_tags:
             logger.warning(
-                "Couldn't determine author information, maybe provide the desired filename using '--filename'?"
+                "Couldn't determine author information, maybe provide the "
+                "desired filename using '--filename'?"
             )
             return ""
         authors = [x.text for x in surname_tags]
@@ -44,9 +45,9 @@ class ScienceDirectInformer(Informer):
 
 class ScienceDirect(Provider):
     re_abs = (
-        "https?:\/\/www.sciencedirect.com/science/article/pii/[A-Za-z0-9]+"
+        r"https?:\/\/www.sciencedirect.com/science/article/pii/[A-Za-z0-9]+"
     )
-    re_pdf = "https://pdf.sciencedirectassets.com/\d+/([0-9a-zA-Z\-\.]+)/(?P<data>[0-9a-zA-Z\-\.]+)/main.pdf\?.*"
+    re_pdf = r"https://pdf.sciencedirectassets.com/\d+/([0-9a-zA-Z\-\.]+)/(?P<data>[0-9a-zA-Z\-\.]+)/main.pdf\?.*"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,16 +83,16 @@ class ScienceDirect(Provider):
             raise URLResolutionError("ScienceDirect", url)
         json_data = scripts[0].string
         data = json.loads(json_data)
-        if not "article" in data:
+        if "article" not in data:
             raise URLResolutionError("ScienceDirect", url)
 
         data = data["article"]
-        if not "pdfDownload" in data:
+        if "pdfDownload" not in data:
             raise URLResolutionError("ScienceDirect", url)
 
         data = data["pdfDownload"]
 
-        if not "urlMetadata" in data:
+        if "urlMetadata" not in data:
             raise URLResolutionError("ScienceDirect", url)
         meta = data["urlMetadata"]
 
@@ -164,6 +165,7 @@ class ScienceDirect(Provider):
         pdf_url = a[0].get("href")
         return pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(ScienceDirect.re_abs, src) or re.match(
             ScienceDirect.re_pdf, src

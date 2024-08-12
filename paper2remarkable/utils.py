@@ -32,6 +32,7 @@ HEADERS = {
     "Safari/537.36"
 }
 
+HTTP_SERVICE_UNAVAILABLE = 503
 
 logger = Logger()
 
@@ -73,6 +74,7 @@ def download_url(url, filename, cookiejar=None):
 
 def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
     count = 0
+    res = None
     jar = {} if cookiejar is None else cookiejar
     while count < tries:
         count += 1
@@ -81,11 +83,14 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
             res = requests.get(url, headers=HEADERS, cookies=jar)
         except requests.exceptions.ConnectionError:
             error = True
+
         if (
-            res.status_code == 503
+            res is not None
+            and res.status_code == HTTP_SERVICE_UNAVAILABLE
             and res.headers.get("server", "") == "cloudflare"
         ):
             raise BlockedByCloudFlareError(url)
+
         if error or not res.ok:
             logger.warning(
                 "(%i/%i) Error getting url %s. Retrying in 5 seconds."
@@ -93,6 +98,7 @@ def get_page_with_retry(url, tries=5, cookiejar=None, return_text=False):
             )
             time.sleep(5)
             continue
+
         logger.info("Downloaded url: %s" % url)
         if return_text:
             return res.text
@@ -184,7 +190,7 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
 
 def is_url(string):
     # pattern adapted from CleverCSV
-    pattern = "((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*[\-\_]?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:+]*)?(\.[a-z]+)?"
+    pattern = r"((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*[\-\_]?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:+]*)?(\.[a-z]+)?"
     string = string.strip(" ")
     match = regex.fullmatch(pattern, string)
     return match is not None

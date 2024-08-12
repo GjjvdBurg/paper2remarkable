@@ -23,8 +23,8 @@ class NatureInformer(Informer):
 
 
 class Nature(Provider):
-    re_abs = "^https://www.nature.com/articles/s[a-z0-9\-]+$"
-    re_pdf = "^https://www.nature.com/articles/s[a-z0-9\-]+\.pdf$"
+    re_abs = r"^https://www.nature.com/articles/s[a-z0-9\-]+$"
+    re_pdf = r"^https://www.nature.com/articles/s[a-z0-9\-]+\.pdf$"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,5 +41,6 @@ class Nature(Provider):
             raise URLResolutionError("Nature", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(Nature.re_abs, src) or re.match(Nature.re_pdf, src)

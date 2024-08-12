@@ -22,20 +22,21 @@ class ACMInformer(Informer):
     meta_author_key = "citation_authors"
 
     def get_title(self, soup):
-        target = soup.find("h1", {"class": "citation__title"})
+        target = soup.find("div", {"class": "core-publication-title"})
         return target.text
 
     def get_authors(self, soup):
         authors = [
-            a["title"] for a in soup.find_all("a", {"class": "author-name"})
+            author_block.find("span", {"property": "familyName"}).text
+            for author_block in soup.find_all("span", {"property": "author"})
         ]
-        return self._format_authors(authors)
+        return authors
 
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
     def get_year(self, soup):
-        date = soup.find("span", {"class": "epub-section__date"})
+        date = soup.find("span", {"class": "core-date-published"})
         return self._format_year(date.text)
 
     def _format_year(self, soup_date):
@@ -43,8 +44,8 @@ class ACMInformer(Informer):
 
 
 class ACM(Provider):
-    re_abs = "^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
-    re_pdf = "^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)(\?download=true)?"
+    re_abs = r"^https?://dl.acm.org/doi/(?P<doi>\d+\.\d+/\d+\.\d+)"
+    re_pdf = r"^https?://dl.acm.org/doi/pdf/(?P<doi>\d+\.\d+/\d+\.\d+)(\?download=true)?"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -71,6 +72,7 @@ class ACM(Provider):
             raise URLResolutionError("ACM", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         m = re.match(ACM.re_abs, src) or re.match(ACM.re_pdf, src)
-        return not m is None
+        return m is not None

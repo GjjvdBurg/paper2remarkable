@@ -9,7 +9,6 @@ Copyright: 2019, G.J.J. van den Burg
 """
 
 import re
-import time
 
 from ..exceptions import URLResolutionError
 from ..log import Logger
@@ -24,13 +23,14 @@ class CiteSeerXInformer(Informer):
     meta_date_key = "citation_year"
 
     def _format_authors(self, soup_authors):
-        op = lambda x: x[0].split(",")
-        return super()._format_authors(soup_authors, sep=" ", idx=-1, op=op)
+        return super()._format_authors(
+            soup_authors, sep=" ", idx=-1, op=lambda x: x[0].split(",")
+        )
 
 
 class CiteSeerX(Provider):
-    re_abs = "^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/summary\?doi=(?P<doi>[0-9\.]+)"
-    re_pdf = "^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/download(\;jsessionid=[A-Z0-9]+)?\?doi=(?P<doi>[0-9\.]+)&rep=rep1&type=pdf"
+    re_abs = r"^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/summary\?doi=(?P<doi>[0-9\.]+)"
+    re_pdf = r"^https?:\/\/citeseerx.ist.psu.edu(:443)?\/viewdoc\/download(\;jsessionid=[A-Z0-9]+)?\?doi=(?P<doi>[0-9\.]+)&rep=rep1&type=pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,6 +72,7 @@ class CiteSeerX(Provider):
             raise URLResolutionError("CiteSeerX", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return re.match(CiteSeerX.re_abs, src) or re.match(
             CiteSeerX.re_pdf, src

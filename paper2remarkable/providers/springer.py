@@ -35,9 +35,9 @@ class SpringerInformer(Informer):
 
 
 class Springer(Provider):
-    re_abs_1 = "https?:\/\/link.springer.com\/article\/10\.\d{4}\/[a-z0-9\-]+"
-    re_abs_2 = "https?:\/\/link.springer.com\/chapter\/10\.\d{4}\/[a-z0-9\-]+"
-    re_pdf = "https?:\/\/link\.springer\.com\/content\/pdf\/10\.\d{4}(%2F|\/)[a-z0-9\-\_]+\.pdf"
+    re_abs_1 = r"https?:\/\/link.springer.com\/article\/10\.\d{4}\/[a-z0-9\-]+"
+    re_abs_2 = r"https?:\/\/link.springer.com\/chapter\/10\.\d{4}\/[a-z0-9\-]+"
+    re_pdf = r"https?:\/\/link\.springer\.com\/content\/pdf\/10\.\d{4}(%2F|\/)[a-z0-9\-\_]+\.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,6 +75,7 @@ class Springer(Provider):
             raise URLResolutionError("Springer", url)
         return abs_url, pdf_url
 
+    @staticmethod
     def validate(src):
         return (
             re.match(Springer.re_abs_1, src)

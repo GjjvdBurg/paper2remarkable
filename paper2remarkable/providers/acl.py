@@ -23,10 +23,10 @@ class ACLInformer(Informer):
 
 
 class ACL(Provider):
-    re_abs_1 = "^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]+)"
-    re_abs_2 = "^https://(www.)?aclanthology.org/(?P<key>[0-9a-zA-Z\.\-]+)"
-    re_pdf_1 = "^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]*?)(v\d+)?.pdf"
-    re_pdf_2 = "^https://(www.)?aclanthology.org/(?P<key>[0-9a-zA-Z\.\-]*?)(v\d+)?.pdf"
+    re_abs_1 = r"^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]+)"
+    re_abs_2 = r"^https://(www.)?aclanthology.org/(?P<key>[0-9a-zA-Z\.\-]+)"
+    re_pdf_1 = r"^https://www.aclweb.org/anthology/(?P<key>[0-9a-zA-Z\.\-]*?)(v\d+)?.pdf"
+    re_pdf_2 = r"^https://(www.)?aclanthology.org/(?P<key>[0-9a-zA-Z\.\-]*?)(v\d+)?.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,6 +59,7 @@ class ACL(Provider):
 
         raise URLResolutionError("ACL", url)
 
+    @staticmethod
     def validate(src):
         return (
             re.match(ACL.re_pdf_1, src)

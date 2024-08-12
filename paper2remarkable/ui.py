@@ -225,13 +225,13 @@ def merge_options(args, config=None):
     def set_bool(d, key, value, invert=False):
         if value:
             d[key] = True ^ invert
-        elif not key in d:
+        elif key not in d:
             d[key] = False ^ invert
 
     def set_path(d, key, value):
-        if not value is None:
+        if value is not None:
             d[key] = value
-        elif not key in d:
+        elif key not in d:
             d[key] = key
 
     set_bool(opts["core"], "blank", args.blank)
@@ -245,12 +245,12 @@ def merge_options(args, config=None):
         opts["core"]["crop"] = "right"
     elif args.no_crop:
         opts["core"]["crop"] = "none"
-    elif not "crop" in opts["core"]:
+    elif "crop" not in opts["core"]:
         opts["core"]["crop"] = "left"
 
     if args.remarkable_dir is not None:
         opts["core"]["remarkable_dir"] = args.remarkable_dir
-    elif not "remarkable_dir" in opts["core"]:
+    elif "remarkable_dir" not in opts["core"]:
         opts["core"]["remarkable_dir"] = "/"
 
     set_path(opts["system"], "gs", args.gs)
@@ -263,14 +263,14 @@ def merge_options(args, config=None):
         with open(args.css, "r") as fp:
             contents = fp.read()
         opts["html"]["css"] = contents
-    elif not "css" in opts["html"]:
+    elif "css" not in opts["html"]:
         opts["html"]["css"] = None
 
     if args.font_urls and os.path.exists(args.font_urls):
         with open(args.font_urls, "r") as fp:
-            urls = [l.strip() for l in fp.readlines()]
+            urls = [line.strip() for line in fp.readlines()]
         opts["html"]["font_urls"] = urls
-    elif not "font_urls" in opts["html"]:
+    elif "font_urls" not in opts["html"]:
         opts["html"]["font_urls"] = None
 
     return opts

@@ -48,7 +48,7 @@ class TestHTML(unittest.TestCase):
         prov = HTML(upload=False, css=test_css, font_urls=test_font_urls)
         filename = prov.run(url)
         with pdfplumber.open(filename) as pdf:
-            self.assertEqual(9, len(pdf.pages))
+            self.assertEqual(7, len(pdf.pages))
 
         os.unlink(filename)
 

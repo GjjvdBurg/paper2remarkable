@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = "G.J.J. van den Burg"
-
 """Tests"""
 
 import hashlib
@@ -16,11 +14,11 @@ import pdfplumber
 from _constants import TEST_FILE
 from pikepdf import Pdf
 
-from paper2remarkable.exceptions import URLResolutionError, FulltextMissingError
+from paper2remarkable.exceptions import FulltextMissingError
+from paper2remarkable.exceptions import URLResolutionError
 from paper2remarkable.providers import ACL
 from paper2remarkable.providers import ACM
 from paper2remarkable.providers import CVF
-from paper2remarkable.providers import DiVA
 from paper2remarkable.providers import ECCC
 from paper2remarkable.providers import HTML
 from paper2remarkable.providers import IACR
@@ -29,6 +27,7 @@ from paper2remarkable.providers import NBER
 from paper2remarkable.providers import PMLR
 from paper2remarkable.providers import Arxiv
 from paper2remarkable.providers import CiteSeerX
+from paper2remarkable.providers import DiVA
 from paper2remarkable.providers import LocalFile
 from paper2remarkable.providers import Nature
 from paper2remarkable.providers import NeurIPS
@@ -146,10 +145,17 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
-    def test_openreview(self):
+    def test_openreview_1(self):
         prov = OpenReview(upload=False, verbose=VERBOSE)
         url = "https://openreview.net/forum?id=S1x4ghC9tQ"
         exp_filename = "Gregor_et_al_-_Temporal_Difference_Variational_Auto-Encoder_2018.pdf"
+        filename = prov.run(url)
+        self.assertEqual(exp_filename, os.path.basename(filename))
+
+    def test_openreview_2(self):
+        prov = OpenReview(upload=False, verbose=VERBOSE)
+        url = "https://openreview.net/pdf?id=PlGSgjFK2oJ"
+        exp_filename = "Burg_Williams_-_On_Memorization_in_Probabilistic_Deep_Generative_Models_2021.pdf"
         filename = prov.run(url)
         self.assertEqual(exp_filename, os.path.basename(filename))
 
@@ -564,16 +570,19 @@ class TestProviders(unittest.TestCase):
     def test_diva_2(self):
         # Testing absolute URLs and sanitization of filenames
         prov = DiVA(upload=False, verbose=VERBOSE)
-        url = "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
+        url = (
+            "https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1480467"
+        )
         exp = "Alhussein_-_Privacy_by_Design_Amp_Internet_of_Things_Managing_Privacy_2018.pdf"
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
-    
+
     def test_diva_3(self):
         # Testing older entries without available fulltext
         prov = DiVA(upload=False, verbose=VERBOSE)
         url = "https://uu.diva-portal.org/smash/record.jsf?pid=diva2%3A59234"
         self.assertRaises(FulltextMissingError, prov.run, url)
+
 
 if __name__ == "__main__":
     unittest.main()
