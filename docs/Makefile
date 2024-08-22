@@ -15,6 +15,7 @@ OUTPUT_DIR=./output
 PACKAGE       = p2r
 SPHINXBUILD   = sphinx-build
 ALLSPHINXOPTS = -d .build/doctrees .
+PYTHON       ?= python
 
 .PHONY: all
 
@@ -30,18 +31,15 @@ man: $(OUTPUT_DIR)/$(PACKAGE).1
 	cp $< ../$(PACKAGE).1
 	@echo "Generated man page copied to ../$(PACKAGE).1"
 
-$(OUTPUT_DIR)/$(PACKAGE).1: man.rst | output-dir
-	$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(OUTPUT_DIR)
-
-man.rst: man.md venv
-	source $(VENV_DIR)/bin/activate && m2r2 man.md
+$(OUTPUT_DIR)/$(PACKAGE).1: man.rst | output-dir venv
+	source $(VENV_DIR)/bin/activate && \
+		$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(OUTPUT_DIR)
 
 output-dir:
 	mkdir -p $(OUTPUT_DIR)
 	mkdir -p _static
 
 clean_output:
-	rm -f man.rst
 	rm -rf $(OUTPUT_DIR)
 	rm -rf _static
 	rm -rf .build
@@ -55,8 +53,8 @@ clean_output:
 venv: $(VENV_DIR)/bin/activate
 
 $(VENV_DIR)/bin/activate:
-	test -d $(VENV_DIR) || python -m venv $(VENV_DIR)
-	source $(VENV_DIR)/bin/activate && pip install m2r2
+	test -d $(VENV_DIR) || $(PYTHON) -m venv $(VENV_DIR)
+	source $(VENV_DIR)/bin/activate && pip install sphinx
 	touch $(VENV_DIR)/bin/activate
 
 clean_venv:
