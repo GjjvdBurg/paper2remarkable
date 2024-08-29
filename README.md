@@ -130,10 +130,26 @@ Specifically:
      instructions below may be more convenient on Windows.
 
 3. Finally, install ``paper2remarkable``:
-   ```
+   ```bash
    $ pip install paper2remarkable
    ```
    this installs the ``p2r`` command line program.
+
+> [!IMPORTANT]
+> On certain newer Debian and Ubuntu-based distributions, running 
+>
+> ```bash
+> $ pip install paper2remarkable
+> ```
+>
+> will raise an ```error: externally-managed-environment```.
+> Rather, run 
+>
+> ```bash
+> $ pipx install paper2remarkable
+> ```
+>
+> to install the  ``p2r`` command line program.
 
 **Optionally**, you can install:
 
