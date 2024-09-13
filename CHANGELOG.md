@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.9.13
+
+* Add DiVA provider (thanks to @koddas)
+* Fix various broken providers and unit tests
+
 ## Version 0.9.12
 
 * Bugfix for NeurIPS provider
