@@ -121,6 +121,7 @@ def build_release_message(context, commit: bool = False) -> str:
         f"{context['next_version']}"
     )
     message += "\n"
+    message += "\n"
     message += context["changelog_update"]
     return message
 
@@ -202,9 +203,9 @@ class UpdateChangelog(Step):
         self.instruct(
             f"Update change log for version {context['next_version']}"
         )
-        self.system("vi CHANGELOG.md")
+        self.system("vim CHANGELOG.md")
         self.instruct("TEMP: Copy the latest section to the update file")
-        self.system("vi CHANGELOG.md /tmp/changelog_update.md")
+        self.system("vim CHANGELOG.md /tmp/changelog_update.md")
         with open("/tmp/changelog_update.md", "r") as fileobj:
             context["changelog_update"] = fileobj.read()
 
@@ -241,11 +242,6 @@ class MakeDocs(Step):
         self.execute("make docs")
 
 
-class MakeMan(Step):
-    def action(self, context):
-        self.execute("make man")
-
-
 class MakeDist(Step):
     def action(self, context):
         self.execute("make dist")
@@ -270,7 +266,7 @@ class TestPackage(Step):
             f"Ensuring that the package has version {context['next_version']}"
         )
         version = self.execute(
-            f"source {context['tmpvenv']}/bin/activate && veld -V",
+            f"source {context['tmpvenv']}/bin/activate && p2r -V",
             silent=True,
             confirm=False,
         )
@@ -379,7 +375,7 @@ def main(target=None):
         ("ci1", WaitForCI()),
         ("bumpversion", BumpVersionPackage()),
         ("clean2", MakeClean()),
-        ("man1", MakeMan()),
+        ("docs", MakeDocs()),
         ("gitadd2", GitAddVersionAndMan()),
         ("gittagpre", GitTagPreRelease()),
         # triggers Github Actions to build dists and push to TestPyPI
