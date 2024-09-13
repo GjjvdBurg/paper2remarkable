@@ -1,0 +1,263 @@
+.\" Man page generated from reStructuredText.
+.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.TH "P2R" "1" "Sep 13, 2024" "" "paper2remarkable"
+.SH NAME
+p2r \- Fetch an academic paper or web article and send it to the reMarkable tablet
+.SH SYNOPSIS
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.EX
+p2r [OPTION]... [INPUT]...
+.EE
+.UNINDENT
+.UNINDENT
+.SH DESCRIPTION
+.sp
+Fetch an academic paper, local pdf file, or any web article and send it to the
+reMarkable tablet. The input to the script can be a URL to a PDF file or
+article on a website, or a local file. For supported scientific outlets, the
+program will collect the metadata for the paper and create a nice filename
+(unless \fB\-\-filename\fP is specified). See \fI\%SUPPORTED
+SOURCES\fP for an overview of supported scientific paper
+sources.
+.sp
+By default, paper2remarkable crops the unnecessary whitespace from a PDF file
+to make the paper fit better on the reMarkable. The default setting yields a
+left\-aligned document on the reMarkable which can be useful for taking margin
+notes. Alternatively, the program supports the \fB\-\-center\fP, \fB\-\-right\fP, and
+\fB\-\-no\-crop\fP options to change this crop setting.
+.SH OPTIONS
+.sp
+Basic options:
+.INDENT 0.0
+.TP
+.B  \-b\fP,\fB  \-\-blank
+Add a blank page after every page of the PDF document. This can be
+useful for taking notes on papers.
+.TP
+.BI \-C\fP,\fB  \-\-config\fB= FILENAME
+Read options from a configuration file. A YAML file is supported, see
+\fI\%CONFIGURATION FILE\fP for further details. By default the
+file at \fB~/.paper2remarkable.yml\fP is used if it exists.
+.TP
+.B  \-e\fP,\fB  \-\-experimental
+Enable the experimental features of paper2remarkable. See below under
+\fI\%EXPERIMENTAL FEATURES\fP for an overview.
+.TP
+.BI \-f\fP,\fB  \-\-filename\fB= FILENAME
+Filename to use for the file on reMarkable. If you specify multiple
+\fBINPUT\fP files and want to use a specific filename for each, you can
+specify \fB\-\-filename\fP for each \fBINPUT\fP source by repeating it.
+.TP
+.B  \-h\fP,\fB  \-\-help
+Show help message and exit.
+.TP
+.B  \-v\fP,\fB  \-\-verbose
+Enable verbose mode of paper2remarkable. By default the program prints
+no output.
+.TP
+.B  \-V\fP,\fB  \-\-version
+Show the version and exit.
+.UNINDENT
+.sp
+Crop options:
+.INDENT 0.0
+.TP
+.B  \-c\fP,\fB  \-\-center
+Center the PDF on the page.
+.TP
+.B  \-k\fP,\fB  \-\-no\-crop
+Don\(aqt crop the document at all.
+.TP
+.B  \-r\fP,\fB  \-\-right
+Right\-align the document on the reMarkable so the menu doesn\(aqt cover it.
+.UNINDENT
+.sp
+reMarkable options:
+.INDENT 0.0
+.TP
+.B  \-n\fP,\fB  \-\-no\-upload
+Don\(aqt upload the document to the reMarkable, save the output in the
+current working directory.
+.TP
+.BI \-p\fP,\fB  \-\-remarkable\-path\fB= DIR
+The directory on the reMarkable where the document will be uploaded to.
+If the target directory does not exist it will be created. If not
+specified, the root directory will be used.
+.UNINDENT
+.sp
+Output customization:
+.INDENT 0.0
+.TP
+.BI \-\-css\fB= FILENAME
+Path to a CSS file with custom styling for the HTML output. This option
+is ignored for any of the other providers. The code for the HTML
+provider contains the default CSS style, which can be used as a starting
+point.
+.TP
+.BI \-\-font\-urls\fB= FILENAME
+Path to a file with font urls (one per line) for the HTML output. This
+will generally be used in combination with the \fB\-\-css\fP option.
+.UNINDENT
+.sp
+System settings:
+.sp
+You\(aqll only need to specify these options if the programs are not available on
+the PATH variable.
+.INDENT 0.0
+.TP
+.BI \-\-gs\fB= GS
+Path to the GhostScript executable.
+.TP
+.BI \-\-pdftoppm\fB= PDFTOPPM
+Path to pdftoppm executable (default: pdftoppm). Note that pdftoppm is
+optional.
+.TP
+.BI \-\-pdftk\fB= PDFTK
+Path to PDFtk executable (default: pdftk). Either pdftk or qpdf is
+needed.
+.TP
+.BI \-\-qpdf\fB= QPDF
+Path to qpdf executable (default: qpdf). Either pdftk or qpdf is needed.
+.TP
+.BI \-\-rmapi\fB= RMAPI
+Path to rmapi executable (default: rmapi).
+.UNINDENT
+.sp
+Developer options:
+.INDENT 0.0
+.TP
+.B  \-d\fP,\fB  \-\-debug
+Debug mode, when used the program doesn\(aqt upload the document to the
+reMarkable by default and leaves the temporary directory with
+intermediate files.
+.UNINDENT
+.SH SUPPORTED SOURCES
+.sp
+The following scientific sources are currently supported and paper2remarkable
+will create a filename based on the authors, title, and publication year of
+the work. For the sources below the program is generally flexible with regards
+to whether a URL to the PDF or to the abstract page is provided.
+.INDENT 0.0
+.IP \(bu 2
+arXiv
+.IP \(bu 2
+ACL Web
+.IP \(bu 2
+ACM Digital Library
+.IP \(bu 2
+CVF
+.IP \(bu 2
+DiVA
+.IP \(bu 2
+ECCC
+.IP \(bu 2
+IACR
+.IP \(bu 2
+JMLR
+.IP \(bu 2
+Nature
+.IP \(bu 2
+NBER
+.IP \(bu 2
+NeurIPS
+.IP \(bu 2
+OpenReview
+.IP \(bu 2
+PMLR
+.IP \(bu 2
+PubMed Central
+.IP \(bu 2
+SpringerLink
+.IP \(bu 2
+SemanticScholar
+.UNINDENT
+.sp
+paper2remarkable also supports a generic URL to a PDF file or a local file, in
+which case no \(dqnice\(dq filename will be generated.
+.INDENT 0.0
+.IP \(bu 2
+A generic URL to a PDF file. This can be considered a fallback option for
+when a PDF source is not supported (yet).
+.IP \(bu 2
+A local PDF file.
+.UNINDENT
+.sp
+Finally, paper2remarkable supports extracting articles from websites. In this
+case an effort is done to detect the main content of the article and clean up
+the HTML before sending the file to the reMarkable.
+.SH CONFIGURATION FILE
+.sp
+To avoid having to provide frequently\-used command line flags, a configuration
+file can be created for paper2remarkable. By default it is a YAML file located
+at \fB~/.paper2remarkable.yml\fP, but an alternative location can be provided
+with the \fB\-\-config\fP option to the script.
+.sp
+The configuration file consists of three sections: \fBcore\fP, \fBsystem\fP, and
+\fBhtml\fP\&. In the \fBcore\fP section options for cropping, verbosity, and blank
+pages can be added, among others. The \fBsystem\fP section allows setting paths
+to executables such as \fBrmapi\fP, \fBpdftk\fP, etc.  Finally, the \fBhtml\fP
+section allows you to provide custom CSS and font urls for formatting the
+output of web articles.
+.sp
+Options provided on the command line overwrite those in the configuration
+file. So, for instance, if the configuration file has the setting \fBcrop:
+\(aqleft\(aq\fP in the \fBcore\fP section and the command line flag \fB\-c\fP is provided,
+the PDF will be centered.
+.sp
+An example file is provided in the repository on
+\X'tty: link https://www.github.com/GjjvdBurg/paper2remarkable'\fI\%GitHub\fP\X'tty: link', which also
+contains more information on the available options and their values.
+.SH EXPERIMENTAL FEATURES
+.sp
+Occassionally, experimental (beta) features will be included in
+paper2remarkable and they will be listed here. You can enable the experimental
+features by using the \fB\-e\fP flag to paper2remarkable.
+.INDENT 0.0
+.IP \(bu 2
+The HTML provider currently has an experimental feature to handle lazy
+loading of images. Certain websites use a small placeholder image and load
+the main image using Javascript, with the actual image source stored in a
+\fBdata\-src\fP attribute in the \fBimg\fP tag. The experimental feature uses the
+\fBdata\-src\fP attribute as the image source instead of that in the \fBsrc\fP
+attribute.
+.UNINDENT
+.SH BUGS
+.sp
+Please report bugs to:
+.sp
+\X'tty: link https://www.github.com/GjjvdBurg/paper2remarkable'\fI\%https://www.github.com/GjjvdBurg/paper2remarkable\fP\X'tty: link'
+.SH AUTHOR
+Gertjan van den Burg & other helpful contributors.
+.SH COPYRIGHT
+2020, G.J.J. van den Burg
+.\" Generated by docutils manpage writer.
+.

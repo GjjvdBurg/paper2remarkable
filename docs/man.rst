@@ -135,6 +135,7 @@ to whether a URL to the PDF or to the abstract page is provided.
 * ACL Web
 * ACM Digital Library
 * CVF
+* DiVA
 * ECCC
 * IACR
 * JMLR
@@ -144,8 +145,8 @@ to whether a URL to the PDF or to the abstract page is provided.
 * OpenReview
 * PMLR
 * PubMed Central
-* SemanticScholar
 * SpringerLink
+* SemanticScholar
 
 paper2remarkable also supports a generic URL to a PDF file or a local file, in 
 which case no "nice" filename will be generated.
