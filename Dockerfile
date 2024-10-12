@@ -2,7 +2,7 @@ FROM golang:buster AS rmapi
 
 ENV GOPATH /go
 ENV PATH ${GOPATH}/bin:/usr/local/go/bin:$PATH
-ENV RMAPIREPO github.com/juruen/rmapi
+ENV RMAPIREPO github.com/ddvk/rmapi
 
 RUN git clone https://${RMAPIREPO} && cd rmapi && go install
 
