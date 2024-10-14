@@ -7,7 +7,7 @@ ENV RMAPIREPO github.com/juruen/rmapi
 RUN git clone https://${RMAPIREPO} && cd rmapi && go install
 
 
-FROM python:3.7-slim-buster
+FROM python:3.11-slim-bullseye
 
 # rmapi
 COPY --from=rmapi /go/bin/rmapi /usr/bin/rmapi
