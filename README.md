@@ -66,7 +66,7 @@ let me know!
 4. Shrinks the pdf file to reduce the filesize
 5. Generates a nice filename based on author/title/year of the paper
 6. Uploads it to your reMarkable using 
-   [rMapi](https://github.com/juruen/rmapi).
+   [rMapi](https://github.com/ddvk/rmapi).
 
 Optionally, you can:
 
@@ -109,12 +109,12 @@ The script requires the following external programs to be available:
   [pdftk-java](https://gitlab.com/pdftk-java/pdftk), whichever your package 
   manager provides.
 - [GhostScript](https://www.ghostscript.com/)
-- [rMAPI](https://github.com/juruen/rmapi)
+- [rMAPI](https://github.com/ddvk/rmapi)
 
 Specifically:
 
-1. First install [rMAPI](https://github.com/juruen/rmapi), using the 
-   instructions available here: https://github.com/juruen/rmapi#install
+1. First install [rMAPI](https://github.com/ddvk/rmapi), using the 
+   instructions available here: https://github.com/ddvk/rmapi#install
 
 2. Then install system dependencies:
    - **Arch Linux:** ``pacman -S pdftk ghostscript poppler``
@@ -266,7 +266,7 @@ do
 done
 ```
 
-[print-guide]: https://github.com/juruen/rmapi/blob/master/docs/tutorial-print-macosx.md
+[print-guide]: https://github.com/ddvk/rmapi/blob/master/docs/tutorial-print-macosx.md
 
 ## Docker
 
@@ -283,7 +283,7 @@ docker build -t p2r .
 
 ### Authorization
 
-``paper2remarkable`` uses [rMapi](https://github.com/juruen/rmapi) to sync 
+``paper2remarkable`` uses [rMapi](https://github.com/ddvk/rmapi) to sync 
 documents to the reMarkable. The first time you run ``paper2remarkable`` you 
 will have to authenticate rMapi using a one-time code provided by reMarkable. 
 By default, rMapi uses the ``${HOME}/.rmapi`` file as a configuration file to 
