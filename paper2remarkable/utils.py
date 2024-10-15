@@ -13,9 +13,9 @@ import string
 import subprocess
 import time
 
-import regex
 import requests
 import unidecode
+import validators
 
 from pikepdf import Pdf
 from pikepdf import PdfError
@@ -189,11 +189,13 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
 
 
 def is_url(string):
-    # pattern adapted from CleverCSV
-    pattern = r"((https?|ftp):\/\/(?!\-))?(((([\p{L}\p{N}]*[\-\_]?[\p{L}\p{N}]+)+\.)+([a-z]{2,}|local)(\.[a-z]{2,3})?)|localhost|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\:\d{1,5})?))(\/[\p{L}\p{N}_\/()~?=&%\-\#\.:+]*)?(\.[a-z]+)?"
-    string = string.strip(" ")
-    match = regex.fullmatch(pattern, string)
-    return match is not None
+    """Check if the string is a valid URL
+
+    Returns
+    -------
+    bool: True if the string is a valid URL, False otherwise.
+    """
+    return validators.url(string)
 
 
 def check_pdftool(pdftk_path, qpdf_path):
