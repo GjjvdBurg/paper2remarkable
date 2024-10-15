@@ -128,6 +128,15 @@ def build_argument_parser():
         default=None,
     )
     parser.add_argument(
+        "--source",
+        choices=["url", "file"],
+        help=(
+            "Force the source type (url or file) in case of detection failure."
+            " This is useful when the input is ambiguous, but be aware that "
+            "this does not guarantee successful processing."
+        ),
+    )
+    parser.add_argument(
         "input",
         help="One or more URLs to a paper or paths to local PDF files",
         nargs="+",
@@ -153,18 +162,28 @@ def exception(msg):
     raise SystemExit(1)
 
 
-def choose_provider(cli_input):
+def choose_provider(cli_input, source_type=None):
     """Choose the provider to use for the given source
 
-    This function first tries to check if the input is a local file, by
-    checking if the path exists. Next, it checks if the input is a "valid" url
-    using a regex test. If it is, the registered provider classes are checked
-    to see which provider can handle this url.
+    This function determines the appropriate provider based on the input and the
+    optional source_type parameter. If source_type is specified, it overrides
+    the automatic detection. Otherwise, it first tries to check if the input is
+    a local file by checking if the path exists. Next, it checks if the input is
+    a "valid" url using a regex test. If it is, the registered provider classes
+    are checked to see which provider can handle this url.
+
+    Parameters
+    ----------
+    cli_input : str
+        The input provided by the user, either a file path or a URL.
+    source_type : str, optional
+        The type of the source, either "file" or "url". If provided, it overrides
+        the automatic detection.
 
     Returns
     -------
     provider : class
-        The class of the provider than can handle the source. A subclass of the
+        The class of the provider that can handle the source. A subclass of the
         Provider abc.
 
     new_input : str
@@ -178,19 +197,22 @@ def choose_provider(cli_input):
     Raises
     ------
     UnidentifiedSourceError
-        Raised when the input is neither an existing local file nor a valid url
+        Raised when the input is neither an existing local file nor a valid url,
+        and no valid source_type is provided.
 
     InvalidURLError
-        Raised when the input *is* a valid url, but no provider can handle it.
-
+        Raised when the input *is* a valid url (or source_type is "url"), but no
+        provider can handle it.
     """
     provider = cookiejar = None
-    if LocalFile.validate(cli_input):
-        # input is a local file
+    if source_type == "file" or (
+        source_type is None and LocalFile.validate(cli_input)
+    ):
+        # input is a local file or user specified source type is file
         new_input = cli_input
         provider = LocalFile
-    elif is_url(cli_input):
-        # input is a url
+    elif source_type == "url" or (source_type is None and is_url(cli_input)):
+        # input is a url or user specified source type is url
         new_input, cookiejar = follow_redirects(cli_input)
         provider = next((p for p in providers if p.validate(new_input)), None)
     else:
@@ -292,7 +314,9 @@ def runner(inputs, filenames, options, debug=False):
     if not len(inputs) == len(filenames):
         raise ValueError("Number of inputs and filenames must be the same")
     for cli_input, filename in zip(inputs, filenames):
-        provider, new_input, cookiejar = choose_provider(cli_input)
+        provider, new_input, cookiejar = choose_provider(
+            cli_input, options["core"].get("source")
+        )
         prov = provider(
             verbose=options["core"]["verbose"],
             upload=options["core"]["upload"],
