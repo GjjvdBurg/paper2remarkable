@@ -232,6 +232,33 @@ class TestUI(unittest.TestCase):
         with self.assertRaises(InvalidURLError):
             choose_provider(url)
 
+    def test_choose_provider_with_source(self):
+        with self.subTest("Test with local file and file source type"):
+            local_file = "/tmp/test.pdf"
+            open(local_file, "w").close()
+            provider, new_input, _ = choose_provider(
+                local_file, source_type="file"
+            )
+            self.assertEqual(provider, LocalFile)
+            self.assertEqual(new_input, local_file)
+            os.remove(local_file)
+
+        with self.subTest("Test with local file and URL source type"):
+            # Test with URL source
+            url = "https://arxiv.org/abs/1234.56789"
+            provider, new_input, _ = choose_provider(url, source_type="url")
+            self.assertEqual(provider, Arxiv)
+            self.assertTrue(new_input.startswith("https://arxiv.org/"))
+
+        with self.subTest("Test with URL and file source type"):
+            # Test with incorrect source type for file
+            provider, new_input, _ = choose_provider(url, source_type="file")
+            self.assertEqual(provider, LocalFile)
+            self.assertEqual(new_input, url)
+
+        # Note: we can't test incorrect source type for URL because it will
+        # raise an exception when determining the correct provider
+
     def test_merge_options_1(self):
         config = None
         source = "/tmp/local.pdf"  # doesn't need to exist
