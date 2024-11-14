@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from paper2remarkable.providers.epub import EPUBProvider
 from .acl import ACL
 from .acm import ACM
 from .arxiv import Arxiv
@@ -20,7 +19,6 @@ from .pmlr import PMLR
 from .pubmed import PubMed
 from .semantic_scholar import SemanticScholar
 from .springer import Springer
-from .epub import EPUBProvider
 
 # # The following providers are no longer functional due to Cloudflare blocking
 # # automated access, and have therefore been removed from the list of providers
@@ -51,5 +49,4 @@ providers = [
     LocalFile,
     PdfUrl,
     HTML,
-    EPUBProvider
 ]

@@ -34,6 +34,7 @@ logger = Logger()
 class Provider(metaclass=abc.ABCMeta):
     """ABC for providers of pdf sources"""
 
+    SUPPORTED_FORMATS = ["pdf", "ps", "epub"]
     def __init__(
         self,
         verbose=False,
@@ -77,20 +78,41 @@ class Provider(metaclass=abc.ABCMeta):
             logger.disable()
 
         # Define the operations to run on the pdf. Providers can add others.
-        self.operations = [("rewrite", self.rewrite_pdf)]
-        if crop == "center":
-            self.operations.append(("center", self.center_pdf))
-        elif crop == "right":
-            self.operations.append(("right", self.right_pdf))
-        elif crop == "left":
-            self.operations.append(("crop", self.crop_pdf))
-
-        if blank:
-            self.operations.append(("blank", blank_pdf))
-
-        self.operations.append(("shrink", self.shrink_pdf))
-
+        self.operations = {
+            format: [] for format in self.SUPPORTED_FORMATS
+        }
+        self._configure_operations(crop, blank)
         logger.info("Starting %s provider" % type(self).__name__)
+
+
+    def _configure_operations(self, crop, blank):
+        """Configure operations for PDF and PS formats"""
+        # Formats that need PDF processing
+        pdf_formats = ['pdf', 'ps']
+        def add_operation(formats, operation_name, operation_func):
+            for fmt in formats:
+                self.operations[fmt].append((operation_name, operation_func))
+
+        # Base operations
+        add_operation(pdf_formats, "rewrite", self.rewrite_pdf)
+
+        # Crop operations mapping
+        crop_operations = {
+            'center': ('center', self.center_pdf),
+            'right': ('right', self.right_pdf),
+            'left': ('crop', self.crop_pdf)
+        }
+
+        # Add crop operation if specified
+        if crop in crop_operations:
+            add_operation(pdf_formats, *crop_operations[crop])
+
+        # Add blank operation if specified
+        if blank:
+            add_operation(pdf_formats, "blank", blank_pdf)
+
+        # PDF-specific shrink operation
+        add_operation(['pdf'], "shrink", self.shrink_pdf)
 
     @staticmethod
     @abc.abstractmethod
@@ -210,17 +232,23 @@ class Provider(metaclass=abc.ABCMeta):
 
         # generate nice filename if needed
         clean_filename = filename or self.informer.get_filename(abs_url)
-        tmp_filename = "paper.pdf"
+        extension = clean_filename.split(".")[-1]
+        tmp_filename = f"paper.{extension}"
+
+        if extension not in self.SUPPORTED_FORMATS:
+            raise ValueError(f"Unsupported file format {extension}. Must be one of {self.SUPPORTED_FORMATS}")
+
 
         self.initial_dir = os.getcwd()
         with tempfile.TemporaryDirectory(prefix="p2r_") as working_dir:
             with chdir(working_dir):
                 self.retrieve_pdf(pdf_url, tmp_filename)
 
-                assert_file_is_pdf(tmp_filename)
+                if extension in "pdf ps".split():
+                    assert_file_is_pdf(tmp_filename)
 
                 intermediate_fname = tmp_filename
-                for opname, op in self.operations:
+                for opname, op in self.operations[extension]:
                     intermediate_fname = op(intermediate_fname)
 
                 shutil.copy(intermediate_fname, clean_filename)

@@ -19,7 +19,7 @@ from . import GITHUB_URL
 from . import __version__
 from .exceptions import InvalidURLError
 from .exceptions import UnidentifiedSourceError
-from .providers import LocalFile, EPUBProvider
+from .providers import LocalFile
 from .providers import providers
 from .utils import follow_redirects
 from .utils import is_url
@@ -27,13 +27,8 @@ from .utils import is_url
 
 def build_argument_parser():
     parser = argparse.ArgumentParser(
-        description="Paper2reMarkable version %s - Upload PDFs and EPUBs to reMarkable" % __version__
+        description="Paper2reMarkable version %s" % __version__
     )
-    parser.add_argument(
-         "input",
-         help="One or more URLs to a paper or paths to local PDF/EPUB files",
-         nargs="?",
-     )
     parser.add_argument(
         "-b",
         "--blank",
@@ -189,22 +184,17 @@ def choose_provider(cli_input):
         Raised when the input *is* a valid url, but no provider can handle it.
 
     """
-
     provider = cookiejar = None
-
-    # Check if it's a local file first
-    if os.path.exists(cli_input):
+    if LocalFile.validate(cli_input):
+        # input is a local file
         new_input = cli_input
-        # If it's an epub, use EPUBProvider
-        if cli_input.lower().endswith('.epub'):
-            provider = EPUBProvider
-        # Otherwise use LocalFile for PDFs
-        else:
-            provider = LocalFile
+        provider = LocalFile
     elif is_url(cli_input):
+        # input is a url
         new_input, cookiejar = follow_redirects(cli_input)
         provider = next((p for p in providers if p.validate(new_input)), None)
     else:
+        # not a proper URL or non-existent file
         raise UnidentifiedSourceError
 
     if provider is None:
