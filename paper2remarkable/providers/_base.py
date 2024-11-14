@@ -88,6 +88,7 @@ class Provider(metaclass=abc.ABCMeta):
     def _configure_operations(self, crop, blank):
         """Configure operations for PDF and PS formats"""
         # Formats that need PDF processing
+        # No processing for epubs is assumed
         pdf_formats = ['pdf', 'ps']
         def add_operation(formats, operation_name, operation_func):
             for fmt in formats:
