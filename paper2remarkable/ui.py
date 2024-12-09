@@ -158,8 +158,8 @@ def choose_provider(cli_input):
 
     This function first tries to check if the input is a local file, by
     checking if the path exists. Next, it checks if the input is a "valid" url
-    using a regex test. If it is, the registered provider classes are checked
-    to see which provider can handle this url.
+    using the validators library. If it is, the registered provider classes are
+    checked to see which provider can handle this url.
 
     Returns
     -------
