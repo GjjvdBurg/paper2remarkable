@@ -33,6 +33,7 @@ REQUIRED = [
     "requests>=2.21",
     "titlecase>=0.12",
     "unidecode>=1.1",
+    "validators>=0.34",
     "weasyprint>=51",
 ]
 
