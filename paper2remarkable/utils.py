@@ -15,7 +15,6 @@ import time
 
 import requests
 import unidecode
-import validators
 
 from pikepdf import Pdf
 from pikepdf import PdfError
@@ -186,16 +185,6 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
             "Uploading file %s to reMarkable failed" % filepath
         )
     logger.info("Upload successful.")
-
-
-def is_url(string):
-    """Check if the string is a valid URL
-
-    Returns
-    -------
-    bool: True if the string is a valid URL, False otherwise.
-    """
-    return validators.url(string)
 
 
 def check_pdftool(pdftk_path, qpdf_path):
