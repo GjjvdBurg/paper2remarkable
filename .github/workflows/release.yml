@@ -42,7 +42,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/veld
+      url: https://test.pypi.org/p/paper2remarkable
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
@@ -69,7 +69,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/p/veld
+      url: https://pypi.org/p/paper2remarkable
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
