@@ -34,6 +34,8 @@ HEADERS = {
 
 HTTP_SERVICE_UNAVAILABLE = 503
 
+REMARKABLE_USB_URL = "http://10.11.99.1"
+
 logger = Logger()
 
 
@@ -156,7 +158,9 @@ def follow_redirects(url):
     return url, jar
 
 
-def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
+def upload_to_remarkable_rmapi(
+    filepath, remarkable_dir="/", rmapi_path="rmapi"
+):
     logger.info("Starting upload to reMarkable")
 
     # Create the reMarkable dir if it doesn't exist
@@ -182,6 +186,63 @@ def upload_to_remarkable(filepath, remarkable_dir="/", rmapi_path="rmapi"):
         stdout=subprocess.DEVNULL,
     )
     if not status == 0:
+        raise RemarkableError(
+            "Uploading file %s to reMarkable failed" % filepath
+        )
+    logger.info("Upload successful.")
+
+
+def list_usb_dir(guid):
+    url = REMARKABLE_USB_URL + "/documents/"
+    if guid:
+        url += guid + "/"
+    response = requests.post(url)
+    return response.json()
+
+
+def crawl_usb_dirs(remarkable_dir):
+    parts = [p for p in remarkable_dir.split("/") if p]
+    guid = None
+    while len(parts) > 0:
+        part = parts.pop(0)
+        data = list_usb_dir(guid)
+        guid = None
+        for item in data:
+            if item["VissibleName"] == part:
+                guid = item["ID"]
+        if not guid:
+            raise RemarkableError(
+                "Directory %s does not exist on reMarkable" % remarkable_dir
+            )
+    # necessary because the last listed dir is the one uploaded to
+    list_usb_dir(guid)
+
+
+def upload_to_remarkable_usb(filepath, remarkable_dir="/"):
+    # https://remarkable.guide/tech/usb-web-interface.html
+    logger.info("Starting upload to reMarkable")
+
+    # Check if the remarkable dir exists (no creation through usb api)
+    crawl_usb_dirs(remarkable_dir)
+
+    headers = {
+        "Origin": REMARKABLE_USB_URL,
+        "Accept": "*/*",
+        "Referer": REMARKABLE_USB_URL + "/",
+        "Connection": "keep-alive",
+    }
+    response = requests.post(
+        REMARKABLE_USB_URL + "/upload",
+        files={
+            "file": (
+                os.path.basename(filepath),
+                open(filepath, "rb"),
+                "application/pdf",
+            )
+        },
+        headers=headers,
+    )
+    if not response.ok:
         raise RemarkableError(
             "Uploading file %s to reMarkable failed" % filepath
         )

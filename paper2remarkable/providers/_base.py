@@ -25,7 +25,8 @@ from ..utils import chdir
 from ..utils import check_pdftool
 from ..utils import download_url
 from ..utils import follow_redirects
-from ..utils import upload_to_remarkable
+from ..utils import upload_to_remarkable_rmapi
+from ..utils import upload_to_remarkable_usb
 from ._info import Informer
 
 logger = Logger()
@@ -43,6 +44,7 @@ class Provider(metaclass=abc.ABCMeta):
         crop="left",
         blank=False,
         remarkable_dir="/",
+        usb_upload=False,
         rmapi_path="rmapi",
         pdftoppm_path="pdftoppm",
         pdftk_path="pdftk",
@@ -57,6 +59,7 @@ class Provider(metaclass=abc.ABCMeta):
         self.experimental = experimental
         self.remarkable_dir = remarkable_dir
         self.rmapi_path = rmapi_path
+        self.usb_upload = usb_upload
         self.pdftoppm_path = pdftoppm_path
         self.pdftk_path = pdftk_path
         self.qpdf_path = qpdf_path
@@ -231,11 +234,17 @@ class Provider(metaclass=abc.ABCMeta):
                     return input()
 
                 if self.upload:
-                    return upload_to_remarkable(
-                        clean_filename,
-                        remarkable_dir=self.remarkable_dir,
-                        rmapi_path=self.rmapi_path,
-                    )
+                    if not self.usb_upload:
+                        return upload_to_remarkable_rmapi(
+                            clean_filename,
+                            remarkable_dir=self.remarkable_dir,
+                            rmapi_path=self.rmapi_path,
+                        )
+                    else:
+                        return upload_to_remarkable_usb(
+                            clean_filename,
+                            remarkable_dir=self.remarkable_dir,
+                        )
 
                 target_path = os.path.join(self.initial_dir, clean_filename)
                 while os.path.exists(target_path):
