@@ -94,6 +94,11 @@ def shrink_pdf(filepath, gs_path="gs"):
             f"Shrinking has no effect for this file, using original ({size_str})."
         )
         return filepath
-    size_str = _filesize_string(size_after)
-    logger.info(f"Shrinking brought filesize down to {size_str}")
+
+    size_str_before = _filesize_string(size_before)
+    size_str_after = _filesize_string(size_after)
+    logger.info(
+        f"Shrinking reduced filesize from {size_str_before} to "
+        f"{size_str_after}"
+    )
     return output_file
