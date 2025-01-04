@@ -22,12 +22,13 @@ class PubMedInformer(Informer):
     def _format_authors(self, soup_authors):
         return super()._format_authors(soup_authors, sep=" ", idx=-1)
 
+    def _format_year(self, soup_date):
+        return soup_date.split(" ")[0]
+
 
 class PubMed(Provider):
-    re_abs = r"https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/?"
-    re_pdf = (
-        r"https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC\d+/pdf/nihms\d+\.pdf"
-    )
+    re_abs = r"https?://pmc.ncbi.nlm.nih.gov/articles/PMC\d+/?"
+    re_pdf = r"https?://pmc.ncbi.nlm.nih.gov/articles/PMC\d+/pdf/nihms\d+\.pdf"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
