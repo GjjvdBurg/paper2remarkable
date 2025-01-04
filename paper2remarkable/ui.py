@@ -13,8 +13,8 @@ import copy
 import os
 import sys
 
-import yaml
 import validators
+import yaml
 
 from . import GITHUB_URL
 from . import __version__
@@ -89,6 +89,11 @@ def build_argument_parser():
         "--filename",
         help="Filename to use for the file on reMarkable",
         action="append",
+    )
+    parser.add_argument(
+        "--usb-upload",
+        help="upload through usb instead of rmapi",
+        action="store_true",
     )
     parser.add_argument(
         "--gs", help="path to gs executable (default: gs)", default=None
@@ -262,6 +267,7 @@ def merge_options(args, config=None):
     set_bool(opts["core"], "verbose", args.verbose)
     set_bool(opts["core"], "upload", args.no_upload, invert=True)
     set_bool(opts["core"], "experimental", args.experimental)
+    set_bool(opts["core"], "usb_upload", args.usb_upload)
 
     if args.center:
         opts["core"]["crop"] = "center"
@@ -327,6 +333,7 @@ def runner(inputs, filenames, options, debug=False):
             crop=options["core"]["crop"],
             blank=options["core"]["blank"],
             remarkable_dir=options["core"]["remarkable_dir"],
+            usb_upload=options["core"]["usb_upload"],
             rmapi_path=options["system"]["rmapi"],
             pdftoppm_path=options["system"]["pdftoppm"],
             pdftk_path=options["system"]["pdftk"],
