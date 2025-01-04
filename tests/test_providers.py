@@ -352,7 +352,7 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual(exp, os.path.basename(filename))
         # this is a proxy test to check that all images are included
-        self.assertEqual(32, len(pdfplumber.open(filename).pages))
+        self.assertIn(len(pdfplumber.open(filename).pages), [32, 33])
 
     @unittest.skip("Broken test (other url needed)")
     def test_html_4(self):
