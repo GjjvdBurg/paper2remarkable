@@ -15,8 +15,8 @@
 
 set -e -u -x -o pipefail
 
-NODE_VERSION="v12.18.1"
-NVM_VERSION="v0.36.0"
+NODE_VERSION="v22.12.0"
+NVM_VERSION="v0.40.1"
 
 echo "Setting up environment"
 echo "::group::Updating system ..."
