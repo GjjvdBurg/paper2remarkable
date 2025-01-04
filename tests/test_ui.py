@@ -416,6 +416,7 @@ class TestUI(unittest.TestCase):
                 "experimental": False,
                 "crop": "none",
                 "remarkable_dir": "/",
+                "usb_upload": False,
             },
             "system": {
                 "gs": "gs",
@@ -460,6 +461,7 @@ class TestUI(unittest.TestCase):
                 "experimental": False,
                 "crop": "none",
                 "remarkable_dir": rm_dir,
+                "usb_upload": False,
             },
             "system": {
                 "gs": "gs",
