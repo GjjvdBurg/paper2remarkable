@@ -76,7 +76,7 @@ class TestUI(unittest.TestCase):
             (
                 PubMed,
                 "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3474301/",
-                "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3474301/",
+                "https://pmc.ncbi.nlm.nih.gov/articles/PMC3474301/",
             ),
             (
                 ACM,
