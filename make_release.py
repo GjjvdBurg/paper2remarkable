@@ -204,7 +204,12 @@ class UpdateChangelog(Step):
             f"Update change log for version {context['next_version']}"
         )
         self.system("vim CHANGELOG.md")
-        self.instruct("TEMP: Copy the latest section to the update file")
+        self.instruct(
+            "TEMP: In the editor that will open, copy the latest section to "
+            "the update file. Do not include the section header, keep only "
+            "the bullet points."
+        )
+        wait_for_enter()
         self.system("vim CHANGELOG.md /tmp/changelog_update.md")
         with open("/tmp/changelog_update.md", "r") as fileobj:
             context["changelog_update"] = fileobj.read()
