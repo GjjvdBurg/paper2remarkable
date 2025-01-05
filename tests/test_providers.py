@@ -193,6 +193,13 @@ class TestProviders(unittest.TestCase):
         filename = prov.run(url)
         self.assertEqual("NoREC.pdf", os.path.basename(filename))
 
+    def test_epub(self):
+        prov = PdfUrl(upload=False, verbose=VERBOSE)
+        url = "https://www.gutenberg.org/ebooks/2701.epub.images"
+        filename = prov.run(url)
+        exp = "pg2701-images.epub"
+        self.assertEqual(exp, os.path.basename(filename))
+
     def test_jmlr_1(self):
         prov = JMLR(upload=False, verbose=VERBOSE)
         url = "http://www.jmlr.org/papers/volume17/14-526/14-526.pdf"

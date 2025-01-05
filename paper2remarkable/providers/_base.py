@@ -35,6 +35,7 @@ class Provider(metaclass=abc.ABCMeta):
     """ABC for providers of pdf sources"""
 
     SUPPORTED_FORMATS = ["pdf", "ps", "epub"]
+
     def __init__(
         self,
         verbose=False,
@@ -78,18 +79,16 @@ class Provider(metaclass=abc.ABCMeta):
             logger.disable()
 
         # Define the operations to run on the pdf. Providers can add others.
-        self.operations = {
-            format: [] for format in self.SUPPORTED_FORMATS
-        }
+        self.operations = {format: [] for format in self.SUPPORTED_FORMATS}
         self._configure_operations(crop, blank)
         logger.info("Starting %s provider" % type(self).__name__)
-
 
     def _configure_operations(self, crop, blank):
         """Configure operations for PDF and PS formats"""
         # Formats that need PDF processing
         # No processing for epubs is assumed
-        pdf_formats = ['pdf', 'ps']
+        pdf_formats = ["pdf", "ps"]
+
         def add_operation(formats, operation_name, operation_func):
             for fmt in formats:
                 self.operations[fmt].append((operation_name, operation_func))
@@ -99,9 +98,9 @@ class Provider(metaclass=abc.ABCMeta):
 
         # Crop operations mapping
         crop_operations = {
-            'center': ('center', self.center_pdf),
-            'right': ('right', self.right_pdf),
-            'left': ('crop', self.crop_pdf)
+            "center": ("center", self.center_pdf),
+            "right": ("right", self.right_pdf),
+            "left": ("crop", self.crop_pdf),
         }
 
         # Add crop operation if specified
@@ -113,7 +112,7 @@ class Provider(metaclass=abc.ABCMeta):
             add_operation(pdf_formats, "blank", blank_pdf)
 
         # PDF-specific shrink operation
-        add_operation(['pdf'], "shrink", self.shrink_pdf)
+        add_operation(["pdf"], "shrink", self.shrink_pdf)
 
     @staticmethod
     @abc.abstractmethod
@@ -237,8 +236,9 @@ class Provider(metaclass=abc.ABCMeta):
         tmp_filename = f"paper.{extension}"
 
         if extension not in self.SUPPORTED_FORMATS:
-            raise ValueError(f"Unsupported file format {extension}. Must be one of {self.SUPPORTED_FORMATS}")
-
+            raise ValueError(
+                f"Unsupported file format {extension}. Must be one of {self.SUPPORTED_FORMATS}"
+            )
 
         self.initial_dir = os.getcwd()
         with tempfile.TemporaryDirectory(prefix="p2r_") as working_dir:
