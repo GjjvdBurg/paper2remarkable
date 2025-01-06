@@ -34,7 +34,7 @@ class PdfUrlInformer(Informer):
 
         filename = path_parts[-1]
         ext = filename.split(".")[-1]
-        if ext not in [".pdf", "epub"]:
+        if ext not in ["pdf", "epub"]:
             raise FilenameMissingError(
                 provider="PdfUrl",
                 url=abs_url,
