@@ -40,7 +40,9 @@ class Arxiv(Provider):
         self.informer = ArxivInformer()
 
         # register the dearxiv operation
-        self.operations.insert(0, ("dearxiv", self.dearxiv))
+        for format in self.operations:
+            if format in "pdf ps".split():
+                self.operations[format].insert(0, ("dearxiv", self.dearxiv))
 
     def get_abs_pdf_urls(self, url):
         """Get the pdf and abs url from any given arXiv url"""

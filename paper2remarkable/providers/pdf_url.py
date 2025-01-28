@@ -33,11 +33,12 @@ class PdfUrlInformer(Informer):
             )
 
         filename = path_parts[-1]
-        if not filename.endswith(".pdf"):
+        ext = filename.split(".")[-1]
+        if ext not in ["pdf", "epub"]:
             raise FilenameMissingError(
                 provider="PdfUrl",
                 url=abs_url,
-                reason="URL path didn't end in .pdf",
+                reason="URL path didn't end in .pdf or .epub",
             )
         logger.warning(
             "Using filename {filename} extracted from url. "
