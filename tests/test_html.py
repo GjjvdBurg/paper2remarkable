@@ -52,6 +52,44 @@ class TestHTML(unittest.TestCase):
 
         os.unlink(filename)
 
+    def test_table_rendering(self):
+        """Test that HTML tables are properly rendered in the PDF output."""
+        test_html = """
+        <html>
+        <body>
+            <h1>Test Table</h1>
+            <table>
+                <tr>
+                    <th>Header 1</th>
+                    <th>Header 2</th>
+                </tr>
+                <tr>
+                    <td>Data 1</td>
+                    <td>Data 2</td>
+                </tr>
+                <tr>
+                    <td>Data 3</td>
+                    <td>Data 4</td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
+
+        prov = HTML(upload=False)
+        title, article = make_readable(test_html)
+        html_article = prov.preprocess_html("test_url", title, article)
+
+        # Verify table structure is preserved
+        self.assertIn("<table>", html_article)
+        self.assertIn("<th>", html_article)
+        self.assertIn("<td>", html_article)
+
+        # Verify table content is present
+        self.assertIn("Header 1", html_article)
+        self.assertIn("Data 1", html_article)
+        self.assertIn("Data 4", html_article)
+
 
 if __name__ == "__main__":
     unittest.main()
