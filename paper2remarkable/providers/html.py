@@ -42,6 +42,24 @@ h3 { font-size: 14px; }
 blockquote { font-style: italic; }
 pre { font-family: 'Inconsolata'; padding-left: 2.5%; background: #efefef; }
 code { font-family: 'Inconsolata'; font-size: .7rem; background: #efefef; }
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 1em 0; 
+    font-family: 'EB Garamond'; 
+    font-size: 9pt;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+th, td { 
+    border: 1px solid #ddd; 
+    padding: 4px 6px; 
+    text-align: left;
+    vertical-align: top;
+}
+th { background-color: #f5f5f5; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr { page-break-inside: avoid; break-inside: avoid; }
 """
 
 # NOTE: For some reason, Weasyprint no longer accepts the @import statement in
@@ -161,13 +179,14 @@ class HTML(Provider):
 
         h2t = html2text.HTML2Text()
         h2t.wrap_links = False
+        h2t.bypass_tables = False  # Preserve table structure
         text = h2t.handle(article)
 
         # Add the title back to the document
         article = "# {title}\n\n{text}".format(title=title, text=text)
 
-        # Convert to html, fixing relative image urls.
-        md = markdown.Markdown()
+        # Convert to html, fixing relative image urls and enabling table support
+        md = markdown.Markdown(extensions=["tables", "attr_list"])
         md.treeprocessors.register(ImgProcessor(pdf_url), "img", 10)
         html_article = md.convert(article)
         return html_article
